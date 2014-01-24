@@ -1,0 +1,36 @@
+{
+	"name": "nodebb-plugin-spam-be-gone",
+	"version": "0.0.1",
+	"description": "anti spam using both Akismet.com and StopForumSpam.com",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
+	},
+	"keywords": [
+		"nodebb",
+		"plugin",
+		"spam",
+		"akismet",
+		"stopforumspam",
+		"antispam"
+	],
+	"author": {
+		"name": "Aziz khoury",
+		"email": "bentael@gmail.com"
+	},
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
+	},
+	"dependencies": {
+		"async": "~0.2.9",
+		"tiny-logger": "~0.0.2",
+		"akismet": "~0.0.10",
+		"spamcheck": "~0.0.2-1",
+		"fs-extra": "~0.8.1"
+	}
+}

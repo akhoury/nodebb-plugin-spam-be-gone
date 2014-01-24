@@ -1,4 +1,6 @@
 nodebb-plugin-spam-be-gone
 ==========================
 
-yup
+work in progress
+
+![Imgur](http://i.imgur.com/0GjQRaW.png)

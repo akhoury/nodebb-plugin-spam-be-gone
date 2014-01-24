@@ -1,0 +1,27 @@
+{
+	"id": "nodebb-plugin-spam-be-gone",
+	"name": "SpamBeGone",
+	"description": "anti spam using both Akismet.com and StopForumSpam.com",
+	"url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone",
+	"library": "./index.js",
+	"staticDir": "./public",
+
+	"css": [
+		"css/default.css"
+	],
+
+	"hooks": [
+		{ "hook": "filter:user.create", "method": "checkUser", "callbacked": true, "priority": 5},
+		{ "hook": "filter:post.create", "method": "checkPost", "callbacked": true, "priority": 5},
+		{ "hook": "filter:admin.header.build", "method": "admin.menu", "callbacked": false },
+		{ "hook": "filter:admin.create_routes", "method": "admin.route", "callbacked": true },
+		{ "hook": "action:plugin.activate", "method": "admin.activate" },
+		{ "hook": "action:config.set", "method": "reload" }
+	],
+
+	"defaults": {
+		"akismetApiKey": "",
+		"enableStopForumSpam": "1",
+		"logging": "0"
+	}
+}
