@@ -15,7 +15,7 @@
 		"plugin",
 		"spam",
 		"akismet",
-		"stopforumspam",
+		"honeypot",
 		"antispam"
 	],
 	"author": {
@@ -27,10 +27,7 @@
 		"url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
 	},
 	"dependencies": {
-		"async": "~0.2.9",
-		"tiny-logger": "~0.0.2",
 		"akismet": "~0.0.10",
-		"spamcheck": "~0.0.2-1",
-		"fs-extra": "~0.8.1"
+		"project-honeypot": "~0.0.0"
 	}
 }

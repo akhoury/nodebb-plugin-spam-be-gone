@@ -1,27 +1,41 @@
 {
 	"id": "nodebb-plugin-spam-be-gone",
-	"name": "SpamBeGone",
+	"name": "Spam Be Gone",
 	"description": "anti spam using both Akismet.com and StopForumSpam.com",
 	"url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone",
-	"library": "./index.js",
-	"staticDir": "./public",
+	"library": "./library.js",
+	"templates": "templates",
 
-	"css": [
-		"css/default.css"
-	],
+    "hooks": [
+        {"hook": "action:app.load", "method": "load"},
+        {"hook": "filter:admin.header.build", "method": "admin.menu"},
+        {"hook": "action:plugin.activate", "method": "admin.activate"},
 
-	"hooks": [
-		{ "hook": "filter:user.create", "method": "checkUser", "callbacked": true, "priority": 5},
-		{ "hook": "filter:post.create", "method": "checkPost", "callbacked": true, "priority": 5},
-		{ "hook": "filter:admin.header.build", "method": "admin.menu", "callbacked": false },
-		{ "hook": "filter:admin.create_routes", "method": "admin.route", "callbacked": true },
-		{ "hook": "action:plugin.activate", "method": "admin.activate" },
-		{ "hook": "action:config.set", "method": "reload" }
-	],
+        {"hook": "filter:user.create", "method": "checkUser", "priority": 5},
+        {"hook": "filter:post.create", "method": "checkPost", "priority": 5}
+    ],
 
-	"defaults": {
-		"akismetApiKey": "",
-		"enableStopForumSpam": "1",
+    "minver": "0.4.0",
+    "faIcon": "fa-shield",
+	"pluginSettings": {
+        "akismetEnabled": {
+            "type": "boolean",
+            "defaultsTo": true
+        },
+		"akismetApiKey": {
+            "required": true,
+            "defaultsTo": "",
+            "jsType": "string"
+        },
+        "honeypotEnabled": {
+            "type": "boolean",
+            "defaultsTo": true
+        },
+		"honeypotApiKey": {
+            "required": true,
+            "defaultsTo": "",
+            "jsType": "string"
+        },
 		"logging": "0"
 	}
 }
