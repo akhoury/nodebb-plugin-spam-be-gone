@@ -7,7 +7,6 @@
                 <div class="checkbox">
                    <label>
                      <input data-toggle-target="#akismetApiKey" type="checkbox" id="akismetEnabled" name="akismetEnabled"/> Enable Akismet
-                     <p class="help-block">Akismet temporarly disabled till we solve some blockers. Keep track over <a target="_blank" href="https://community.nodebb.org/topic/150/nodebb-anti-spam">here</a></p>
                    </label>
                  </div>
 				<div class="form-group">
