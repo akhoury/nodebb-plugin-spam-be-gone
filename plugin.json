@@ -9,13 +9,12 @@
     "hooks": [
         {"hook": "action:app.load", "method": "load"},
         {"hook": "filter:admin.header.build", "method": "admin.menu"},
-        {"hook": "action:plugin.activate", "method": "admin.activate"},
 
         {"hook": "filter:user.create", "method": "checkUser", "priority": 5},
-        {"hook": "filter:post.create", "method": "checkPost", "priority": 5}
+        {"hook": "filter:topic.reply", "method": "checkReply", "priority": 5}
     ],
 
-    "minver": "0.4.0",
+    "minver": "0.4.2",
     "faIcon": "fa-shield",
 	"pluginSettings": {
         "akismetEnabled": {
