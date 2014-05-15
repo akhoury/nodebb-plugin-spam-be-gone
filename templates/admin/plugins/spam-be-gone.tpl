@@ -9,10 +9,10 @@
                      <input data-toggle-target="#akismetApiKey" type="checkbox" id="akismetEnabled" name="akismetEnabled"/> Enable Akismet
                    </label>
                  </div>
+                <p class="help-block">To check every user post. Get yours from <a target="_blank" href="http://akismet.com/">akismet.com</a></p>
 				<div class="form-group">
 					<label for="akismetApiKey">Akismet API Key</label>
 					<input placeholder="Akismet API Key here" type="text" class="form-control" id="akismetApiKey" name="akismetApiKey" />
-				    <p class="help-block">To check every user post. Get yours from <a target="_blank" href="http://akismet.com/">akismet.com</a></p>
 				</div>
 
 				<div class="checkbox">
@@ -20,19 +20,48 @@
                      <input data-toggle-target="#honeypotApiKey" type="checkbox" id="honeypotEnabled" name="honeypotEnabled"/> Enable Honeypot
                    </label>
                  </div>
+                <p class="help-block">To check every user registration. Get yours from <a target="_blank" href="http://www.projecthoneypot.org/">projecthoneypot.org</a></p>
 				<div class="form-group">
 					<label for="honeypotApiKey">Honeypot API Key</label>
 					<input placeholder="Honeypot API Key here" type="text" class="form-control" id="honeypotApiKey" name="honeypotApiKey" />
-				    <p class="help-block">To check every user registration. Get yours from <a target="_blank" href="http://www.projecthoneypot.org/">projecthoneypot.org</a></p>
 				</div>
+
+				<div class="checkbox">
+                   <label>
+                     <input data-toggle-target=".recaptchaKey" type="checkbox" id="recaptchaEnabled" name="recaptchaEnabled"/> Enable Re-Captcha
+                   </label>
+                 </div>
+                <p class="help-block">To check every user registration. You need a private and a public key, get yours from <a target="_blank" href="http://www.google.com/recaptcha">google.com/recaptcha</a></p>
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="recaptchaPublicKey">Re-Captcha Public API Key</label>
+                        <input placeholder="Public API Key here" type="text" class="recaptchaKey form-control" id="recaptchaPublicKey" name="recaptchaPublicKey" />
+                    </div>
+                    <div class="form-group">
+                        <label for="recaptchaPrivateKey">Re-Captcha Private API Key</label>
+                        <input placeholder="Private API Key here" type="text" class="recaptchaKey form-control" id="recaptchaPrivateKey" name="recaptchaPrivateKey" />
+                    </div>
+                </div>
+                <p class="help-block">Keep your private key private</p>
+                <div class="form-group col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <label for="recaptchaTheme">Re-Captcha Theme</label>
+                    <p class="help-block">Preview Captcha themes <a target="_blank" href="https://developers.google.com/recaptcha/docs/customization">here</a></p>
+                    <select id="recaptchaTheme" class="recaptchaKey form-control">
+                      <option value="clean">Clean</option>
+                      <option value="red">Red</option>
+                      <option value="white">White</option>
+                      <option value="blackglass">blackglass</option>
+                    </select>
+                </div>
 			</div>
 		</div>
-
+        <hr />
 		<button class="btn btn-lg btn-primary" id="save" type="button">Save</button>
 
 	    <p class="help-block">
-	        This plugin uses <a target="_blank" href="https://github.com/julianlam/project-honeypot">project-honeypot</a>
-	        and <a target="_blank" href="https://github.com/oozcitak/akismet-js">akismet-js</a>.
+	        This plugin uses <a target="_blank" href="https://github.com/julianlam/project-honeypot">project-honeypot</a>,
+	        <a target="_blank" href="https://github.com/oozcitak/akismet-js">akismet-js</a>,
+	        and <a target="_blank" href="https://github.com/JacksonTian/re-captcha">re-captcha</a>
 
 	        <br />
 	        File issues, pull requests or ideas at the <a target="_blank" href="https://github.com/akhoury/nodebb-plugin-spam-be-gone">github repo</a>

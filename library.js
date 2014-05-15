@@ -1,12 +1,36 @@
 var	Akismet = require('akismet'),
     Honeypot = require('project-honeypot'),
+	Recaptcha = require('re-captcha'),
     pluginData = require('./plugin.json'),
     winston = module.parent.require('winston'),
     nconf = module.parent.require('nconf'),
+    async = module.parent.require('async'),
     Meta = module.parent.require('./meta'),
-    akismet, honeypot, Plugin = {};
+    akismet, honeypot, recaptcha,
+	Plugin = {};
 
 pluginData.nbbId = pluginData.id.replace(/nodebb-plugin-/, '');
+
+var util = {
+		keys: function(obj, props, value) {
+			if(props == null || obj == null)
+				return undefined;
+
+			var i = props.indexOf(".");
+			if( i == -1 ) {
+				if(value !== undefined)
+					obj[props] = value;
+				return obj[props];
+			}
+			var prop = props.slice(0, i),
+				newProps = props.slice(i + 1);
+
+			if(props !== undefined && !(obj[prop] instanceof Object) )
+				obj[prop] = {};
+
+			return util.keys(obj[prop], newProps, value);
+		}
+};
 
 Plugin.load = function(app, middleware, controllers) {
 
@@ -15,7 +39,7 @@ Plugin.load = function(app, middleware, controllers) {
     };
 
     Meta.settings.get(pluginData.nbbId, function(err, settings) {
-        if (!err && settings) {
+		if (!err && settings) {
             if (settings.akismetEnabled === 'on') {
                 if (settings.akismetApiKey) {
                     akismet = require('akismet').client({blog: nconf.get('base_url'), apiKey: settings.akismetApiKey});
@@ -38,6 +62,22 @@ Plugin.load = function(app, middleware, controllers) {
                 }
             }
 
+			if (settings.recaptchaEnabled === 'on') {
+				if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey ) {
+					recaptcha = new Recaptcha(settings.recaptchaPublicKey, settings.recaptchaPrivateKey);
+
+					var recaptchaLanguages = {'en': 1, 'nl': 1, 'fr': 1, 'de': 1, 'pt': 1, 'ru': 1, 'es': 1, 'tr': 1},
+						lang = (Meta.config.defaultLang || 'en').toLowerCase();
+					lang = recaptchaLanguages[lang] ? lang : 'en';
+
+					recaptcha.__options__ = {
+						theme: settings.recaptchaTheme || 'clean',
+						lang: lang,
+						tabindex: settings.recaptchaTabindex || 0
+					};
+				}
+			}
+
         } else {
             winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrived!');
         }
@@ -47,6 +87,25 @@ Plugin.load = function(app, middleware, controllers) {
     app.get('/api/admin/plugins/' + pluginData.nbbId, render);
 };
 
+Plugin.addCaptcha = function(req, res, templateData, callback) {
+	var message = '', captcha = '';
+	if (recaptcha) {
+		if (req.session.recaptcha_error) {
+			message = '<p style="background-color: #f2dede; padding: 10px; text-align: center;" class="bg-danger">' + req.session.recaptcha_error.message + '</p>';
+		}
+
+		captcha = recaptcha.toHTML(req.session.recaptcha_error);
+		req.session.recaptcha_error = null;
+
+		templateData.captcha = ''
+			+ '<script id=\'spam-be-gone-recaptcha-script\'>\n\n'
+			+	'var RecaptchaOptions = \n\t\t\t' + JSON.stringify(recaptcha.__options__) + ';\n\n'
+			+ '</script>'
+			+ message
+			+ captcha;
+	}
+	callback(null, templateData);
+};
 
 Plugin.checkReply = function(data, callback) {
     // http://akismet.com/development/api/#comment-check
@@ -74,30 +133,67 @@ Plugin.checkReply = function(data, callback) {
     }
 };
 
-Plugin.checkUser = function(userData, callback) {
-    if (honeypot && userData.ip) {
-        honeypot.query(userData.ip, function (err, results) {
-            if (err) {
-                winston.error(err);
-                callback(null, userData);
-            } else {
-                if (results && results.found && results.type) {
-                    if (results.type.spammer || results.type.suspicious) {
-                        var message = userData.username + ' | ' + userData.email + ' was detected as ' +  (results.type.spammer ? 'spammer' : 'suspicious');
-                        winston.warn('[plugins/' + pluginData.nbbId + '] ' + message + ' and was denied registration.');
-                        callback(new Error(message), userData);
-                    } else {
-                        callback(null, userData);
-                    }
-                } else {
-                    winston.warn('User with ip:' + userData.ip + ' not found in Honeypot database');
-                    callback(null, userData);
-                }
-            }
-        });
-    } else {
-        callback(null, userData);
-    }
+Plugin.checkRegister = function(req, res, userData, callback) {
+	async.parallel([
+		function(next) {
+			Plugin._honeypotCheck(req, res, userData, next);
+		},
+		function(next) {
+			Plugin._recaptchaCheck(req, res, userData, next)
+		}
+	], function(err, results) {
+			callback(err, userData);
+	});
+};
+
+Plugin._honeypotCheck = function(req, res, userData, next) {
+	if (honeypot && req && req.ip) {
+		honeypot.query(req.ip, function (err, results) {
+			if (err) {
+				winston.error(err);
+				next(null, userData);
+			} else {
+				if (results && results.found && results.type) {
+					if (results.type.spammer || results.type.suspicious) {
+						var message = userData.username + ' | ' + userData.email + ' was detected as ' +  (results.type.spammer ? 'spammer' : 'suspicious');
+
+						winston.warn('[plugins/' + pluginData.nbbId + '] ' + message + ' and was denied registration.');
+						next({source: 'honeypot', message: message}, userData);
+					} else {
+						next(null, userData);
+					}
+				} else {
+					winston.warn('[plugins/' + pluginData.nbbId + '] username:' + userData.username + ' ip:' + req.ip + ' was not found in Honeypot database');
+					next(null, userData);
+				}
+			}
+		});
+	} else {
+		next(null, userData);
+	}
+};
+
+Plugin._recaptchaCheck = function(req, res, userData, next) {
+	if (recaptcha && req && req.ip && req.body) {
+		req.session.recaptcha_error = null;
+
+		recaptcha.verify({
+			remoteip:  req.ip,
+			challenge: req.body.recaptcha_challenge_field,
+			response:  req.body.recaptcha_response_field
+		}, function(err) {
+			if (err) {
+				var message = 'wrong-captcha';
+				req.session.recaptcha_error = {message: message};
+				winston.warn('[plugins/' + pluginData.nbbId + '] ' + message);
+				next({source: 'recaptcha', message: message}, userData);
+			} else {
+				next(null, userData);
+			}
+		});
+	} else {
+		next(null, userData);
+	}
 };
 
 Plugin.admin = {
