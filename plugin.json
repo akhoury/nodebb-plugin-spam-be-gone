@@ -6,6 +6,7 @@
 	"library": "./library.js",
 	"templates": "templates",
 	"scripts": [
+		"public/vendor/recaptcha_ajax.js",
 		"public/js/scripts.js"
 	],
 	"less": [

@@ -61,7 +61,7 @@
 	    <p class="help-block">
 	        This plugin uses <a target="_blank" href="https://github.com/julianlam/project-honeypot">project-honeypot</a>,
 	        <a target="_blank" href="https://github.com/oozcitak/akismet-js">akismet-js</a>,
-	        and <a target="_blank" href="https://github.com/JacksonTian/re-captcha">re-captcha</a>
+	        and <a target="_blank" href="https://github.com/zeMirco/simple-recaptcha">simple-recaptcha</a>
 
 	        <br />
 	        File issues, pull requests or ideas at the <a target="_blank" href="https://github.com/akhoury/nodebb-plugin-spam-be-gone">github repo</a>

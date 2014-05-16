@@ -1,12 +1,12 @@
 var	Akismet = require('akismet'),
     Honeypot = require('project-honeypot'),
-	Recaptcha = require('re-captcha'),
+	simpleRecaptcha = require('simple-recaptcha'),
     pluginData = require('./plugin.json'),
     winston = module.parent.require('winston'),
     nconf = module.parent.require('nconf'),
     async = module.parent.require('async'),
     Meta = module.parent.require('./meta'),
-    akismet, honeypot, recaptcha,
+    akismet, honeypot, recaptchaArgs, pluginSettings,
 	Plugin = {};
 
 pluginData.nbbId = pluginData.id.replace(/nodebb-plugin-/, '');
@@ -64,20 +64,24 @@ Plugin.load = function(app, middleware, controllers) {
 
 			if (settings.recaptchaEnabled === 'on') {
 				if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey ) {
-					recaptcha = new Recaptcha(settings.recaptchaPublicKey, settings.recaptchaPrivateKey);
-
 					var recaptchaLanguages = {'en': 1, 'nl': 1, 'fr': 1, 'de': 1, 'pt': 1, 'ru': 1, 'es': 1, 'tr': 1},
 						lang = (Meta.config.defaultLang || 'en').toLowerCase();
-					lang = recaptchaLanguages[lang] ? lang : 'en';
 
-					recaptcha.__options__ = {
-						theme: settings.recaptchaTheme || 'clean',
-						lang: lang,
-						tabindex: settings.recaptchaTabindex || 0
+					recaptchaArgs = {
+						publicKey: settings.recaptchaPublicKey,
+						targetId: pluginData.nbbId + '-recaptcha-target',
+						options: {
+							theme: settings.recaptchaTheme || 'clean',
+							lang: recaptchaLanguages[lang] ? lang : 'en',
+							tabindex: settings.recaptchaTabindex || 0
+						}
 					};
 				}
+			} else {
+				recaptchaArgs = null;
 			}
 
+			pluginSettings = settings;
         } else {
             winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrived!');
         }
@@ -88,21 +92,15 @@ Plugin.load = function(app, middleware, controllers) {
 };
 
 Plugin.addCaptcha = function(req, res, templateData, callback) {
-	var message = '', captcha = '';
-	if (recaptcha) {
-		if (req.session.recaptcha_error) {
-			message = '<p style="background-color: #f2dede; padding: 10px; text-align: center;" class="bg-danger">' + req.session.recaptcha_error.message + '</p>';
-		}
-
-		captcha = recaptcha.toHTML(req.session.recaptcha_error);
-		req.session.recaptcha_error = null;
+	if (recaptchaArgs) {
 
 		templateData.captcha = ''
-			+ '<script id=\'spam-be-gone-recaptcha-script\'>\n\n'
-			+	'var RecaptchaOptions = \n\t\t\t' + JSON.stringify(recaptcha.__options__) + ';\n\n'
+			+ '<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n'
+			+	'window.plugin = window.plugin || {};\n\t\t\t'
+			+   'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'
+			+ 	'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'
 			+ '</script>'
-			+ message
-			+ captcha;
+			+ '<div id="' + pluginData.nbbId + '-recaptcha-target"></div>';
 	}
 	callback(null, templateData);
 };
@@ -174,23 +172,23 @@ Plugin._honeypotCheck = function(req, res, userData, next) {
 };
 
 Plugin._recaptchaCheck = function(req, res, userData, next) {
-	if (recaptcha && req && req.ip && req.body) {
-		req.session.recaptcha_error = null;
+	if (recaptchaArgs && req && req.ip && req.body) {
 
-		recaptcha.verify({
-			remoteip:  req.ip,
-			challenge: req.body.recaptcha_challenge_field,
-			response:  req.body.recaptcha_response_field
-		}, function(err) {
-			if (err) {
-				var message = 'wrong-captcha';
-				req.session.recaptcha_error = {message: message};
-				winston.warn('[plugins/' + pluginData.nbbId + '] ' + message);
-				next({source: 'recaptcha', message: message}, userData);
-			} else {
-				next(null, userData);
+		simpleRecaptcha(
+			pluginSettings.recaptchaPrivateKey,
+			req.ip,
+			req.body.recaptcha_challenge_field,
+			req.body.recaptcha_response_field,
+			function(err) {
+				if (err) {
+					var message = err.Error || 'Wrong Captcha';
+					winston.warn('[plugins/' + pluginData.nbbId + '] ' + message);
+					next({source: 'recaptcha', message: message}, userData);
+				} else {
+					next(null, userData);
+				}
 			}
-		});
+		);
 	} else {
 		next(null, userData);
 	}
