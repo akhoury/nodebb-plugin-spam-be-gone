@@ -5,6 +5,7 @@ $(function() {
 			&& window.plugin
 			&& plugin['spam-be-gone']
 			&& plugin['spam-be-gone'].recaptchaArgs
+			&& $('#' + plugin['spam-be-gone'].recaptchaArgs.targetId).length
 		) {
 			var args = plugin['spam-be-gone'].recaptchaArgs;
 			Recaptcha.create(
