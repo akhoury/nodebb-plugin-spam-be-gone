@@ -20,6 +20,6 @@
         {"hook": "filter:register.check", "method": "checkRegister", "priority": 5},
         {"hook": "filter:topic.reply", "method": "checkReply", "priority": 5}
     ],
-    "minver": "0.4.3",
+    "minver": "0.5.0",
     "faIcon": "fa-shield"
 }
