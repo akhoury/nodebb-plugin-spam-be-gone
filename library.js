@@ -143,7 +143,7 @@ Plugin.checkRegister = function(req, res, userData, callback) {
 			Plugin._recaptchaCheck(req, res, userData, next)
 		}
 	], function(err, results) {
-			callback(err, userData);
+			callback(err, req, res, userData);
 	});
 };
 
