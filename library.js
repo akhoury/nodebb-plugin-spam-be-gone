@@ -102,7 +102,7 @@ Plugin.addCaptcha = function(req, res, templateData, callback) {
 				+	'window.plugin = window.plugin || {};\n\t\t\t'
 				+   'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'
 				+ 	'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'
-				+ '</script>';
+				+ '</script>'
 		}
 	}
 	callback(null, req, res, templateData);
