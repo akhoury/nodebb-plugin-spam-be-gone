@@ -8,8 +8,7 @@ $(function() {
 			&& $('#' + plugin['spam-be-gone'].recaptchaArgs.targetId).length
 			) {
 
-			var utils = {
-				injectTag: function (tagName, attrs, options) {
+			var injectTag = function (tagName, attrs, options) {
 					options || (options = {});
 
 					var tag = document.createElement(tagName);
@@ -32,38 +31,38 @@ $(function() {
 						scripts[scripts.length - 1].parentNode.appendChild(tag);
 					}
 				},
-				injectScript: function(src, options) {
+
+				injectScript = function(src, options) {
 					options || (options = {});
-					utils.injectTag('script', {src: src, type: 'text/javascript'}, options);
-				}
-			}
+					injectTag('script', {src: src, type: 'text/javascript'}, options);
+				},
 
-			var createCaptcha = function() {
-				var args = plugin['spam-be-gone'].recaptchaArgs;
+				createCaptcha = function() {
+					var args = plugin['spam-be-gone'].recaptchaArgs;
 
-				if (window.Recaptcha) {
-					Recaptcha.create(
-						args.publicKey,
-						args.targetId,
-						{
-							theme: args.options.theme,
-							lang: args.options.lang,
-							tabIndex: args.options.tabindex,
-							callback: function() {
-								var error = utils.param('error');
-								if (error) {
-									app.alertError(error);
+					if (window.Recaptcha) {
+						Recaptcha.create(
+							args.publicKey,
+							args.targetId,
+							{
+								theme: args.options.theme,
+								lang: args.options.lang,
+								tabIndex: args.options.tabindex,
+								callback: function() {
+									var error = utils.param('error');
+									if (error) {
+										app.alertError(error);
+									}
 								}
 							}
-						}
-					);
-				}
-			};
+						);
+					}
+				};
 
 			if ($('script[scr$="recaptcha_ajax.js"]').length) {
 				createCaptcha();
 			} else {
-				utils.injectScript('//www.google.com/recaptcha/api/js/recaptcha_ajax.js', {onload: createCaptcha});
+				injectScript('//www.google.com/recaptcha/api/js/recaptcha_ajax.js', {onload: createCaptcha});
 			}
 		}
 	});
