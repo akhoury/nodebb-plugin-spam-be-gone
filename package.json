@@ -30,5 +30,8 @@
 		"akismet": "~0.0.10",
 		"project-honeypot": "~0.0.0",
 		"simple-recaptcha": "~0.0.3"
-	}
+	},
+	  "peerDependencies": {
+    		"nodebb-theme-vanilla": "~0.0.33"
+  	}
 }
