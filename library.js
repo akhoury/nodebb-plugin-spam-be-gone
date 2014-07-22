@@ -71,7 +71,9 @@ Plugin.load = function(app, middleware, controllers) {
 						publicKey: settings.recaptchaPublicKey,
 						targetId: pluginData.nbbId + '-recaptcha-target',
 						options: {
-							theme: settings.recaptchaTheme || 'clean',
+							// theme: settings.recaptchaTheme || 'clean',
+							//todo: switch to custom theme, issue#9
+							theme: 'clean',
 							lang: recaptchaLanguages[lang] ? lang : 'en',
 							tabindex: settings.recaptchaTabindex || 0
 						}
