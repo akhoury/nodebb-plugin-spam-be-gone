@@ -46,7 +46,7 @@
                 <div class="form-group col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <label for="recaptchaTheme">Re-Captcha Theme</label>
                     <p class="help-block">Preview Captcha themes <a target="_blank" href="https://developers.google.com/recaptcha/docs/customization">here</a></p>
-                    <select id="recaptchaTheme" class="recaptchaKey form-control">
+                    <select id="recaptchaTheme" name="recaptchaTheme" class="recaptchaKey form-control">
                       <option value="clean">Clean</option>
                       <option value="red">Red</option>
                       <option value="white">White</option>
