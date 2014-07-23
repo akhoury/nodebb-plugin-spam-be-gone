@@ -47,10 +47,12 @@
                     <label for="recaptchaTheme">Re-Captcha Theme</label>
                     <p class="help-block">
                     	Currently supporting the "clean" theme only. Track issue <a href="https://github.com/akhoury/nodebb-plugin-spam-be-gone/issues/9" target="_blank">here</a>.
+                    </p>
+                    <p class="help-block">
                     	Preview Captcha themes <a target="_blank" href="https://developers.google.com/recaptcha/docs/customization">here</a>
                    	</p>
 
-                    <select id="recaptchaTheme" name="recaptchaTheme" class="recaptchaKey form-control disabled" disabled="disabled">
+                    <select id="recaptchaTheme" name="recaptchaTheme" disabled class="deletethisprefixissue9-recaptchaKey form-control">
                       <option value="clean">Clean</option>
                       <option value="red">Red</option>
                       <option value="white">White</option>

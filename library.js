@@ -95,8 +95,7 @@ Plugin.load = function(app, middleware, controllers) {
 
 Plugin.addCaptcha = function(req, res, templateData, callback) {
 	if (recaptchaArgs) {
-
-		templateData.captcha = {
+		var captcha = {
 			label: 'Captcha',
 			html: ''
 				+ '<div id="' + pluginData.nbbId + '-recaptcha-target"></div>'
@@ -104,7 +103,13 @@ Plugin.addCaptcha = function(req, res, templateData, callback) {
 				+	'window.plugin = window.plugin || {};\n\t\t\t'
 				+   'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'
 				+ 	'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'
-				+ '</script>'
+				+ '</script>',
+			styleName: pluginData.nbbId
+		};
+		if (templateData.regFormEntry && Array.isArray(templateData.regFormEntry)) {
+			templateData.regFormEntry.push(captcha);
+		} else {
+			templateData.captcha = captcha;
 		}
 	}
 	callback(null, req, res, templateData);
