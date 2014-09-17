@@ -12,10 +12,8 @@
 		"public/less/styles.less"
 	],
     "hooks": [
-        {"hook": "actions:app.load", "method": "load"},
         {"hook": "static:app.load", "method": "load"},
         {"hook": "filter:admin.header.build", "method": "admin.menu"},
-
         {"hook": "filter:register.build", "method": "addCaptcha", "priority": 5},
         {"hook": "filter:register.check", "method": "checkRegister", "priority": 5},
         {"hook": "filter:topic.reply", "method": "checkReply", "priority": 5}

@@ -1,35 +1,35 @@
 var	Akismet = require('akismet'),
     Honeypot = require('project-honeypot'),
-	simpleRecaptcha = require('simple-recaptcha'),
+    simpleRecaptcha = require('simple-recaptcha'),
     pluginData = require('./plugin.json'),
     winston = module.parent.require('winston'),
     nconf = module.parent.require('nconf'),
     async = module.parent.require('async'),
     Meta = module.parent.require('./meta'),
     akismet, honeypot, recaptchaArgs, pluginSettings,
-	Plugin = {};
+    Plugin = {};
 
 pluginData.nbbId = pluginData.id.replace(/nodebb-plugin-/, '');
 
 var util = {
-		keys: function(obj, props, value) {
-			if(props == null || obj == null)
-				return undefined;
+    keys: function(obj, props, value) {
+        if(props == null || obj == null)
+            return undefined;
 
-			var i = props.indexOf(".");
-			if( i == -1 ) {
-				if(value !== undefined)
-					obj[props] = value;
-				return obj[props];
-			}
-			var prop = props.slice(0, i),
-				newProps = props.slice(i + 1);
+        var i = props.indexOf(".");
+        if( i == -1 ) {
+            if(value !== undefined)
+                obj[props] = value;
+            return obj[props];
+        }
+        var prop = props.slice(0, i),
+            newProps = props.slice(i + 1);
 
-			if(props !== undefined && !(obj[prop] instanceof Object) )
-				obj[prop] = {};
+        if(props !== undefined && !(obj[prop] instanceof Object) )
+            obj[prop] = {};
 
-			return util.keys(obj[prop], newProps, value);
-		}
+        return util.keys(obj[prop], newProps, value);
+    }
 };
 
 Plugin.load = function(app, middleware, controllers, callback) {
@@ -39,7 +39,7 @@ Plugin.load = function(app, middleware, controllers, callback) {
     };
 
     Meta.settings.get(pluginData.nbbId, function(err, settings) {
-		if (!err && settings) {
+        if (!err && settings) {
             if (settings.akismetEnabled === 'on') {
                 if (settings.akismetApiKey) {
                     akismet = require('akismet').client({blog: nconf.get('base_url'), apiKey: settings.akismetApiKey});
@@ -62,61 +62,61 @@ Plugin.load = function(app, middleware, controllers, callback) {
                 }
             }
 
-			if (settings.recaptchaEnabled === 'on') {
-				if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey ) {
-					var recaptchaLanguages = {'en': 1, 'nl': 1, 'fr': 1, 'de': 1, 'pt': 1, 'ru': 1, 'es': 1, 'tr': 1},
-						lang = (Meta.config.defaultLang || 'en').toLowerCase();
+            if (settings.recaptchaEnabled === 'on') {
+                if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey ) {
+                    var recaptchaLanguages = {'en': 1, 'nl': 1, 'fr': 1, 'de': 1, 'pt': 1, 'ru': 1, 'es': 1, 'tr': 1},
+                        lang = (Meta.config.defaultLang || 'en').toLowerCase();
 
-					recaptchaArgs = {
-						publicKey: settings.recaptchaPublicKey,
-						targetId: pluginData.nbbId + '-recaptcha-target',
-						options: {
-							// theme: settings.recaptchaTheme || 'clean',
-							//todo: switch to custom theme, issue#9
-							theme: 'clean',
-							lang: recaptchaLanguages[lang] ? lang : 'en',
-							tabindex: settings.recaptchaTabindex || 0
-						}
-					};
-				}
-			} else {
-				recaptchaArgs = null;
-			}
+                    recaptchaArgs = {
+                        publicKey: settings.recaptchaPublicKey,
+                        targetId: pluginData.nbbId + '-recaptcha-target',
+                        options: {
+                            // theme: settings.recaptchaTheme || 'clean',
+                            //todo: switch to custom theme, issue#9
+                            theme: 'clean',
+                            lang: recaptchaLanguages[lang] ? lang : 'en',
+                            tabindex: settings.recaptchaTabindex || 0
+                        }
+                    };
+                }
+            } else {
+                recaptchaArgs = null;
+            }
             winston.info('[plugins/' + pluginData.nbbId + '] Settings loaded');
-			pluginSettings = settings;
+            pluginSettings = settings;
         } else {
             winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrived!');
         }
 
         app.get('/admin/plugins/' + pluginData.nbbId, middleware.admin.buildHeader, render);
         app.get('/api/admin/plugins/' + pluginData.nbbId, render);
-	
-	if (typeof callback === 'function') {
-        	callback();
-	}
+
+        if (typeof callback === 'function') {
+            callback();
+        }
     });
 };
 
 Plugin.addCaptcha = function(req, res, templateData, callback) {
-	if (recaptchaArgs) {
-		var captcha = {
-			label: 'Captcha',
-			html: ''
-				+ '<div id="' + pluginData.nbbId + '-recaptcha-target"></div>'
-				+ '<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n'
-				+	'window.plugin = window.plugin || {};\n\t\t\t'
-				+   'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'
-				+ 	'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'
-				+ '</script>',
-			styleName: pluginData.nbbId
-		};
-		if (templateData.regFormEntry && Array.isArray(templateData.regFormEntry)) {
-			templateData.regFormEntry.push(captcha);
-		} else {
-			templateData.captcha = captcha;
-		}
-	}
-	callback(null, req, res, templateData);
+    if (recaptchaArgs) {
+        var captcha = {
+            label: 'Captcha',
+            html: ''
+                + '<div id="' + pluginData.nbbId + '-recaptcha-target"></div>'
+                + '<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n'
+                +	'window.plugin = window.plugin || {};\n\t\t\t'
+                +   'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'
+                + 	'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'
+                + '</script>',
+            styleName: pluginData.nbbId
+        };
+        if (templateData.regFormEntry && Array.isArray(templateData.regFormEntry)) {
+            templateData.regFormEntry.push(captcha);
+        } else {
+            templateData.captcha = captcha;
+        }
+    }
+    callback(null, req, res, templateData);
 };
 
 Plugin.checkReply = function(data, callback) {
@@ -146,66 +146,66 @@ Plugin.checkReply = function(data, callback) {
 };
 
 Plugin.checkRegister = function(req, res, userData, callback) {
-	async.parallel([
-		function(next) {
-			Plugin._honeypotCheck(req, res, userData, next);
-		},
-		function(next) {
-			Plugin._recaptchaCheck(req, res, userData, next)
-		}
-	], function(err, results) {
-			callback(err, req, res, userData);
-	});
+    async.parallel([
+        function(next) {
+            Plugin._honeypotCheck(req, res, userData, next);
+        },
+        function(next) {
+            Plugin._recaptchaCheck(req, res, userData, next)
+        }
+    ], function(err, results) {
+        callback(err, req, res, userData);
+    });
 };
 
 Plugin._honeypotCheck = function(req, res, userData, next) {
-	if (honeypot && req && req.ip) {
-		honeypot.query(req.ip, function (err, results) {
-			if (err) {
-				winston.error(err);
-				next(null, userData);
-			} else {
-				if (results && results.found && results.type) {
-					if (results.type.spammer || results.type.suspicious) {
-						var message = userData.username + ' | ' + userData.email + ' was detected as ' +  (results.type.spammer ? 'spammer' : 'suspicious');
+    if (honeypot && req && req.ip) {
+        honeypot.query(req.ip, function (err, results) {
+            if (err) {
+                winston.error(err);
+                next(null, userData);
+            } else {
+                if (results && results.found && results.type) {
+                    if (results.type.spammer || results.type.suspicious) {
+                        var message = userData.username + ' | ' + userData.email + ' was detected as ' +  (results.type.spammer ? 'spammer' : 'suspicious');
 
-						winston.warn('[plugins/' + pluginData.nbbId + '] ' + message + ' and was denied registration.');
-						next({source: 'honeypot', message: message}, userData);
-					} else {
-						next(null, userData);
-					}
-				} else {
-					winston.warn('[plugins/' + pluginData.nbbId + '] username:' + userData.username + ' ip:' + req.ip + ' was not found in Honeypot database');
-					next(null, userData);
-				}
-			}
-		});
-	} else {
-		next(null, userData);
-	}
+                        winston.warn('[plugins/' + pluginData.nbbId + '] ' + message + ' and was denied registration.');
+                        next({source: 'honeypot', message: message}, userData);
+                    } else {
+                        next(null, userData);
+                    }
+                } else {
+                    winston.warn('[plugins/' + pluginData.nbbId + '] username:' + userData.username + ' ip:' + req.ip + ' was not found in Honeypot database');
+                    next(null, userData);
+                }
+            }
+        });
+    } else {
+        next(null, userData);
+    }
 };
 
 Plugin._recaptchaCheck = function(req, res, userData, next) {
-	if (recaptchaArgs && req && req.ip && req.body) {
+    if (recaptchaArgs && req && req.ip && req.body) {
 
-		simpleRecaptcha(
-			pluginSettings.recaptchaPrivateKey,
-			req.ip,
-			req.body.recaptcha_challenge_field,
-			req.body.recaptcha_response_field,
-			function(err) {
-				if (err) {
-					var message = err.Error || 'Wrong Captcha';
-					winston.warn('[plugins/' + pluginData.nbbId + '] ' + message);
-					next({source: 'recaptcha', message: message}, userData);
-				} else {
-					next(null, userData);
-				}
-			}
-		);
-	} else {
-		next(null, userData);
-	}
+        simpleRecaptcha(
+            pluginSettings.recaptchaPrivateKey,
+            req.ip,
+            req.body.recaptcha_challenge_field,
+            req.body.recaptcha_response_field,
+            function(err) {
+                if (err) {
+                    var message = err.Error || 'Wrong Captcha';
+                    winston.warn('[plugins/' + pluginData.nbbId + '] ' + message);
+                    next({source: 'recaptcha', message: message}, userData);
+                } else {
+                    next(null, userData);
+                }
+            }
+        );
+    } else {
+        next(null, userData);
+    }
 };
 
 Plugin.admin = {
