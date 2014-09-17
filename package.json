@@ -1,6 +1,6 @@
 {
 	"name": "nodebb-plugin-spam-be-gone",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "anti spam using both Akismet.com and StopForumSpam.com",
 	"main": "index.js",
 	"scripts": {
