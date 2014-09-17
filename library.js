@@ -90,8 +90,10 @@ Plugin.load = function(app, middleware, controllers, callback) {
 
         app.get('/admin/plugins/' + pluginData.nbbId, middleware.admin.buildHeader, render);
         app.get('/api/admin/plugins/' + pluginData.nbbId, render);
-
-        callback();
+	
+	if (typeof callback === 'function') {
+        	callback();
+	}
     });
 };
 
