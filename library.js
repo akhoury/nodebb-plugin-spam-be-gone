@@ -32,7 +32,7 @@ var util = {
 		}
 };
 
-Plugin.load = function(app, middleware, controllers) {
+Plugin.load = function(app, middleware, controllers, callback) {
 
     var render = function(req, res, next) {
         res.render('admin/plugins/' + pluginData.nbbId, pluginData || {});
@@ -82,15 +82,17 @@ Plugin.load = function(app, middleware, controllers) {
 			} else {
 				recaptchaArgs = null;
 			}
-
+            winston.info('[plugins/' + pluginData.nbbId + '] Settings loaded');
 			pluginSettings = settings;
         } else {
             winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrived!');
         }
-    });
 
-    app.get('/admin/plugins/' + pluginData.nbbId, middleware.admin.buildHeader, render);
-    app.get('/api/admin/plugins/' + pluginData.nbbId, render);
+        app.get('/admin/plugins/' + pluginData.nbbId, middleware.admin.buildHeader, render);
+        app.get('/api/admin/plugins/' + pluginData.nbbId, render);
+
+        callback();
+    });
 };
 
 Plugin.addCaptcha = function(req, res, templateData, callback) {

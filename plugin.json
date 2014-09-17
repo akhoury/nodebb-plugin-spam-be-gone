@@ -12,6 +12,7 @@
 		"public/less/styles.less"
 	],
     "hooks": [
+        {"hook": "actions:app.load", "method": "load"},
         {"hook": "static:app.load", "method": "load"},
         {"hook": "filter:admin.header.build", "method": "admin.menu"},
 
