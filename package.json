@@ -32,6 +32,6 @@
 		"simple-recaptcha": "~0.0.3"
 	},
 	  "peerDependencies": {
-    		"nodebb-theme-vanilla": "~0.0.137"
+    		"nodebb-theme-vanilla": ">0.0.137"
   	}
 }
