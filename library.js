@@ -97,7 +97,7 @@ Plugin.load = function(app, middleware, controllers, callback) {
     });
 };
 
-Plugin.addCaptcha = function(req, res, templateData, callback) {
+Plugin.addCaptcha = function(data, callback) {
     if (recaptchaArgs) {
         var captcha = {
             label: 'Captcha',
@@ -110,13 +110,13 @@ Plugin.addCaptcha = function(req, res, templateData, callback) {
                 + '</script>',
             styleName: pluginData.nbbId
         };
-        if (templateData.regFormEntry && Array.isArray(templateData.regFormEntry)) {
-            templateData.regFormEntry.push(captcha);
+        if (data.templateData.regFormEntry && Array.isArray(data.templateData.regFormEntry)) {
+            data.templateData.regFormEntry.push(captcha);
         } else {
-            templateData.captcha = captcha;
+            data.templateData.captcha = captcha;
         }
     }
-    callback(null, req, res, templateData);
+    callback(null, data);
 };
 
 Plugin.checkReply = function(data, callback) {
