@@ -145,16 +145,16 @@ Plugin.checkReply = function(data, callback) {
     }
 };
 
-Plugin.checkRegister = function(req, res, userData, callback) {
+Plugin.checkRegister = function(data, callback) {
     async.parallel([
         function(next) {
-            Plugin._honeypotCheck(req, res, userData, next);
+            Plugin._honeypotCheck(data.req, data.res, data.userData, next);
         },
         function(next) {
-            Plugin._recaptchaCheck(req, res, userData, next)
+            Plugin._recaptchaCheck(data.req, data.res, data.userData, next)
         }
     ], function(err, results) {
-        callback(err, req, res, userData);
+        callback(err, data);
     });
 };
 
