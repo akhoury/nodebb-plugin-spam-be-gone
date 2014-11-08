@@ -32,7 +32,7 @@ var util = {
     }
 };
 
-Plugin.load = function(app, middleware, controllers, callback) {
+Plugin.load = function(params, callback) {
 
     var render = function(req, res, next) {
         res.render('admin/plugins/' + pluginData.nbbId, pluginData || {});
@@ -88,8 +88,8 @@ Plugin.load = function(app, middleware, controllers, callback) {
             winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrived!');
         }
 
-        app.get('/admin/plugins/' + pluginData.nbbId, middleware.admin.buildHeader, render);
-        app.get('/api/admin/plugins/' + pluginData.nbbId, render);
+        params.router.get('/admin/plugins/' + pluginData.nbbId, params.middleware.admin.buildHeader, render);
+        params.router.get('/api/admin/plugins/' + pluginData.nbbId, render);
 
         if (typeof callback === 'function') {
             callback();
