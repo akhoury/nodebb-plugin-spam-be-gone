@@ -6,7 +6,7 @@ $(function() {
 			&& plugin['spam-be-gone']
 			&& plugin['spam-be-gone'].recaptchaArgs
 			&& $('#' + plugin['spam-be-gone'].recaptchaArgs.targetId).length
-			) {
+		) {
 
 			var injectTag = function (tagName, attrs, options) {
 					options || (options = {});

@@ -102,12 +102,12 @@ Plugin.addCaptcha = function(req, res, templateData, callback) {
         var captcha = {
             label: 'Captcha',
             html: ''
-                + '<div id="' + pluginData.nbbId + '-recaptcha-target"></div>'
-                + '<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n'
-                +	'window.plugin = window.plugin || {};\n\t\t\t'
-                +   'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'
-                + 	'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'
-                + '</script>',
+            + '<div id="' + pluginData.nbbId + '-recaptcha-target"></div>'
+            + '<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n'
+            +	'window.plugin = window.plugin || {};\n\t\t\t'
+            +   'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'
+            + 	'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'
+            + '</script>',
             styleName: pluginData.nbbId
         };
         if (templateData.regFormEntry && Array.isArray(templateData.regFormEntry)) {
@@ -127,7 +127,7 @@ Plugin.checkReply = function(data, callback) {
             user_agent: data.req.headers['user-agent'],
             blog: data.req.protocol + '://' + data.req.host,
             permalink: data.req.path,
-            comment_content: data.content,
+            comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
             comment_author: data.username
         }, function(err, spam) {
             if (err) {
