@@ -31,7 +31,10 @@
 		"project-honeypot": "~0.0.0",
 		"simple-recaptcha": "~0.0.3"
 	},
-	  "peerDependencies": {
-    		"nodebb-theme-vanilla": ">=0.0.137"
-  	}
+	"peerDependencies": {
+		"nodebb-theme-vanilla": ">=0.0.137"
+	},
+	"nbbpm": {
+		"compatibility": "^0.6.0"
+	}
 }

@@ -1,4 +1,4 @@
-var	Akismet = require('akismet'),
+var Akismet = require('akismet'),
     Honeypot = require('project-honeypot'),
     simpleRecaptcha = require('simple-recaptcha'),
     pluginData = require('./plugin.json'),

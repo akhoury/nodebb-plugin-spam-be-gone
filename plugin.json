@@ -19,6 +19,5 @@
         {"hook": "filter:topic.post", "method": "checkReply", "priority": 5},
         {"hook": "filter:topic.reply", "method": "checkReply", "priority": 5}
     ],
-    "compatibility": "~0.5.0",
     "faIcon": "fa-shield"
 }
