@@ -127,7 +127,7 @@ Plugin.checkReply = function(data, callback) {
             user_agent: data.req.headers['user-agent'],
             blog: data.req.protocol + '://' + data.req.host,
             permalink: data.req.path,
-            comment_content: data.content,
+            comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
             comment_author: data.username
         }, function(err, spam) {
             if (err) {
