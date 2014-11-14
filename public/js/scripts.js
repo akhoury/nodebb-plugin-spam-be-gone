@@ -48,12 +48,7 @@ $(function() {
 								theme: args.options.theme,
 								lang: args.options.lang,
 								tabIndex: args.options.tabindex,
-								callback: function() {
-									var error = utils.param('error');
-									if (error) {
-										app.alertError(error);
-									}
-								}
+								callback: function() { /* noop */ }
 							}
 						);
 					}
