@@ -42,7 +42,7 @@ Plugin.load = function(params, callback) {
         if (!err && settings) {
             if (settings.akismetEnabled === 'on') {
                 if (settings.akismetApiKey) {
-                    akismet = require('akismet').client({blog: nconf.get('base_url'), apiKey: settings.akismetApiKey});
+                    akismet = require('akismet').client({blog: nconf.get('url'), apiKey: settings.akismetApiKey});
                     akismet.verifyKey(function(err, verified) {
                         if (!verified) {
                             winston.error('[plugins/' + pluginData.nbbId + '] Unable to verify Akismet API key.');
