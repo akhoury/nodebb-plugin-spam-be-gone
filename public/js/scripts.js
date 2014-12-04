@@ -4,6 +4,7 @@ function spamBeGoneCreateCaptcha() {
     grecaptcha.render(
         args.targetId,
 		{
+			theme: args.options.theme,
 			sitekey: args.publicKey,
 			callback: function() {
 				var error = utils.param('error');
