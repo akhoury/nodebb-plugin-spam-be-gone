@@ -170,7 +170,7 @@ Plugin._honeypotCheck = function(req, res, userData, next) {
                         var message = userData.username + ' | ' + userData.email + ' was detected as ' +  (results.type.spammer ? 'spammer' : 'suspicious');
 
                         winston.warn('[plugins/' + pluginData.nbbId + '] ' + message + ' and was denied registration.');
-                        next({source: 'honeypot', message: message}, userData);
+                        next(new Error(message), userData);
                     } else {
                         next(null, userData);
                     }
@@ -194,9 +194,9 @@ Plugin._recaptchaCheck = function(req, res, userData, next) {
             req.body['g-recaptcha-response'],
             function(err) {
                 if (err) {
-                    var message = err.Error || 'Wrong Captcha';
+                    var message = err.Error || 'Captcha not verified, are you a robot?';
                     winston.warn('[plugins/' + pluginData.nbbId + '] ' + message);
-                    next({source: 'recaptcha', message: message}, userData);
+                    next(new Error(message), userData);
                 } else {
                     next(null, userData);
                 }
