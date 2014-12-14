@@ -191,8 +191,7 @@ Plugin._recaptchaCheck = function(req, res, userData, next) {
         simpleRecaptcha(
             pluginSettings.recaptchaPrivateKey,
             req.ip,
-            req.body.recaptcha_challenge_field,
-            req.body.recaptcha_response_field,
+            req.body['g-recaptcha-response'],
             function(err) {
                 if (err) {
                     var message = err.Error || 'Wrong Captcha';

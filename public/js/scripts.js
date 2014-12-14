@@ -1,3 +1,21 @@
+function spamBeGoneCreateCaptcha() {
+    var args = plugin['spam-be-gone'].recaptchaArgs;
+
+    grecaptcha.render(
+        args.targetId,
+		{
+			theme: args.options.theme,
+			sitekey: args.publicKey,
+			callback: function() {
+				var error = utils.param('error');
+				if (error) {
+					app.alertError(error);
+				}
+			}
+		}
+	);
+}
+
 $(function() {
 	$(window).on('action:ajaxify.end', function(e, data) {
 		if (
@@ -34,31 +52,10 @@ $(function() {
 
 				injectScript = function(src, options) {
 					options || (options = {});
-					injectTag('script', {src: src, type: 'text/javascript'}, options);
-				},
-
-				createCaptcha = function() {
-					var args = plugin['spam-be-gone'].recaptchaArgs;
-
-					if (window.Recaptcha) {
-						Recaptcha.create(
-							args.publicKey,
-							args.targetId,
-							{
-								theme: args.options.theme,
-								lang: args.options.lang,
-								tabIndex: args.options.tabindex,
-								callback: function() { /* noop */ }
-							}
-						);
-					}
+					injectTag('script', {src: src, type: 'text/javascript', async: '', defer: '' }, options);
 				};
 
-			if ($('script[scr$="recaptcha_ajax.js"]').length) {
-				createCaptcha();
-			} else {
-				injectScript('//www.google.com/recaptcha/api/js/recaptcha_ajax.js', {onload: createCaptcha});
-			}
+				injectScript('//www.google.com/recaptcha/api.js?onload=spamBeGoneCreateCaptcha&render=explicit');
 		}
 	});
 });
