@@ -7,6 +7,7 @@ Spam Be Gone 0.4.x uses [Google's "No CAPTCHA reCAPTCHA"](http://googleonlinesec
 ```
 ERROR: Global site keys are not supported
 ```
+## Screenshots
 
 ![Imgur](http://i.imgur.com/GRkH2c9.png)
 ![Imgur](http://i.imgur.com/5nTBtMa.png)
