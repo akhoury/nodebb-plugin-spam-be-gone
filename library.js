@@ -162,7 +162,7 @@ Plugin.checkRegister = function(data, callback) {
 };
 
 Plugin.onPostFlagged = function(flagged) {
-    if (akismet) {
+    if (akismet && pluginSettings.akismetFlagReporting && parseInt(flagged.flaggingUser.reputation, 10) >= parseInt(pluginSettings.akismetFlagReporting, 10)) {
         async.parallel({
             comment_author: function(next) {
                 user.getUserField(flagged.post.uid, 'username', next);

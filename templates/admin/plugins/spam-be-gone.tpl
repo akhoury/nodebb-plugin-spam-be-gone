@@ -43,6 +43,11 @@
                     </div>
                 </div>
                 <p class="help-block">Keep your private key private</p>
+
+                <div class="form-group">
+					<label for="akismetFlagReporting">Allow users with minimum reputation of X to submit posts to Akismet as spam via flagging (leave blank to disable)</label>
+					<input placeholder="5" type="text" class="form-control" id="akismetFlagReporting" name="akismetFlagReporting" />
+				</div>
 			</div>
 		</div>
         <hr />
