@@ -6,6 +6,9 @@ var Akismet = require('akismet'),
     nconf = module.parent.require('nconf'),
     async = module.parent.require('async'),
     Meta = module.parent.require('./meta'),
+    user = module.parent.require('./user'),
+    topics = module.parent.require('./topics'),
+    db = module.parent.require('./database'),
     akismet, honeypot, recaptchaArgs, pluginSettings,
     Plugin = {};
 
@@ -156,6 +159,33 @@ Plugin.checkRegister = function(data, callback) {
     ], function(err, results) {
         callback(err, data);
     });
+};
+
+Plugin.onPostFlagged = function(flagged) {
+    if (akismet && pluginSettings.akismetFlagReporting && parseInt(flagged.flaggingUser.reputation, 10) >= parseInt(pluginSettings.akismetFlagReporting, 10)) {
+        async.parallel({
+            comment_author: function(next) {
+                user.getUserField(flagged.post.uid, 'username', next);
+            },
+            permalink: function(next) {
+                topics.getTopicField(flagged.post.tid, 'slug', next);
+            },
+            ip: function(next) {
+                db.getSortedSetRevRange('uid:' + flagged.post.uid + ':ip', 0, 1, next);
+            }
+        }, function(err, data) {
+            var submitted = { 
+                user_ip: data.ip ? data.ip[0] : '', 
+                permalink: nconf.get('url') + 'topic/' + data.permalink,
+                comment_author: data.comment_author,
+                comment_content: flagged.post.content
+            };
+
+            akismet.submitSpam(submitted, function(err) {
+                console.log('Spam reported to Akismet.', submitted);
+            });
+        });
+    }
 };
 
 Plugin._honeypotCheck = function(req, res, userData, next) {

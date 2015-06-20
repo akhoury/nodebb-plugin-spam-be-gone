@@ -17,7 +17,8 @@
         {"hook": "filter:register.build", "method": "addCaptcha", "priority": 5},
         {"hook": "filter:register.check", "method": "checkRegister", "priority": 5},
         {"hook": "filter:topic.post", "method": "checkReply", "priority": 5},
-        {"hook": "filter:topic.reply", "method": "checkReply", "priority": 5}
+        {"hook": "filter:topic.reply", "method": "checkReply", "priority": 5},
+        {"hook": "action:post.flag", "method": "onPostFlagged", "priority": 5}
     ],
     "faIcon": "fa-shield"
 }
