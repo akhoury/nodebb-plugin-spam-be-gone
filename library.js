@@ -142,7 +142,7 @@ Plugin.checkReply = function(data, callback) {
             comment_author: username
         }, function(err, spam) {
             if (err || !spam) {
-                return callback(err);
+                return callback(err, data);
             }
             
             winston.warn('[plugins/' + pluginData.nbbId + '] Post "' + data.content + '" by uid: ' + data.uid + ' username: '+ username + '@' + data.req.ip + ' was flagged as spam and rejected.');
