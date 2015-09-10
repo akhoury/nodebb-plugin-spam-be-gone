@@ -124,28 +124,31 @@ Plugin.addCaptcha = function(data, callback) {
 
 Plugin.checkReply = function(data, callback) {
     // http://akismet.com/development/api/#comment-check
-    if (akismet && data.req) {
+    if (!akismet || !data.req) {
+        return callback(null, data);
+    }
+    
+    user.getUserField(data.uid, 'username', function(err, username) {
+        if (err) {
+            return callback(err);
+        }
+        
         akismet.checkSpam({
             user_ip: data.req.ip,
             user_agent: data.req.headers['user-agent'],
             blog: data.req.protocol + '://' + data.req.host,
             permalink: data.req.path,
             comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
-            comment_author: data.username
+            comment_author: username
         }, function(err, spam) {
-            if (err) {
-                winston.error(err);
+            if (err || !spam) {
+                return callback(err, data);
             }
-            if(spam)  {
-                winston.warn('[plugins/' + pluginData.nbbId + '] Post "' + data.content + '" by uid: ' + data.username + '@' + data.req.ip + ' was flagged as spam and rejected.');
-                callback(new Error('Post content was flagged as spam by Akismet.com'), data);
-            } else {
-                callback(null, data);
-            }
+            
+            winston.warn('[plugins/' + pluginData.nbbId + '] Post "' + data.content + '" by uid: ' + data.uid + ' username: '+ username + '@' + data.req.ip + ' was flagged as spam and rejected.');
+            callback(new Error('Post content was flagged as spam by Akismet.com'), data);
         });
-    } else {
-        callback(null, data);
-    }
+    });
 };
 
 Plugin.checkRegister = function(data, callback) {
