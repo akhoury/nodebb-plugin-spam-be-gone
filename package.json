@@ -1,37 +1,37 @@
 {
-	"name": "nodebb-plugin-spam-be-gone",
-	"version": "0.4.2",
-	"description": "anti spam using both Akismet.com and StopForumSpam.com",
-	"main": "index.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
-	},
-	"keywords": [
-		"nodebb",
-		"plugin",
-		"spam",
-		"akismet",
-		"honeypot",
-		"antispam"
-	],
-	"author": {
-		"name": "Aziz khoury",
-		"email": "bentael@gmail.com"
-	},
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
-	},
-	"dependencies": {
-		"akismet": "~0.0.10",
-		"project-honeypot": "~0.0.0",
-		"simple-recaptcha": "git://github.com/wzrdtales/simple-recaptcha#v1.0.0"
-	},
-	"nbbpm": {
-		"compatibility": "^0.6.0 || ^0.7.0 || ^0.8.0 || ^0.9.0"
-	}
+  "name": "nodebb-plugin-spam-be-gone",
+  "version": "0.4.3",
+  "description": "anti spam using both Akismet.com and StopForumSpam.com",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
+  },
+  "keywords": [
+    "nodebb",
+    "plugin",
+    "spam",
+    "akismet",
+    "honeypot",
+    "antispam"
+  ],
+  "author": {
+    "name": "Aziz khoury",
+    "email": "bentael@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
+  },
+  "dependencies": {
+    "akismet": "~0.0.10",
+    "project-honeypot": "~0.0.0",
+    "simple-recaptcha": "git://github.com/wzrdtales/simple-recaptcha#v1.0.0"
+  },
+  "nbbpm": {
+    "compatibility": "^0.6.0 || ^0.7.0 || ^0.8.0 || ^0.9.0"
+  }
 }
