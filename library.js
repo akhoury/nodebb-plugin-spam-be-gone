@@ -179,7 +179,7 @@ Plugin.onPostFlagged = function(flagged) {
         }, function(err, data) {
             var submitted = { 
                 user_ip: data.ip ? data.ip[0] : '', 
-                permalink: nconf.get('url') + 'topic/' + data.permalink,
+                permalink: nconf.get('url').replace(/\/$/, '') + '/topic/' + data.permalink,
                 comment_author: data.comment_author,
                 comment_content: flagged.post.content
             };
