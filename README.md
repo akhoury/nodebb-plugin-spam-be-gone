@@ -9,5 +9,12 @@ ERROR: Global site keys are not supported
 ```
 ## Screenshots
 
-![Imgur](http://i.imgur.com/GRkH2c9.png)
+### Settings page
+![screen shot 2015-11-19 at 2 46 08 pm](https://cloud.githubusercontent.com/assets/1398375/11282248/4c5c7464-8ecc-11e5-9542-ab756a3fe5c2.png)
+
+### registration page
 ![Imgur](http://i.imgur.com/5nTBtMa.png)
+
+### Flag a post for moderation
+and it will be also reported to Akismet (if enabled)
+![Github with love](https://cloud.githubusercontent.com/assets/1398375/11282166/e8c8edc4-8ecb-11e5-8925-9f09572d2371.png)
