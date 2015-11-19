@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-spam-be-gone",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "anti spam using both Akismet.com and StopForumSpam.com",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
   },
   "dependencies": {
-    "akismet": "~0.0.10",
+    "akismet": "^1.0.0",
     "project-honeypot": "~0.0.0",
     "simple-recaptcha": "git://github.com/wzrdtales/simple-recaptcha#v1.0.0"
   },
