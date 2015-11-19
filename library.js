@@ -136,8 +136,7 @@ Plugin.checkReply = function(data, callback) {
         akismet.checkSpam({
             user_ip: data.req.ip,
             user_agent: data.req.headers['user-agent'],
-            blog: data.req.protocol + '://' + data.req.host,
-            permalink: data.req.path,
+            permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
             comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
             comment_author: username
         }, function(err, spam) {
@@ -185,7 +184,9 @@ Plugin.onPostFlagged = function(flagged) {
             };
 
             akismet.submitSpam(submitted, function(err) {
-                console.log('Spam reported to Akismet.', submitted);
+                if (err) winston.error('Error reporting to Akismet', err, submitted);
+                
+                winston.info('Spam reported to Akismet.', submitted);
             });
         });
     }
