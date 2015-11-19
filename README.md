@@ -12,7 +12,7 @@ ERROR: Global site keys are not supported
 ### Settings page
 ![screen shot 2015-11-19 at 2 46 08 pm](https://cloud.githubusercontent.com/assets/1398375/11282248/4c5c7464-8ecc-11e5-9542-ab756a3fe5c2.png)
 
-### registration page
+### Registration page
 ![Imgur](http://i.imgur.com/5nTBtMa.png)
 
 ### Flag a post for moderation
