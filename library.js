@@ -128,7 +128,7 @@ Plugin.checkReply = function(data, callback) {
         return callback(null, data);
     }
     
-    user.getUserField(data.uid, 'username', function(err, username) {
+    user.getUserFields(data.uid, ['username', 'reputation'], function(err, fields) {
         if (err) {
             return callback(err);
         }
@@ -138,10 +138,22 @@ Plugin.checkReply = function(data, callback) {
             user_agent: data.req.headers['user-agent'],
             permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
             comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
-            comment_author: username
+            comment_author: fields.username
         }, function(err, spam) {
             if (err || !spam) {
                 return callback(err, data);
+            }
+            
+            if (parseInt(fields.reputation, 10) >= parseInt(pluginSettings.akismetMinReputationHam, 10)) {
+            	akismet.submitHam({
+            		user_ip: data.req.ip,
+            		user_agent: data.req.headers['user-agent'],
+            		permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
+            		comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
+            		comment_author: fields.username
+        		}, function(err) {
+        			return callback(err, data);
+        		});
             }
             
             winston.warn('[plugins/' + pluginData.nbbId + '] Post "' + data.content + '" by uid: ' + data.uid + ' username: '+ username + '@' + data.req.ip + ' was flagged as spam and rejected.');
