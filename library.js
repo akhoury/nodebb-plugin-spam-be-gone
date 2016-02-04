@@ -100,6 +100,11 @@ Plugin.load = function (params, callback) {
 			} else {
 				recaptchaArgs = null;
 			}
+
+			if (!settings.akismetMinReputationHam) {
+				settings.akismetMinReputationHam = 10
+			}
+
 			winston.info('[plugins/' + pluginData.nbbId + '] Settings loaded');
 			pluginSettings = settings;
 		} else {
