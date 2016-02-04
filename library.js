@@ -1,256 +1,291 @@
 var Akismet = require('akismet'),
-    Honeypot = require('project-honeypot'),
-    simpleRecaptcha = require('simple-recaptcha'),
-    pluginData = require('./plugin.json'),
-    winston = module.parent.require('winston'),
-    nconf = module.parent.require('nconf'),
-    async = module.parent.require('async'),
-    Meta = module.parent.require('./meta'),
-    user = module.parent.require('./user'),
-    topics = module.parent.require('./topics'),
-    db = module.parent.require('./database'),
-    akismet, honeypot, recaptchaArgs, pluginSettings,
-    Plugin = {};
+	Honeypot = require('project-honeypot'),
+	simpleRecaptcha = require('simple-recaptcha'),
+	pluginData = require('./plugin.json'),
+	winston = module.parent.require('winston'),
+	nconf = module.parent.require('nconf'),
+	async = module.parent.require('async'),
+	Meta = module.parent.require('./meta'),
+	user = module.parent.require('./user'),
+	topics = module.parent.require('./topics'),
+	db = module.parent.require('./database'),
+	akismet, honeypot, recaptchaArgs, pluginSettings,
+	Plugin = {};
 
 pluginData.nbbId = pluginData.id.replace(/nodebb-plugin-/, '');
 
 var util = {
-    keys: function(obj, props, value) {
-        if(props == null || obj == null)
-            return undefined;
+	keys: function (obj, props, value) {
+		if (props == null || obj == null) {
+			return undefined;
+		}
 
-        var i = props.indexOf(".");
-        if( i == -1 ) {
-            if(value !== undefined)
-                obj[props] = value;
-            return obj[props];
-        }
-        var prop = props.slice(0, i),
-            newProps = props.slice(i + 1);
+		var i = props.indexOf(".");
+		if (i == -1) {
+			if (value !== undefined) {
+				obj[props] = value;
+			}
+			return obj[props];
+		}
+		var prop = props.slice(0, i),
+			newProps = props.slice(i + 1);
 
-        if(props !== undefined && !(obj[prop] instanceof Object) )
-            obj[prop] = {};
+		if (props !== undefined && !(obj[prop] instanceof Object)) {
+			obj[prop] = {};
+		}
 
-        return util.keys(obj[prop], newProps, value);
-    }
+		return util.keys(obj[prop], newProps, value);
+	}
 };
 
-Plugin.load = function(params, callback) {
+Plugin.load = function (params, callback) {
 
-    var render = function(req, res, next) {
-        res.render('admin/plugins/' + pluginData.nbbId, pluginData || {});
-    };
+	var render = function (req, res, next) {
+		res.render('admin/plugins/' + pluginData.nbbId, pluginData || {});
+	};
 
-    Meta.settings.get(pluginData.nbbId, function(err, settings) {
-        if (!err && settings) {
-            if (settings.akismetEnabled === 'on') {
-                if (settings.akismetApiKey) {
-                    akismet = require('akismet').client({blog: nconf.get('url'), apiKey: settings.akismetApiKey});
-                    akismet.verifyKey(function(err, verified) {
-                        if (!verified) {
-                            winston.error('[plugins/' + pluginData.nbbId + '] Unable to verify Akismet API key.');
-                            akismet = null;
-                        }
-                    });
-                } else {
-                    winston.error('[plugins/' + pluginData.nbbId + '] Akismet API Key not set!');
-                }
-            }
+	Meta.settings.get(pluginData.nbbId, function (err, settings) {
+		if (!err && settings) {
+			if (settings.akismetEnabled === 'on') {
+				if (settings.akismetApiKey) {
+					akismet = require('akismet').client({
+						blog: nconf.get('url'),
+						apiKey: settings.akismetApiKey
+					});
+					akismet.verifyKey(function (err, verified) {
+						if (!verified) {
+							winston.error('[plugins/' + pluginData.nbbId + '] Unable to verify Akismet API key.');
+							akismet = null;
+						}
+					});
+				} else {
+					winston.error('[plugins/' + pluginData.nbbId + '] Akismet API Key not set!');
+				}
+			}
 
-            if (settings.honeypotEnabled === 'on') {
-                if (settings.honeypotApiKey) {
-                    honeypot = Honeypot(settings.honeypotApiKey)
-                } else {
-                    winston.error('[plugins/' + pluginData.nbbId + '] Honeypot API Key not set!');
-                }
-            }
+			if (settings.honeypotEnabled === 'on') {
+				if (settings.honeypotApiKey) {
+					honeypot = Honeypot(settings.honeypotApiKey)
+				} else {
+					winston.error('[plugins/' + pluginData.nbbId + '] Honeypot API Key not set!');
+				}
+			}
 
-            if (settings.recaptchaEnabled === 'on') {
-                if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey ) {
-                    var recaptchaLanguages = {'en': 1, 'nl': 1, 'fr': 1, 'de': 1, 'pt': 1, 'ru': 1, 'es': 1, 'tr': 1},
-                        lang = (Meta.config.defaultLang || 'en').toLowerCase();
+			if (settings.recaptchaEnabled === 'on') {
+				if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey) {
+					var recaptchaLanguages = {
+							'en': 1,
+							'nl': 1,
+							'fr': 1,
+							'de': 1,
+							'pt': 1,
+							'ru': 1,
+							'es': 1,
+							'tr': 1
+						},
+						lang = (Meta.config.defaultLang || 'en').toLowerCase();
 
-                    recaptchaArgs = {
-                        publicKey: settings.recaptchaPublicKey,
-                        targetId: pluginData.nbbId + '-recaptcha-target',
-                        options: {
-                            // theme: settings.recaptchaTheme || 'clean',
-                            //todo: switch to custom theme, issue#9
-                            theme: 'clean',
-                            lang: recaptchaLanguages[lang] ? lang : 'en',
-                            tabindex: settings.recaptchaTabindex || 0
-                        }
-                    };
-                }
-            } else {
-                recaptchaArgs = null;
-            }
-            winston.info('[plugins/' + pluginData.nbbId + '] Settings loaded');
-            pluginSettings = settings;
-        } else {
-            winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrived!');
-        }
+					recaptchaArgs = {
+						publicKey: settings.recaptchaPublicKey,
+						targetId: pluginData.nbbId + '-recaptcha-target',
+						options: {
+							// theme: settings.recaptchaTheme || 'clean',
+							//todo: switch to custom theme, issue#9
+							theme: 'clean',
+							lang: recaptchaLanguages[lang] ? lang : 'en',
+							tabindex: settings.recaptchaTabindex || 0
+						}
+					};
+				}
+			} else {
+				recaptchaArgs = null;
+			}
 
-        params.router.get('/admin/plugins/' + pluginData.nbbId, params.middleware.admin.buildHeader, render);
-        params.router.get('/api/admin/plugins/' + pluginData.nbbId, render);
+			if (!settings.akismetMinReputationHam) {
+				settings.akismetMinReputationHam = 10
+			}
 
-        if (typeof callback === 'function') {
-            callback();
-        }
-    });
+			winston.info('[plugins/' + pluginData.nbbId + '] Settings loaded');
+			pluginSettings = settings;
+		} else {
+			winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrived!');
+		}
+
+		params.router.get('/admin/plugins/' + pluginData.nbbId, params.middleware.admin.buildHeader, render);
+		params.router.get('/api/admin/plugins/' + pluginData.nbbId, render);
+
+		if (typeof callback === 'function') {
+			callback();
+		}
+	});
 };
 
-Plugin.addCaptcha = function(data, callback) {
-    if (recaptchaArgs) {
-        var captcha = {
-            label: 'Captcha',
-            html: ''
-                + '<div id="' + pluginData.nbbId + '-recaptcha-target"></div>'
-                + '<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n'
-                +	'window.plugin = window.plugin || {};\n\t\t\t'
-                +   'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'
-                + 	'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'
-                + '</script>',
-            styleName: pluginData.nbbId
-        };
-        if (data.templateData.regFormEntry && Array.isArray(data.templateData.regFormEntry)) {
-            data.templateData.regFormEntry.push(captcha);
-        } else {
-            data.templateData.captcha = captcha;
-        }
-    }
-    callback(null, data);
+Plugin.addCaptcha = function (data, callback) {
+	if (recaptchaArgs) {
+		var captcha = {
+			label: 'Captcha',
+			html: ''
+			+ '<div id="' + pluginData.nbbId + '-recaptcha-target"></div>'
+			+ '<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n'
+			+ 'window.plugin = window.plugin || {};\n\t\t\t'
+			+ 'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'
+			+ 'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'
+			+ '</script>',
+			styleName: pluginData.nbbId
+		};
+		if (data.templateData.regFormEntry && Array.isArray(data.templateData.regFormEntry)) {
+			data.templateData.regFormEntry.push(captcha);
+		} else {
+			data.templateData.captcha = captcha;
+		}
+	}
+	callback(null, data);
 };
 
-Plugin.checkReply = function(data, callback) {
-    // http://akismet.com/development/api/#comment-check
-    if (!akismet || !data.req) {
-        return callback(null, data);
-    }
-    
-    user.getUserField(data.uid, 'username', function(err, username) {
-        if (err) {
-            return callback(err);
-        }
-        
-        akismet.checkSpam({
-            user_ip: data.req.ip,
-            user_agent: data.req.headers['user-agent'],
-            permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
-            comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
-            comment_author: username
-        }, function(err, spam) {
-            if (err || !spam) {
-                return callback(err, data);
-            }
-            
-            winston.warn('[plugins/' + pluginData.nbbId + '] Post "' + data.content + '" by uid: ' + data.uid + ' username: '+ username + '@' + data.req.ip + ' was flagged as spam and rejected.');
-            callback(new Error('Post content was flagged as spam by Akismet.com'), data);
-        });
-    });
+Plugin.checkReply = function (data, callback) {
+	// http://akismet.com/development/api/#comment-check
+	if (!akismet || !data.req) {
+		return callback(null, data);
+	}
+
+	user.getUserFields(data.uid, ['username', 'reputation'], function (err, fields) {
+		if (err) {
+			return callback(err);
+		}
+		console.log(fields);
+
+		akismet.checkSpam({
+			user_ip: data.req.ip,
+			user_agent: data.req.headers['user-agent'],
+			permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
+			comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
+			comment_author: fields.username
+		}, function (err, spam) {
+			if (err || !spam) {
+				return callback(err, data);
+			}
+
+			if (parseInt(fields.reputation, 10) >= parseInt(pluginSettings.akismetMinReputationHam, 10)) {
+				akismet.submitHam({
+					user_ip: data.req.ip,
+					user_agent: data.req.headers['user-agent'],
+					permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
+					comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
+					comment_author: fields.username
+				}, function (err) {
+					return callback(err, data);
+				});
+			}
+
+			winston.warn('[plugins/' + pluginData.nbbId + '] Post "' + data.content + '" by uid: ' + data.uid + ' username: ' + username + '@' + data.req.ip + ' was flagged as spam and rejected.');
+			callback(new Error('Post content was flagged as spam by Akismet.com'), data);
+		});
+	});
 };
 
-Plugin.checkRegister = function(data, callback) {
-    async.parallel([
-        function(next) {
-            Plugin._honeypotCheck(data.req, data.res, data.userData, next);
-        },
-        function(next) {
-            Plugin._recaptchaCheck(data.req, data.res, data.userData, next)
-        }
-    ], function(err, results) {
-        callback(err, data);
-    });
+Plugin.checkRegister = function (data, callback) {
+	async.parallel([
+		function (next) {
+			Plugin._honeypotCheck(data.req, data.res, data.userData, next);
+		},
+		function (next) {
+			Plugin._recaptchaCheck(data.req, data.res, data.userData, next)
+		}
+	], function (err, results) {
+		callback(err, data);
+	});
 };
 
-Plugin.onPostFlagged = function(flagged) {
-    if (akismet && pluginSettings.akismetFlagReporting && parseInt(flagged.flaggingUser.reputation, 10) >= parseInt(pluginSettings.akismetFlagReporting, 10)) {
-        async.parallel({
-            comment_author: function(next) {
-                user.getUserField(flagged.post.uid, 'username', next);
-            },
-            permalink: function(next) {
-                topics.getTopicField(flagged.post.tid, 'slug', next);
-            },
-            ip: function(next) {
-                db.getSortedSetRevRange('uid:' + flagged.post.uid + ':ip', 0, 1, next);
-            }
-        }, function(err, data) {
-            var submitted = { 
-                user_ip: data.ip ? data.ip[0] : '', 
-                permalink: nconf.get('url').replace(/\/$/, '') + '/topic/' + data.permalink,
-                comment_author: data.comment_author,
-                comment_content: flagged.post.content
-            };
+Plugin.onPostFlagged = function (flagged) {
+	if (akismet && pluginSettings.akismetFlagReporting && parseInt(flagged.flaggingUser.reputation, 10) >= parseInt(pluginSettings.akismetFlagReporting, 10)) {
+		async.parallel({
+			comment_author: function (next) {
+				user.getUserField(flagged.post.uid, 'username', next);
+			},
+			permalink: function (next) {
+				topics.getTopicField(flagged.post.tid, 'slug', next);
+			},
+			ip: function (next) {
+				db.getSortedSetRevRange('uid:' + flagged.post.uid + ':ip', 0, 1, next);
+			}
+		}, function (err, data) {
+			var submitted = {
+				user_ip: data.ip ? data.ip[0] : '',
+				permalink: nconf.get('url').replace(/\/$/, '') + '/topic/' + data.permalink,
+				comment_author: data.comment_author,
+				comment_content: flagged.post.content
+			};
 
-            akismet.submitSpam(submitted, function(err) {
-                if (err) winston.error('Error reporting to Akismet', err, submitted);
-                
-                winston.info('Spam reported to Akismet.', submitted);
-            });
-        });
-    }
+			akismet.submitSpam(submitted, function (err) {
+				if (err) {
+					winston.error('Error reporting to Akismet', err, submitted);
+				}
+
+				winston.info('Spam reported to Akismet.', submitted);
+			});
+		});
+	}
 };
 
-Plugin._honeypotCheck = function(req, res, userData, next) {
-    if (honeypot && req && req.ip) {
-        honeypot.query(req.ip, function (err, results) {
-            if (err) {
-                winston.error(err);
-                next(null, userData);
-            } else {
-                if (results && results.found && results.type) {
-                    if (results.type.spammer || results.type.suspicious) {
-                        var message = userData.username + ' | ' + userData.email + ' was detected as ' +  (results.type.spammer ? 'spammer' : 'suspicious');
+Plugin._honeypotCheck = function (req, res, userData, next) {
+	if (honeypot && req && req.ip) {
+		honeypot.query(req.ip, function (err, results) {
+			if (err) {
+				winston.error(err);
+				next(null, userData);
+			} else {
+				if (results && results.found && results.type) {
+					if (results.type.spammer || results.type.suspicious) {
+						var message = userData.username + ' | ' + userData.email + ' was detected as ' + (results.type.spammer ? 'spammer' : 'suspicious');
 
-                        winston.warn('[plugins/' + pluginData.nbbId + '] ' + message + ' and was denied registration.');
-                        next(new Error(message), userData);
-                    } else {
-                        next(null, userData);
-                    }
-                } else {
-                    winston.warn('[plugins/' + pluginData.nbbId + '] username:' + userData.username + ' ip:' + req.ip + ' was not found in Honeypot database');
-                    next(null, userData);
-                }
-            }
-        });
-    } else {
-        next(null, userData);
-    }
+						winston.warn('[plugins/' + pluginData.nbbId + '] ' + message + ' and was denied registration.');
+						next(new Error(message), userData);
+					} else {
+						next(null, userData);
+					}
+				} else {
+					winston.warn('[plugins/' + pluginData.nbbId + '] username:' + userData.username + ' ip:' + req.ip + ' was not found in Honeypot database');
+					next(null, userData);
+				}
+			}
+		});
+	} else {
+		next(null, userData);
+	}
 };
 
-Plugin._recaptchaCheck = function(req, res, userData, next) {
-    if (recaptchaArgs && req && req.ip && req.body) {
+Plugin._recaptchaCheck = function (req, res, userData, next) {
+	if (recaptchaArgs && req && req.ip && req.body) {
 
-        simpleRecaptcha(
-            pluginSettings.recaptchaPrivateKey,
-            req.ip,
-            req.body['g-recaptcha-response'],
-            function(err) {
-                if (err) {
-                    var message = err.Error || 'Captcha not verified, are you a robot?';
-                    winston.warn('[plugins/' + pluginData.nbbId + '] ' + message);
-                    next(new Error(message), userData);
-                } else {
-                    next(null, userData);
-                }
-            }
-        );
-    } else {
-        next(null, userData);
-    }
+		simpleRecaptcha(
+			pluginSettings.recaptchaPrivateKey,
+			req.ip,
+			req.body['g-recaptcha-response'],
+			function (err) {
+				if (err) {
+					var message = err.Error || 'Captcha not verified, are you a robot?';
+					winston.warn('[plugins/' + pluginData.nbbId + '] ' + message);
+					next(new Error(message), userData);
+				} else {
+					next(null, userData);
+				}
+			}
+		);
+	} else {
+		next(null, userData);
+	}
 };
 
 Plugin.admin = {
-    menu: function(custom_header, callback) {
-        custom_header.plugins.push({
-            "route": '/plugins/' + pluginData.nbbId,
-            "icon": pluginData.faIcon,
-            "name": pluginData.name
-        });
+	menu: function (custom_header, callback) {
+		custom_header.plugins.push({
+			"route": '/plugins/' + pluginData.nbbId,
+			"icon": pluginData.faIcon,
+			"name": pluginData.name
+		});
 
-        callback(null, custom_header);
-    }
+		callback(null, custom_header);
+	}
 };
 
 module.exports = Plugin;
