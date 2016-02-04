@@ -152,6 +152,7 @@ Plugin.checkReply = function (data, callback) {
 		if (err) {
 			return callback(err);
 		}
+		console.log(fields);
 
 		akismet.checkSpam({
 			user_ip: data.req.ip,
