@@ -10,9 +10,16 @@
                    </label>
                  </div>
                 <p class="help-block">To check every user post. Get yours from <a target="_blank" href="http://akismet.com/">akismet.com</a></p>
-				<div class="form-group">
-					<label for="akismetApiKey">Akismet API Key</label>
-					<input placeholder="Akismet API Key here" type="text" class="form-control" id="akismetApiKey" name="akismetApiKey" />
+                
+                <div class="form-inline">
+					<div class="form-group">
+						<label for="akismetApiKey">Akismet API Key</label>
+						<input placeholder="Akismet API Key here" type="text" class="form-control" id="akismetApiKey" name="akismetApiKey" />
+					</div>
+					<div class="form-group">
+						<label for="akismetMinReputationHam">Minimum reputation level to classify flagged posts as false positives (HAM). Posts made by users with at least this level reputation will never be flagged as spam.</label>
+						<input placeholder="Ham Minimum Reputation" type="number" class="form-control" id="akismetMinReputationHam" name="akismetMinReputationHam" />
+					</div>
 				</div>
 
 				<div class="checkbox">
