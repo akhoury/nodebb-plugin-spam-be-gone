@@ -128,7 +128,13 @@ Plugin.onPostEdit = function(data, callback) {
 };
 
 Plugin.onTopicEdit = function(data, callback) {
-	Plugin.checkReply(data, callback);
+	Plugin.checkReply({
+		content: data.topic.title || '',
+		uid: data.topic.uid,
+		req: data.req
+	}, function(err) {
+		callback(err, data);
+	});
 };
 
 Plugin.checkReply = function (data, callback) {
@@ -176,7 +182,7 @@ Plugin.checkReply = function (data, callback) {
 				});
 			}
 
-			winston.warn('[plugins/' + pluginData.nbbId + '] Post "' + data.content + '" by uid: ' + data.uid + ' username: ' + userData.username + '@' + data.req.ip + ' was flagged as spam and rejected.');
+			winston.warn('[plugins/' + pluginData.nbbId + '] Post "' + akismetData.comment_content + '" by uid: ' + data.uid + ' username: ' + userData.username + '@' + data.req.ip + ' was flagged as spam and rejected.');
 			next(new Error('Post content was flagged as spam by Akismet.com'));
 		}
 	], callback);
