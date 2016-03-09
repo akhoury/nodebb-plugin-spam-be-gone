@@ -1,42 +1,24 @@
-var Akismet = require('akismet'),
-	Honeypot = require('project-honeypot'),
-	simpleRecaptcha = require('simple-recaptcha'),
-	pluginData = require('./plugin.json'),
-	winston = module.parent.require('winston'),
-	nconf = module.parent.require('nconf'),
-	async = module.parent.require('async'),
-	Meta = module.parent.require('./meta'),
-	user = module.parent.require('./user'),
-	topics = module.parent.require('./topics'),
-	db = module.parent.require('./database'),
-	akismet, honeypot, recaptchaArgs, pluginSettings,
-	Plugin = {};
+'use strict';
+
+
+var Honeypot = require('project-honeypot');
+var simpleRecaptcha = require('simple-recaptcha');
+var pluginData = require('./plugin.json');
+var winston = module.parent.require('winston');
+var nconf = module.parent.require('nconf');
+var async = module.parent.require('async');
+var Meta = module.parent.require('./meta');
+var user = module.parent.require('./user');
+var topics = module.parent.require('./topics');
+var db = module.parent.require('./database');
+
+var akismet;
+var honeypot;
+var recaptchaArgs;
+var pluginSettings;
+var Plugin = {};
 
 pluginData.nbbId = pluginData.id.replace(/nodebb-plugin-/, '');
-
-var util = {
-	keys: function (obj, props, value) {
-		if (props == null || obj == null) {
-			return undefined;
-		}
-
-		var i = props.indexOf(".");
-		if (i == -1) {
-			if (value !== undefined) {
-				obj[props] = value;
-			}
-			return obj[props];
-		}
-		var prop = props.slice(0, i),
-			newProps = props.slice(i + 1);
-
-		if (props !== undefined && !(obj[prop] instanceof Object)) {
-			obj[prop] = {};
-		}
-
-		return util.keys(obj[prop], newProps, value);
-	}
-};
 
 Plugin.load = function (params, callback) {
 
@@ -65,7 +47,7 @@ Plugin.load = function (params, callback) {
 
 			if (settings.honeypotEnabled === 'on') {
 				if (settings.honeypotApiKey) {
-					honeypot = Honeypot(settings.honeypotApiKey)
+					honeypot = Honeypot(settings.honeypotApiKey);
 				} else {
 					winston.error('[plugins/' + pluginData.nbbId + '] Honeypot API Key not set!');
 				}
@@ -102,7 +84,7 @@ Plugin.load = function (params, callback) {
 			}
 
 			if (!settings.akismetMinReputationHam) {
-				settings.akismetMinReputationHam = 10
+				settings.akismetMinReputationHam = 10;
 			}
 
 			winston.info('[plugins/' + pluginData.nbbId + '] Settings loaded');
@@ -124,13 +106,12 @@ Plugin.addCaptcha = function (data, callback) {
 	if (recaptchaArgs) {
 		var captcha = {
 			label: 'Captcha',
-			html: ''
-			+ '<div id="' + pluginData.nbbId + '-recaptcha-target"></div>'
-			+ '<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n'
-			+ 'window.plugin = window.plugin || {};\n\t\t\t'
-			+ 'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'
-			+ 'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'
-			+ '</script>',
+			html: '' +
+			'<div id="' + pluginData.nbbId + '-recaptcha-target"></div>' +
+			'<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n' +
+			'window.plugin = window.plugin || {};\n\t\t\t' +
+			'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'	+
+			'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'+ '</script>',
 			styleName: pluginData.nbbId
 		};
 		if (data.templateData.regFormEntry && Array.isArray(data.templateData.regFormEntry)) {
@@ -142,9 +123,17 @@ Plugin.addCaptcha = function (data, callback) {
 	callback(null, data);
 };
 
+Plugin.onPostEdit = function(data, callback) {
+	Plugin.checkReply(data.post, callback);
+};
+
+Plugin.onTopicEdit = function(data, callback) {
+	Plugin.checkReply(data, callback);
+};
+
 Plugin.checkReply = function (data, callback) {
 	// http://akismet.com/development/api/#comment-check
-	if (!akismet || !data.req) {
+	if (!akismet || !data || !data.req) {
 		return callback(null, data);
 	}
 	var userData;
@@ -199,9 +188,9 @@ Plugin.checkRegister = function (data, callback) {
 			Plugin._honeypotCheck(data.req, data.res, data.userData, next);
 		},
 		function (next) {
-			Plugin._recaptchaCheck(data.req, data.res, data.userData, next)
+			Plugin._recaptchaCheck(data.req, data.res, data.userData, next);
 		}
-	], function (err, results) {
+	], function (err) {
 		callback(err, data);
 	});
 };
