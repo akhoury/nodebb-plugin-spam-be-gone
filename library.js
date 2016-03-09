@@ -147,40 +147,50 @@ Plugin.checkReply = function (data, callback) {
 	if (!akismet || !data.req) {
 		return callback(null, data);
 	}
-
-	user.getUserFields(data.uid, ['username', 'reputation'], function (err, fields) {
-		if (err) {
-			return callback(err);
-		}
-		console.log(fields);
-
-		akismet.checkSpam({
-			user_ip: data.req.ip,
-			user_agent: data.req.headers['user-agent'],
-			permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
-			comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
-			comment_author: fields.username
-		}, function (err, spam) {
-			if (err || !spam) {
-				return callback(err, data);
+	var userData;
+	var akismetData;
+	async.waterfall([
+		function (next) {
+			async.parallel({
+				isAdminOrGlobalMod: function(next) {
+					user.isAdminOrGlobalMod(data.uid, next);
+				},
+				userData: function(next) {
+					user.getUserFields(data.uid, ['username', 'reputation'], next);
+				}
+			}, next);
+		},
+		function (results, next) {
+			userData = results.userData;
+			if (results.isAdminOrGlobalMod) {
+				return callback(null, data);
+			}
+			akismetData = {
+				user_ip: data.req.ip,
+				user_agent: data.req.headers['user-agent'],
+				permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
+				comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
+				comment_author: userData.username
+			};
+			akismet.checkSpam(akismetData, next);
+		},
+		function (spam, next) {
+			if (!spam) {
+				return callback(null, data);
 			}
 
-			if (parseInt(fields.reputation, 10) >= parseInt(pluginSettings.akismetMinReputationHam, 10)) {
-				akismet.submitHam({
-					user_ip: data.req.ip,
-					user_agent: data.req.headers['user-agent'],
-					permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
-					comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
-					comment_author: fields.username
-				}, function (err) {
-					return callback(err, data);
+			if (parseInt(userData.reputation, 10) >= parseInt(pluginSettings.akismetMinReputationHam, 10)) {
+				akismet.submitHam(akismetData, function (err) {
+					if (err) {
+						winston.error(err);
+					}
 				});
 			}
 
-			winston.warn('[plugins/' + pluginData.nbbId + '] Post "' + data.content + '" by uid: ' + data.uid + ' username: ' + username + '@' + data.req.ip + ' was flagged as spam and rejected.');
-			callback(new Error('Post content was flagged as spam by Akismet.com'), data);
-		});
-	});
+			winston.warn('[plugins/' + pluginData.nbbId + '] Post "' + data.content + '" by uid: ' + data.uid + ' username: ' + userData.username + '@' + data.req.ip + ' was flagged as spam and rejected.');
+			next(new Error('Post content was flagged as spam by Akismet.com'));
+		}
+	], callback);
 };
 
 Plugin.checkRegister = function (data, callback) {
