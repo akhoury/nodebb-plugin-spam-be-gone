@@ -27,78 +27,78 @@ Plugin.load = function (params, callback) {
 	};
 
 	Meta.settings.get(pluginData.nbbId, function (err, settings) {
-		if (!err && settings) {
-			if (settings.akismetEnabled === 'on') {
-				if (settings.akismetApiKey) {
-					akismet = require('akismet').client({
-						blog: nconf.get('url'),
-						apiKey: settings.akismetApiKey
-					});
-					akismet.verifyKey(function (err, verified) {
-						if (!verified) {
-							winston.error('[plugins/' + pluginData.nbbId + '] Unable to verify Akismet API key.');
-							akismet = null;
-						}
-					});
-				} else {
-					winston.error('[plugins/' + pluginData.nbbId + '] Akismet API Key not set!');
-				}
-			}
-
-			if (settings.honeypotEnabled === 'on') {
-				if (settings.honeypotApiKey) {
-					honeypot = Honeypot(settings.honeypotApiKey);
-				} else {
-					winston.error('[plugins/' + pluginData.nbbId + '] Honeypot API Key not set!');
-				}
-			}
-
-			if (settings.recaptchaEnabled === 'on') {
-				if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey) {
-					var recaptchaLanguages = {
-							'en': 1,
-							'nl': 1,
-							'fr': 1,
-							'de': 1,
-							'pt': 1,
-							'ru': 1,
-							'es': 1,
-							'tr': 1
-						},
-						lang = (Meta.config.defaultLang || 'en').toLowerCase();
-
-					recaptchaArgs = {
-						publicKey: settings.recaptchaPublicKey,
-						targetId: pluginData.nbbId + '-recaptcha-target',
-						options: {
-							// theme: settings.recaptchaTheme || 'clean',
-							//todo: switch to custom theme, issue#9
-							theme: 'clean',
-							lang: recaptchaLanguages[lang] ? lang : 'en',
-							tabindex: settings.recaptchaTabindex || 0
-						}
-					};
-				}
-			} else {
-				recaptchaArgs = null;
-			}
-
-			if (!settings.akismetMinReputationHam) {
-				settings.akismetMinReputationHam = 10;
-			}
-
-			winston.info('[plugins/' + pluginData.nbbId + '] Settings loaded');
-			pluginSettings = settings;
-		} else {
-			winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrived!');
+		if (err) {
+			return callback(err);
 		}
+		if (!settings) {
+			winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrived!');
+			return callback();
+		}
+
+		if (settings.akismetEnabled === 'on') {
+			if (settings.akismetApiKey) {
+				akismet = require('akismet').client({
+					blog: nconf.get('url'),
+					apiKey: settings.akismetApiKey
+				});
+				akismet.verifyKey(function (err, verified) {
+					if (!verified) {
+						winston.error('[plugins/' + pluginData.nbbId + '] Unable to verify Akismet API key.');
+						akismet = null;
+					}
+				});
+			} else {
+				winston.error('[plugins/' + pluginData.nbbId + '] Akismet API Key not set!');
+			}
+		}
+
+		if (settings.honeypotEnabled === 'on') {
+			if (settings.honeypotApiKey) {
+				honeypot = Honeypot(settings.honeypotApiKey);
+			} else {
+				winston.error('[plugins/' + pluginData.nbbId + '] Honeypot API Key not set!');
+			}
+		}
+
+		if (settings.recaptchaEnabled === 'on') {
+			if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey) {
+				var recaptchaLanguages = {
+						'en': 1,
+						'nl': 1,
+						'fr': 1,
+						'de': 1,
+						'pt': 1,
+						'ru': 1,
+						'es': 1,
+						'tr': 1
+					},
+					lang = (Meta.config.defaultLang || 'en').toLowerCase();
+
+				recaptchaArgs = {
+					publicKey: settings.recaptchaPublicKey,
+					targetId: pluginData.nbbId + '-recaptcha-target',
+					options: {
+						// theme: settings.recaptchaTheme || 'clean',
+						//todo: switch to custom theme, issue#9
+						theme: 'clean',
+						lang: recaptchaLanguages[lang] ? lang : 'en',
+						tabindex: settings.recaptchaTabindex || 0
+					}
+				};
+			}
+		}
+
+		if (!settings.akismetMinReputationHam) {
+			settings.akismetMinReputationHam = 10;
+		}
+
+		winston.info('[plugins/' + pluginData.nbbId + '] Settings loaded');
+		pluginSettings = settings;
 
 		params.router.get('/admin/plugins/' + pluginData.nbbId, params.middleware.admin.buildHeader, render);
 		params.router.get('/api/admin/plugins/' + pluginData.nbbId, render);
 
-		if (typeof callback === 'function') {
-			callback();
-		}
+		callback();
 	});
 };
 
@@ -124,12 +124,18 @@ Plugin.addCaptcha = function (data, callback) {
 };
 
 Plugin.onPostEdit = function(data, callback) {
-	Plugin.checkReply(data.post, callback);
+	Plugin.checkReply({
+		content: data.post.content,
+		uid: data.post.uid,
+		req: data.req
+	}, function(err) {
+		callback(err, data);
+	});
 };
 
 Plugin.onTopicEdit = function(data, callback) {
 	Plugin.checkReply({
-		content: data.topic.title || '',
+		title: data.topic.title || '',
 		uid: data.topic.uid,
 		req: data.req
 	}, function(err) {
