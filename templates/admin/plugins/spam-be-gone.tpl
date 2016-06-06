@@ -1,12 +1,21 @@
 <h1><i class="fa {faIcon}"></i> {name}</h1>
 
+<style>
+  .{nbbId}-settings .checkbox>label {
+      font-size: 24px;
+  }
+  .{nbbId}-settings .checkbox>label>input[data-toggle-target] {
+      margin-bottom: 0;
+  }
+</style>
 <form role="form" class="{nbbId}-settings">
 	<fieldset>
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="checkbox">
 					<label>
-						<input data-toggle-target="#akismetApiKey" type="checkbox" id="akismetEnabled" name="akismetEnabled"/> Enable Akismet
+						<input data-toggle-target="#akismetApiKey,#akismetMinReputationHam,#akismetFlagReporting" type="checkbox" id="akismetEnabled" name="akismetEnabled"/>
+						Enable Akismet
 					</label>
 				</div>
 				<p class="help-block">To check every user post. Get yours from
@@ -20,8 +29,15 @@
 					<label for="akismetMinReputationHam">HAM Minimum Reputation</label>
 					<input placeholder="10" type="number" class="form-control" id="akismetMinReputationHam" name="akismetMinReputationHam"/>
 				</div>
-
 				<p class="help-block">Minimum reputation level to classify flagged posts as false positives (HAM). Posts made by users with at least this level reputation will never be flagged as spam.</p>
+
+				<div class="form-group">
+					<label for="akismetFlagReporting">Flagging Minimum Reputation</label>
+					<input placeholder="5" type="text" class="form-control" id="akismetFlagReporting" name="akismetFlagReporting"/>
+				</div>
+				<p class="help-block">Allow users with minimum reputation of X to submit posts to Akismet as spam via flagging (leave blank to disable)</p>
+
+				<hr />
 
 				<div class="checkbox">
 					<label>
@@ -35,9 +51,11 @@
 					<input placeholder="Honeypot API Key here" type="text" class="form-control" id="honeypotApiKey" name="honeypotApiKey"/>
 				</div>
 
+				<hr />
+
 				<div class="checkbox">
 					<label>
-						<input data-toggle-target=".recaptchaKey" type="checkbox" id="recaptchaEnabled" name="recaptchaEnabled"/> Enable Re-Captcha
+						<input data-toggle-target="#recaptchaPublicKey,#recaptchaPrivateKey" type="checkbox" id="recaptchaEnabled" name="recaptchaEnabled"/> Enable Re-Captcha
 					</label>
 				</div>
 				<p class="help-block">To check every user registration. You need a private and a public key, get yours from
@@ -54,10 +72,6 @@
 				</div>
 				<p class="help-block">Keep your private key private</p>
 
-				<div class="form-group">
-					<label for="akismetFlagReporting">Allow users with minimum reputation of X to submit posts to Akismet as spam via flagging (leave blank to disable)</label>
-					<input placeholder="5" type="text" class="form-control" id="akismetFlagReporting" name="akismetFlagReporting"/>
-				</div>
 			</div>
 		</div>
 		<hr/>

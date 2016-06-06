@@ -62,17 +62,6 @@ Plugin.load = function (params, callback) {
 
 		if (settings.recaptchaEnabled === 'on') {
 			if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey) {
-				var recaptchaLanguages = {
-						'en': 1,
-						'nl': 1,
-						'fr': 1,
-						'de': 1,
-						'pt': 1,
-						'ru': 1,
-						'es': 1,
-						'tr': 1
-					},
-					lang = (Meta.config.defaultLang || 'en').toLowerCase();
 
 				recaptchaArgs = {
 					publicKey: settings.recaptchaPublicKey,
@@ -81,7 +70,8 @@ Plugin.load = function (params, callback) {
 						// theme: settings.recaptchaTheme || 'clean',
 						//todo: switch to custom theme, issue#9
 						theme: 'clean',
-						lang: recaptchaLanguages[lang] ? lang : 'en',
+
+						hl: (Meta.config.defaultLang || 'en').toLowerCase(),
 						tabindex: settings.recaptchaTabindex || 0
 					}
 				};
