@@ -2,7 +2,7 @@
 
 
 var Honeypot = require('project-honeypot');
-var simpleRecaptcha = require('simple-recaptcha');
+var simpleRecaptcha = require('simple-recaptcha-new');
 var pluginData = require('./plugin.json');
 var winston = module.parent.require('winston');
 var nconf = module.parent.require('nconf');
