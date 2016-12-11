@@ -202,9 +202,9 @@ Plugin.checkRegister = function (data, callback) {
 
 Plugin.onPostFlagged = function (flagged) {
 	if (akismet && pluginSettings.akismetFlagReporting && parseInt(flagged.flaggingUser.reputation, 10) >= parseInt(pluginSettings.akismetFlagReporting, 10)) {
-		async.parallel({
-			comment_author: function (next) {
-				user.getUserField(flagged.post.uid, 'username', next);
+		async.parallel({			
+			userData: function (next) {
+				user.getUserFields(flagged.post.uid, ['username', 'email'], next);
 			},
 			permalink: function (next) {
 				topics.getTopicField(flagged.post.tid, 'slug', next);
@@ -212,12 +212,15 @@ Plugin.onPostFlagged = function (flagged) {
 			ip: function (next) {
 				db.getSortedSetRevRange('uid:' + flagged.post.uid + ':ip', 0, 1, next);
 			}
-		}, function (err, data) {
+		}, function (err, data) {			
+			// todo: we don't have access to the req here :/
 			var submitted = {
 				user_ip: data.ip ? data.ip[0] : '',
 				permalink: nconf.get('url').replace(/\/$/, '') + '/topic/' + data.permalink,
-				comment_author: data.comment_author,
-				comment_content: flagged.post.content
+				comment_author: data.userData.username,
+				comment_author_email: data.userData.email,
+				comment_content: flagged.post.content,
+				comment_type: 'forum-post'
 			};
 
 			akismet.submitSpam(submitted, function (err) {
