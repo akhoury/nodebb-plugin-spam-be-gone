@@ -147,7 +147,7 @@ Plugin.checkReply = function (data, callback) {
 					user.isAdminOrGlobalMod(data.uid, next);
 				},
 				userData: function(next) {
-					user.getUserFields(data.uid, ['username', 'reputation'], next);
+					user.getUserFields(data.uid, ['username', 'reputation', 'email'], next);
 				}
 			}, next);
 		},
@@ -157,11 +157,14 @@ Plugin.checkReply = function (data, callback) {
 				return callback(null, data);
 			}
 			akismetData = {
+				referrer: data.req.headers['referer'],				
 				user_ip: data.req.ip,
 				user_agent: data.req.headers['user-agent'],
 				permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
 				comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
-				comment_author: userData.username
+				comment_author: userData.username,
+				comment_author_email: userData.email,
+				comment_type: 'forum-post'
 			};
 			akismet.checkSpam(akismetData, next);
 		},
