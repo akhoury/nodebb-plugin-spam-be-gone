@@ -118,7 +118,7 @@ Plugin.onPostEdit = function(data, callback) {
 		content: data.post.content,
 		uid: data.post.uid,
 		req: data.req
-	}, function(err) {
+	}, {type: 'post'}, function(err) {
 		callback(err, data);
 	});
 };
@@ -128,12 +128,26 @@ Plugin.onTopicEdit = function(data, callback) {
 		title: data.topic.title || '',
 		uid: data.topic.uid,
 		req: data.req
-	}, function(err) {
+	}, {type: 'topic'}, function(err) {
 		callback(err, data);
 	});
 };
 
-Plugin.checkReply = function (data, callback) {
+Plugin.onTopicPost = function(data, callback) {
+	Plugin.checkReply(data, {type: 'topic'}, callback);
+};
+
+Plugin.onTopicReply = function(data, callback) {
+	Plugin.checkReply(data, {type: 'post'}, callback);
+};
+
+Plugin.checkReply = function (data, options, callback) {
+	if (typeof options === 'function') {
+		callback = options;
+		options = null;
+	}
+	options = options || {};
+
 	// http://akismet.com/development/api/#comment-check
 	if (!akismet || !data || !data.req) {
 		return callback(null, data);
@@ -164,7 +178,8 @@ Plugin.checkReply = function (data, callback) {
 				comment_content: (data.title ? data.title + '\n\n' : '') + (data.content || ''),
 				comment_author: userData.username,
 				comment_author_email: userData.email,
-				comment_type: 'forum-post'
+				// https://github.com/akhoury/nodebb-plugin-spam-be-gone/issues/54
+				comment_type: options.type === 'topic' ? 'forum-post' : 'comment'
 			};
 			akismet.checkSpam(akismetData, next);
 		},
