@@ -19,7 +19,7 @@ window.__nodebbSpamBeGoneCreateCaptcha__ = function () {
 $(function() {
 	$(window).on('action:ajaxify.end', function(e, data) {
 		if (
-			data.url === 'register'
+			data.tpl_url === 'register'
 			&& window.plugin
 			&& plugin['spam-be-gone']
 			&& plugin['spam-be-gone'].recaptchaArgs
