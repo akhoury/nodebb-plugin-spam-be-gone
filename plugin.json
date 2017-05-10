@@ -20,7 +20,7 @@
         {"hook": "filter:topic.reply", "method": "onTopicReply", "priority": 5},
         {"hook": "filter:topic.edit", "method": "onTopicEdit"},
         {"hook": "filter:post.edit", "method": "onPostEdit"},
-        {"hook": "action:post.flag", "method": "onPostFlagged", "priority": 5}
+        {"hook": "action:flag.create", "method": "onPostFlagged", "priority": 5}
     ],
     "faIcon": "fa-shield"
 }

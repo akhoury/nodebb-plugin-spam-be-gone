@@ -215,17 +215,24 @@ Plugin.checkRegister = function (data, callback) {
 	});
 };
 
-Plugin.onPostFlagged = function (flagged) {
-	if (akismet && pluginSettings.akismetFlagReporting && parseInt(flagged.flaggingUser.reputation, 10) >= parseInt(pluginSettings.akismetFlagReporting, 10)) {
+Plugin.onPostFlagged = function (data) {
+	var flagObj = data.flag;
+
+	// Don't do anything if flag is not for a post and not for "spam" reason
+	if (flagObj.type !== 'post' || flagObj.description !== 'Spam') {
+		return;
+	}
+
+	if (akismet && pluginSettings.akismetFlagReporting && parseInt(flagObj.reporter.reputation, 10) >= parseInt(pluginSettings.akismetFlagReporting, 10)) {
 		async.parallel({			
 			userData: function (next) {
-				user.getUserFields(flagged.post.uid, ['username', 'email'], next);
+				user.getUserFields(flagObj.target.uid, ['username', 'email'], next);
 			},
 			permalink: function (next) {
-				topics.getTopicField(flagged.post.tid, 'slug', next);
+				topics.getTopicField(flagObj.target.tid, 'slug', next);
 			},
 			ip: function (next) {
-				db.getSortedSetRevRange('uid:' + flagged.post.uid + ':ip', 0, 1, next);
+				db.getSortedSetRevRange('uid:' + flagObj.target.uid + ':ip', 0, 1, next);
 			}
 		}, function (err, data) {			
 			// todo: we don't have access to the req here :/
@@ -234,7 +241,7 @@ Plugin.onPostFlagged = function (flagged) {
 				permalink: nconf.get('url').replace(/\/$/, '') + '/topic/' + data.permalink,
 				comment_author: data.userData.username,
 				comment_author_email: data.userData.email,
-				comment_content: flagged.post.content,
+				comment_content: flagObj.target.content,
 				comment_type: 'forum-post'
 			};
 
