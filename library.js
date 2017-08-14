@@ -171,7 +171,7 @@ Plugin.checkReply = function (data, options, callback) {
 				return callback(null, data);
 			}
 			akismetData = {
-				referrer: data.req.headers['referer'],				
+				referrer: data.req.headers['referer'],
 				user_ip: data.req.ip,
 				user_agent: data.req.headers['user-agent'],
 				permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
@@ -196,7 +196,7 @@ Plugin.checkReply = function (data, options, callback) {
 				});
 			}
 
-			winston.warn('[plugins/' + pluginData.nbbId + '] Post "' + akismetData.comment_content + '" by uid: ' + data.uid + ' username: ' + userData.username + '@' + data.req.ip + ' was flagged as spam and rejected.');
+			winston.verbose('[plugins/' + pluginData.nbbId + '] Post "' + akismetData.comment_content + '" by uid: ' + data.uid + ' username: ' + userData.username + '@' + data.req.ip + ' was flagged as spam and rejected.');
 			next(new Error('Post content was flagged as spam by Akismet.com'));
 		}
 	], callback);
@@ -224,7 +224,7 @@ Plugin.onPostFlagged = function (data) {
 	}
 
 	if (akismet && pluginSettings.akismetFlagReporting && parseInt(flagObj.reporter.reputation, 10) >= parseInt(pluginSettings.akismetFlagReporting, 10)) {
-		async.parallel({			
+		async.parallel({
 			userData: function (next) {
 				user.getUserFields(flagObj.target.uid, ['username', 'email'], next);
 			},
@@ -234,7 +234,7 @@ Plugin.onPostFlagged = function (data) {
 			ip: function (next) {
 				db.getSortedSetRevRange('uid:' + flagObj.target.uid + ':ip', 0, 1, next);
 			}
-		}, function (err, data) {			
+		}, function (err, data) {
 			// todo: we don't have access to the req here :/
 			var submitted = {
 				user_ip: data.ip ? data.ip[0] : '',
@@ -273,7 +273,7 @@ Plugin._honeypotCheck = function (req, res, userData, next) {
 						next(null, userData);
 					}
 				} else {
-					winston.warn('[plugins/' + pluginData.nbbId + '] username:' + userData.username + ' ip:' + req.ip + ' was not found in Honeypot database');
+					winston.verbose('[plugins/' + pluginData.nbbId + '] username:' + userData.username + ' ip:' + req.ip + ' was not found in Honeypot database');
 					next(null, userData);
 				}
 			}
@@ -293,7 +293,7 @@ Plugin._recaptchaCheck = function (req, res, userData, next) {
 			function (err) {
 				if (err) {
 					var message = err.Error || 'Captcha not verified, are you a robot?';
-					winston.warn('[plugins/' + pluginData.nbbId + '] ' + message);
+					winston.verbose('[plugins/' + pluginData.nbbId + '] ' + message);
 					next(new Error(message), userData);
 				} else {
 					next(null, userData);
