@@ -16,7 +16,7 @@ var akismet;
 var honeypot;
 var recaptchaArgs;
 var pluginSettings;
-var Plugin = {};
+var Plugin = module.exports;
 
 pluginData.nbbId = pluginData.id.replace(/nodebb-plugin-/, '');
 
@@ -114,19 +114,26 @@ Plugin.addCaptcha = function (data, callback) {
 };
 
 Plugin.onPostEdit = function(data, callback) {
-	Plugin.checkReply({
-		content: data.post.content,
-		uid: data.post.uid,
-		req: data.req
-	}, {type: 'post'}, function(err) {
-		callback(err, data);
-	});
+	async.waterfall([
+		function (next) {
+			topics.getTopicField(data.post.tid, 'cid', next);
+		},
+		function (cid, next) {
+			Plugin.checkReply({
+				content: data.post.content,
+				uid: data.post.uid,
+				cid: cid,
+				req: data.req,
+			}, {type: 'post'}, next);
+		},
+	], callback);
 };
 
 Plugin.onTopicEdit = function(data, callback) {
 	Plugin.checkReply({
 		title: data.topic.title || '',
 		uid: data.topic.uid,
+		cid: data.topic.cid,
 		req: data.req
 	}, {type: 'topic'}, function(err) {
 		callback(err, data);
@@ -157,8 +164,11 @@ Plugin.checkReply = function (data, options, callback) {
 	async.waterfall([
 		function (next) {
 			async.parallel({
-				isAdminOrGlobalMod: function(next) {
-					user.isAdminOrGlobalMod(data.uid, next);
+				isAdmin: function(next) {
+					user.isAdministrator(data.uid, next);
+				},
+				isModerator: function (next) {
+					user.isModerator(data.uid, data.cid, next);
 				},
 				userData: function(next) {
 					user.getUserFields(data.uid, ['username', 'reputation', 'email'], next);
@@ -167,7 +177,7 @@ Plugin.checkReply = function (data, options, callback) {
 		},
 		function (results, next) {
 			userData = results.userData;
-			if (results.isAdminOrGlobalMod) {
+			if (results.isAdmin || results.isModerator) {
 				return callback(null, data);
 			}
 			akismetData = {
@@ -316,5 +326,3 @@ Plugin.admin = {
 		callback(null, custom_header);
 	}
 };
-
-module.exports = Plugin;
