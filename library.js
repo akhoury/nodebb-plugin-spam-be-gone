@@ -124,7 +124,9 @@ Plugin.onPostEdit = function(data, callback) {
 				uid: data.post.uid,
 				cid: cid,
 				req: data.req,
-			}, {type: 'post'}, next);
+			}, {type: 'post'}, function (err) {
+				next(err, data);
+			});
 		},
 	], callback);
 };
