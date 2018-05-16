@@ -57,7 +57,7 @@ $(function() {
 					injectTag('script', {src: src, type: 'text/javascript', async: '', defer: '' }, options);
 				};
 
-				injectScript('//www.google.com/recaptcha/api.js?onload=__nodebbSpamBeGoneCreateCaptcha__&render=explicit&hl=' + (args.options.hl || 'en'));
+				injectScript('//www.recaptcha.net/recaptcha/api.js?onload=__nodebbSpamBeGoneCreateCaptcha__&render=explicit&hl=' + (args.options.hl || 'en'));
 		}
 	});
 });
