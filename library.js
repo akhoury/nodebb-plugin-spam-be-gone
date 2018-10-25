@@ -3,14 +3,18 @@
 
 var Honeypot = require('project-honeypot');
 var simpleRecaptcha = require('simple-recaptcha-new');
+
 var pluginData = require('./plugin.json');
+var nbbRequire = require('./lib/nbbRequire');
+
+var Meta = nbbRequire('./src/meta');
+var user = nbbRequire('./src/user');
+var topics = nbbRequire('./src/topics');
+var db = nbbRequire('./src/database');
+
 var winston = require.main.require('winston');
 var nconf = require.main.require('nconf');
 var async = require.main.require('async');
-var Meta = require.main.require('./src/meta');
-var user = require.main.require('./src/user');
-var topics = require.main.require('./src/topics');
-var db = require.main.require('./src/database');
 
 var akismet;
 var honeypot;
