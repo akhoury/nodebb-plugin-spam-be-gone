@@ -16,6 +16,7 @@
         {"hook": "filter:admin.header.build", "method": "admin.menu"},
         {"hook": "filter:register.build", "method": "addCaptcha", "priority": 5},
         {"hook": "filter:register.check", "method": "checkRegister", "priority": 5},
+        {"hook": "filter:user.getRegistrationQueue", "method": "getRegistrationQueue", "priority": 5},
         {"hook": "filter:topic.post", "method": "onTopicPost", "priority": 5},
         {"hook": "filter:topic.reply", "method": "onTopicReply", "priority": 5},
         {"hook": "filter:topic.edit", "method": "onTopicEdit"},

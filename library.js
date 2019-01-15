@@ -3,6 +3,7 @@
 
 var Honeypot = require('project-honeypot');
 var simpleRecaptcha = require('simple-recaptcha-new');
+var stopforumspam = require('stopforumspam');
 var pluginData = require('./plugin.json');
 var winston = require.main.require('winston');
 var nconf = require.main.require('nconf');
@@ -127,7 +128,7 @@ Plugin.onPostEdit = function(data, callback) {
 			}, {type: 'post'}, function (err) {
 				next(err, data);
 			});
-		},
+		}
 	], callback);
 };
 
@@ -225,6 +226,41 @@ Plugin.checkRegister = function (data, callback) {
 	], function (err) {
 		callback(err, data);
 	});
+};
+
+function augmentWithSFSSpamData(user, callback) {
+	// temporary: see http://www.stopforumspam.com/forum/viewtopic.php?id=6392
+	user.ip = user.ip.replace('::ffff:', '');
+
+	stopforumspam.isSpammer({ ip: user.id, email: user.email, username: user.username, f: 'json' })
+		.then(function (body) {
+			// body === false, then just set the default non spam response, which stopforumspam node module doesn't return it's spam, but some template rely on it
+			if (!body) {
+				body = {success: 1, username: {frequency: 0, appears: 0}, email: {frequency: 0, appears: 0}, ip: {frequency: 0, appears: 0, asn: null}};
+			}
+			user.spamData = body;
+			user.usernameSpam = body.username ? (body.username.frequency > 0 || body.username.appears > 0) : true;
+			user.emailSpam = body.email ? (body.email.frequency > 0 || body.email.appears > 0) : true;
+			user.ipSpam = body.ip ? (body.ip.frequency > 0 || body.ip.appears > 0) : true;
+
+			callback();
+		})
+		.catch(function (err) {
+			// original nodebb core implementation did not pass the error to the cb, so im keeping it that way
+			// https://github.com/NodeBB/NodeBB/blob/2cd1be0d041892742300a2ba2d5f1087b6272071/src/user/approval.js#L260-L264
+			if (err) {
+				winston.error(err);
+			}
+			callback();
+		});
+}
+
+Plugin.getRegistrationQueue = function (data, callback) {
+	if (pluginSettings.stopforumspamEnabled) {
+		async.each(data.users, augmentWithSFSSpamData, function (err) {
+			callback(err, data);
+		});
+	}
 };
 
 Plugin.onPostFlagged = function (data) {

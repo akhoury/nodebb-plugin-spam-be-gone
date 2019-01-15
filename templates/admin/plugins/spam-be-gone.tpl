@@ -72,14 +72,29 @@
               </div>
               <p class="help-block">Keep your private key private</p>
 
+              <hr />
+
+              <div class="checkbox">
+                <label>
+                  <input data-toggle-target="#stopforumspamApiKey" type="checkbox" id="stopforumspamEnabled" name="stopforumspamEnabled"/> Enable StopForumSpam
+                </label>
+              </div>
+              <p class="help-block">To flag a user you need an API key, get yours from <a target="_blank" href="https://www.stopforumspam.com/keys">stopforumspam.com/keys</a></p>
+              <div class="form-group" style="width:45%;">
+                <label for="stopforumspamApiKey">StopForumSpam API Key</label>
+                <input placeholder="API key here" type="text" class="stopforumspamApiKey form-control" id="stopforumspamApiKey" name="stopforumspamApiKey"/>
+              </div>
             </div>
           </div>
+
           <hr/>
+
           <button class="btn btn-lg btn-primary" id="save" type="button">Save</button>
 
           <p class="help-block">
             This plugin uses
             <a target="_blank" href="https://github.com/julianlam/project-honeypot">project-honeypot</a>,
+            <a target="_blank" href="https://github.com/deltreey/stopforumspam">stopforumspam</a>,
             <a target="_blank" href="https://github.com/oozcitak/akismet-js">akismet-js</a>,
             and <a target="_blank" href="https://github.com/zeMirco/simple-recaptcha">simple-recaptcha</a>
 
