@@ -19,7 +19,7 @@
   "templates": "public/templates",
   "languages": "public/languages",
   "defaultLang": "en_GB",
-  "_upgrades": [
+  "upgrades": [
     "upgrades/enable_stopforumspam_by_default.js"
   ],
   "hooks": [

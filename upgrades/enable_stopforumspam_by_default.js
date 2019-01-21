@@ -1,66 +1,29 @@
 'use strict';
 
-var db = require.main.require('./database');
+var Meta = require.main.require('./src/meta');
 var async = require.main.require('async');
 var winston = require.main.require('winston');
-
-var settings;
+var Plugin = require('../library');
 
 module.exports = {
-	name: 'Convert remote-to-local user ID from hash to sorted set',
-	timestamp: Date.UTC(2019, 1, 19),
+	name: 'Enable StopForumSpam by default without api key',
+	timestamp: Date.UTC(2019, 0, 21),
 	method: function (callback) {
-		var progress = this.progress;
-
-		async.waterfall([
-			// Reload plugin settings and grab appID setting
-			async.apply(meta.settings.get, 'session-sharing'),
-			function (_settings, next) {
-				settings = _settings;
-				winston.verbose('getting data');
-				if (settings.secret) {
-					// session-sharing is set up, execute upgrade
-					db.getObject((settings.name || 'appId') + ':uid', next);
-				} else {
-					// No secret set, skip upgrade as completed.
-					setImmediate(next, true);
-				}
-			},
-
-			// Save a backup of the hash data in another key
-			function (hashData, next) {
-				db.rename((settings.name || 'appId') + ':uid', 'backup:' + (settings.name || 'appId') + ':uid', function (err) {
-					next(err, hashData);
+		Meta.settings.get(Plugin.nbbId, function (err, settings) {
+			if (err) {
+				return callback(err);
+			}
+			if (!settings) {
+				settings = {};
+			}
+			if (settings.stopforumspamEnabled !== 'on') {
+				settings.stopforumspamEnabled = 'on';
+				Meta.settings.set(Plugin.nbbId, settings, function (err) {
+					callback(err);
 				});
-			},
-
-			// Save new zset
-			function (hashData, next) {
-				winston.verbose('constructing array');
-				var values = [];
-
-				for(var remoteId in hashData) {
-					if (hashData.hasOwnProperty(remoteId)) {
-						values.push(remoteId);
-					}
-				}
-				progress.total = values.length;
-				winston.verbose('saving into db');
-				async.eachSeries(values, function (value, next) {
-					progress.incr();
-					db.sortedSetAdd((settings.name || 'appId') + ':uid', hashData[value], value, next);
-				}, next);
+			} else {
+				callback();
 			}
-		], function (err) {
-			if (typeof err === 'boolean') {
-				// No upgrade needed
-				return callback();
-			} else if (err && err.message === 'WRONGTYPE Operation against a key holding the wrong kind of value') {
-				// Likely script already run, all is well
-				err = null;
-			}
-
-			callback(err);
 		});
-	},
+	}
 };

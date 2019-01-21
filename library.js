@@ -20,6 +20,7 @@ var pluginSettings;
 var Plugin = module.exports;
 
 pluginData.nbbId = pluginData.id.replace(/nodebb-plugin-/, '');
+Plugin.nbbId = pluginData.nbbId;
 
 Plugin.middleware = {};
 
@@ -39,7 +40,7 @@ Plugin.load = function (params, callback) {
 			return callback(err);
 		}
 		if (!settings) {
-			winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrived!');
+			winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrieved!');
 			return callback();
 		}
 
@@ -330,6 +331,25 @@ Plugin.getRegistrationQueue = function (data, callback) {
 	}
 };
 
+Plugin.userProfileMenu = function (data, next) {
+	if (pluginSettings.stopforumspamEnabled && pluginSettings.stopforumspamApiKey) {
+		data.links.push({
+			id: 'spamBeGoneReportUserBtn',
+			route: 'report-user',
+			icon: 'fa-flag',
+			name: '[[spam-be-gone:report-user]]',
+			visibility: {
+				self: false,
+				other: false,
+				moderator: false,
+				globalMod: true,
+				admin: true
+			}
+		});
+	}
+	next(null, data);
+};
+
 Plugin.onPostFlagged = function (data) {
 	var flagObj = data.flag;
 
@@ -419,24 +439,6 @@ Plugin._recaptchaCheck = function (req, res, userData, next) {
 	}
 };
 
-Plugin.userProfileMenu = function (data, next) {
-	if (pluginSettings.stopforumspamApiKey) {
-		data.links.push({
-			id: 'spamBeGoneReportUserBtn',
-			route: 'report-user',
-			icon: 'fa-flag',
-			name: '[[spam-be-gone:report-user]]',
-			visibility: {
-				self: false,
-				other: false,
-				moderator: false,
-				globalMod: true,
-				admin: true
-			}
-		});
-	}
-	next(null, data);
-};
 
 Plugin.admin = {
 	menu: function (custom_header, callback) {
