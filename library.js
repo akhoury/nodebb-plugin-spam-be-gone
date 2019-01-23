@@ -141,7 +141,7 @@ Plugin.report = function (req, res) {
 		if (results.isAdmin) {
 			return res.status(403).send({ message: '[[spam-be-gone:cant-report-admin]]' });
 		}
-		var data = { ip: '103.208.220.133' || results.ips[0], email: results.fields.email, username: results.fields.username };
+		var data = { ip: results.ips[0], email: results.fields.email, username: results.fields.username };
 		stopforumspam.submit(data, 'Manual submission from user:' + req.uid + ' to user:' + results.fields.uid + ' via ' + pluginData.id)
 			.then(function () {
 				return res.status(200).json({ message: '[[spam-be-gone:user-reported]]' });
