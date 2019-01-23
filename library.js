@@ -91,6 +91,10 @@ Plugin.load = function (params, callback) {
 			settings.akismetMinReputationHam = 10;
 		}
 
+		if (settings.stopforumspamApiKey) {
+			stopforumspam.Key(settings.stopforumspamApiKey);
+		}
+
 		winston.info('[plugins/' + pluginData.nbbId + '] Settings loaded');
 		pluginSettings = settings;
 
@@ -137,14 +141,13 @@ Plugin.report = function (req, res) {
 		if (results.isAdmin) {
 			return res.status(403).send({ message: '[[spam-be-gone:cant-report-admin]]' });
 		}
-		stopforumspam.submit({ ip: results.ips[0] || '127.0.0.1', email: results.fields.email, username: results.fields.username }, 'Manual submission from user:' + req.uid + ' to user:' + results.fields.uid + ' via ' + pluginData.id)
+		var data = { ip: '103.208.220.133' || results.ips[0], email: results.fields.email, username: results.fields.username };
+		stopforumspam.submit(data, 'Manual submission from user:' + req.uid + ' to user:' + results.fields.uid + ' via ' + pluginData.id)
 			.then(function () {
 				return res.status(200).json({ message: '[[spam-be-gone:user-reported]]' });
 			})
 			.catch(function (err) {
-				return res.status(200).json({ message: '[[spam-be-gone:user-reported]]' });
-
-				winston.verbose('[plugins/' + pluginData.nbbId + '][report-error] ' + err.message);
+				winston.error('[plugins/' + pluginData.nbbId + '][report-error] ' + err.message, data);
 				return res.status(400).json({ message: err.message || 'Something went wrong' });
 			});
 	});

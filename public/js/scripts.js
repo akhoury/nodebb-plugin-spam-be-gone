@@ -26,6 +26,8 @@ $(function() {
 		$btn.on('click', function (e) {
 			e.preventDefault();
 			reportUser(data.title);
+			var $parentBtn = $btn.parents('.account-fab').find('[data-toggle="dropdown"]');
+			$parentBtn.dropdown && $parentBtn.dropdown('toggle');
 			return false;
 		});
 	}
