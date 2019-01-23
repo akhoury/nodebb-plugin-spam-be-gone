@@ -3,13 +3,14 @@
 
 var Honeypot = require('project-honeypot');
 var simpleRecaptcha = require('simple-recaptcha-new');
+var stopforumspam = require('stopforumspam');
 var pluginData = require('./plugin.json');
 var winston = require.main.require('winston');
 var nconf = require.main.require('nconf');
 var async = require.main.require('async');
 var Meta = require.main.require('./src/meta');
-var user = require.main.require('./src/user');
-var topics = require.main.require('./src/topics');
+var User = require.main.require('./src/user');
+var Topics = require.main.require('./src/topics');
 var db = require.main.require('./src/database');
 
 var akismet;
@@ -19,19 +20,27 @@ var pluginSettings;
 var Plugin = module.exports;
 
 pluginData.nbbId = pluginData.id.replace(/nodebb-plugin-/, '');
+Plugin.nbbId = pluginData.nbbId;
+
+Plugin.middleware = {};
+
+Plugin.middleware.isAdminOrGlobalMod = function (req, res, next) {
+	User.isAdminOrGlobalMod(req.uid, function (err, isAdminOrGlobalMod) {
+		if (isAdminOrGlobalMod) {
+			return next();
+		}
+		res.status(401).json({ message: '[[spam-be-gone:not-allowed]]' });
+	});
+};
 
 Plugin.load = function (params, callback) {
-
-	var render = function (req, res, next) {
-		res.render('admin/plugins/' + pluginData.nbbId, pluginData || {});
-	};
 
 	Meta.settings.get(pluginData.nbbId, function (err, settings) {
 		if (err) {
 			return callback(err);
 		}
 		if (!settings) {
-			winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrived!');
+			winston.warn('[plugins/' + pluginData.nbbId + '] Settings not set or could not be retrieved!');
 			return callback();
 		}
 
@@ -82,13 +91,65 @@ Plugin.load = function (params, callback) {
 			settings.akismetMinReputationHam = 10;
 		}
 
+		if (settings.stopforumspamApiKey) {
+			stopforumspam.Key(settings.stopforumspamApiKey);
+		}
+
 		winston.info('[plugins/' + pluginData.nbbId + '] Settings loaded');
 		pluginSettings = settings;
 
-		params.router.get('/admin/plugins/' + pluginData.nbbId, params.middleware.admin.buildHeader, render);
-		params.router.get('/api/admin/plugins/' + pluginData.nbbId, render);
+		params.router.get('/admin/plugins/' + pluginData.nbbId, params.middleware.admin.buildHeader, Plugin.render);
+		params.router.get('/api/admin/plugins/' + pluginData.nbbId, Plugin.render);
 
+		params.router.post('/api/user/:user/' + pluginData.nbbId + '/report', Plugin.middleware.isAdminOrGlobalMod, Plugin.report);
 		callback();
+	});
+};
+
+Plugin.render = function (req, res) {
+	res.render('admin/plugins/' + pluginData.nbbId, pluginData || {});
+};
+
+Plugin.report = function (req, res) {
+
+	if (!pluginSettings.stopforumspamEnabled) {
+		return res.status(400).send({ message: '[[spam-be-gone:sfs-not-enabled]]' });
+	}
+
+	if (!pluginSettings.stopforumspamApiKey) {
+		return res.status(400).send({ message: '[[spam-be-gone:sfs-api-key-not-set]]' });
+	}
+
+	async.waterfall([
+		function (next) {
+			User.getUidByUserslug(req.params.user, next);
+		},
+		function (uid, next) {
+			async.parallel({
+				isAdmin: function(next) {
+					User.isAdministrator(uid, next);
+				},
+				fields: function(next) {
+					User.getUserFields(uid, ['username', 'email', 'uid'], next);
+				},
+				ips: function (next) {
+					User.getIPs(uid, 4, next);
+				}
+			}, next);
+		}
+	], function (err, results) {
+		if (results.isAdmin) {
+			return res.status(403).send({ message: '[[spam-be-gone:cant-report-admin]]' });
+		}
+		var data = { ip: results.ips[0], email: results.fields.email, username: results.fields.username };
+		stopforumspam.submit(data, 'Manual submission from user:' + req.uid + ' to user:' + results.fields.uid + ' via ' + pluginData.id)
+			.then(function () {
+				return res.status(200).json({ message: '[[spam-be-gone:user-reported]]' });
+			})
+			.catch(function (err) {
+				winston.error('[plugins/' + pluginData.nbbId + '][report-error] ' + err.message, data);
+				return res.status(400).json({ message: err.message || 'Something went wrong' });
+			});
 	});
 };
 
@@ -116,7 +177,7 @@ Plugin.addCaptcha = function (data, callback) {
 Plugin.onPostEdit = function(data, callback) {
 	async.waterfall([
 		function (next) {
-			topics.getTopicField(data.post.tid, 'cid', next);
+			Topics.getTopicField(data.post.tid, 'cid', next);
 		},
 		function (cid, next) {
 			Plugin.checkReply({
@@ -127,7 +188,7 @@ Plugin.onPostEdit = function(data, callback) {
 			}, {type: 'post'}, function (err) {
 				next(err, data);
 			});
-		},
+		}
 	], callback);
 };
 
@@ -167,13 +228,13 @@ Plugin.checkReply = function (data, options, callback) {
 		function (next) {
 			async.parallel({
 				isAdmin: function(next) {
-					user.isAdministrator(data.uid, next);
+					User.isAdministrator(data.uid, next);
 				},
 				isModerator: function (next) {
-					user.isModerator(data.uid, data.cid, next);
+					User.isModerator(data.uid, data.cid, next);
 				},
 				userData: function(next) {
-					user.getUserFields(data.uid, ['username', 'reputation', 'email'], next);
+					User.getUserFields(data.uid, ['username', 'reputation', 'email'], next);
 				}
 			}, next);
 		},
@@ -227,6 +288,71 @@ Plugin.checkRegister = function (data, callback) {
 	});
 };
 
+function augmentWitSpamData(user, callback) {
+	// temporary: see http://www.stopforumspam.com/forum/viewtopic.php?id=6392
+	user.ip = user.ip.replace('::ffff:', '');
+
+	stopforumspam.isSpammer({ ip: user.ip, email: user.email, username: user.username, f: 'json' })
+		.then(function (body) {
+			// body === false, then just set the default non spam response, which stopforumspam node module doesn't return it's spam, but some template rely on it
+			if (!body) {
+				body = {success: 1, username: {frequency: 0, appears: 0}, email: {frequency: 0, appears: 0}, ip: {frequency: 0, appears: 0, asn: null}};
+			}
+			user.spamChecked = true;
+			user.spamData = body;
+			user.usernameSpam = body.username ? (body.username.frequency > 0 || body.username.appears > 0) : true;
+			user.emailSpam = body.email ? (body.email.frequency > 0 || body.email.appears > 0) : true;
+			user.ipSpam = body.ip ? (body.ip.frequency > 0 || body.ip.appears > 0) : true;
+
+			user.customActions = user.customActions || [];
+			if (pluginSettings.stopforumspamApiKey) {
+				user.customActions.push({
+					title: '[[spam-be-gone:report-user]]',
+					id: 'report-spam-user-' + user.username,
+					class: 'btn-warning report-spam-user',
+					icon: 'fa-flag'
+				});
+			}
+
+			callback();
+		})
+		.catch(function (err) {
+			// original nodebb core implementation did not pass the error to the cb, so im keeping it that way
+			// https://github.com/NodeBB/NodeBB/blob/2cd1be0d041892742300a2ba2d5f1087b6272071/src/user/approval.js#L260-L264
+			if (err) {
+				winston.error(err);
+			}
+			callback();
+		});
+}
+
+Plugin.getRegistrationQueue = function (data, callback) {
+	if (pluginSettings.stopforumspamEnabled) {
+		async.each(data.users, augmentWitSpamData, function (err) {
+			callback(err, data);
+		});
+	}
+};
+
+Plugin.userProfileMenu = function (data, next) {
+	if (pluginSettings.stopforumspamEnabled && pluginSettings.stopforumspamApiKey) {
+		data.links.push({
+			id: 'spamBeGoneReportUserBtn',
+			route: 'report-user',
+			icon: 'fa-flag',
+			name: '[[spam-be-gone:report-user]]',
+			visibility: {
+				self: false,
+				other: false,
+				moderator: false,
+				globalMod: true,
+				admin: true
+			}
+		});
+	}
+	next(null, data);
+};
+
 Plugin.onPostFlagged = function (data) {
 	var flagObj = data.flag;
 
@@ -238,10 +364,10 @@ Plugin.onPostFlagged = function (data) {
 	if (akismet && pluginSettings.akismetFlagReporting && parseInt(flagObj.reporter.reputation, 10) >= parseInt(pluginSettings.akismetFlagReporting, 10)) {
 		async.parallel({
 			userData: function (next) {
-				user.getUserFields(flagObj.target.uid, ['username', 'email'], next);
+				User.getUserFields(flagObj.target.uid, ['username', 'email'], next);
 			},
 			permalink: function (next) {
-				topics.getTopicField(flagObj.target.tid, 'slug', next);
+				Topics.getTopicField(flagObj.target.tid, 'slug', next);
 			},
 			ip: function (next) {
 				db.getSortedSetRevRange('uid:' + flagObj.target.uid + ':ip', 0, 1, next);
@@ -297,7 +423,6 @@ Plugin._honeypotCheck = function (req, res, userData, next) {
 
 Plugin._recaptchaCheck = function (req, res, userData, next) {
 	if (recaptchaArgs && req && req.ip && req.body) {
-
 		simpleRecaptcha(
 			pluginSettings.recaptchaPrivateKey,
 			req.ip,
@@ -317,6 +442,7 @@ Plugin._recaptchaCheck = function (req, res, userData, next) {
 	}
 };
 
+
 Plugin.admin = {
 	menu: function (custom_header, callback) {
 		custom_header.plugins.push({
@@ -324,7 +450,6 @@ Plugin.admin = {
 			"icon": pluginData.faIcon,
 			"name": pluginData.name
 		});
-
 		callback(null, custom_header);
 	}
 };

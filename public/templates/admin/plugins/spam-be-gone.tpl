@@ -72,14 +72,29 @@
               </div>
               <p class="help-block">Keep your private key private</p>
 
+              <hr />
+
+              <div class="checkbox">
+                <label>
+                  <input data-toggle-target="#stopforumspamApiKey" type="checkbox" id="stopforumspamEnabled" name="stopforumspamEnabled"/> Enable StopForumSpam
+                </label>
+              </div>
+              <p class="help-block">To report a user you need an API key, get yours from <a target="_blank" href="https://www.stopforumspam.com/keys">stopforumspam.com/keys</a></p>
+              <div class="form-group" style="width:45%;">
+                <label for="stopforumspamApiKey">StopForumSpam API Key</label>
+                <input placeholder="API key here" type="text" class="stopforumspamApiKey form-control" id="stopforumspamApiKey" name="stopforumspamApiKey"/>
+              </div>
             </div>
           </div>
+
           <hr/>
+
           <button class="btn btn-lg btn-primary" id="save" type="button">Save</button>
 
           <p class="help-block">
             This plugin uses
             <a target="_blank" href="https://github.com/julianlam/project-honeypot">project-honeypot</a>,
+            <a target="_blank" href="https://github.com/deltreey/stopforumspam">stopforumspam</a>,
             <a target="_blank" href="https://github.com/oozcitak/akismet-js">akismet-js</a>,
             and <a target="_blank" href="https://github.com/zeMirco/simple-recaptcha">simple-recaptcha</a>
 
@@ -92,60 +107,60 @@
 
 
       <script type="text/javascript">
-      require(['settings'], function(Settings) {
-        var nbbId = '{nbbId}',
-        klass = nbbId + '-settings',
-        wrapper = $( '.' + klass );
+          require(['settings'], function(Settings) {
+            var nbbId = '{nbbId}',
+            klass = nbbId + '-settings',
+            wrapper = $( '.' + klass );
 
-        function onChange (e) {
-          var target = $(e.target);
-          var input = wrapper.find(target.attr('data-toggle-target'));
-          if (target.is(':checked')) {
-            input.prop('disabled', false);
-          } else {
-            input.prop('disabled', true);
-          }
-        }
-
-        wrapper.find('input[type="checkbox"]').on('change', onChange);
-
-        Settings.load(nbbId, wrapper, function() {
-          wrapper.find('input[type="checkbox"]').each(function() {
-            onChange({target: this});
-          });
-        });
-
-        wrapper.find('#save').on('click', function(e) {
-          e.preventDefault();
-          wrapper.find('.form-group').removeClass('has-error');
-
-          var invalidSelector = '';
-          var invalidCount = 0;
-          wrapper.find('input[type="checkbox"]').each(function(i, checkbox) {
-            checkbox = $(checkbox);
-            if (checkbox.is(':checked') && !wrapper.find(checkbox.attr('data-toggle-target')).val()) {
-              invalidSelector += (!invalidCount++ ? '' : ', ') + checkbox.attr('data-toggle-target');
+            function onChange (e) {
+              var target = $(e.target);
+              var input = wrapper.find(target.attr('data-toggle-target'));
+              if (target.is(':checked')) {
+                input.prop('disabled', false);
+              } else {
+                input.prop('disabled', true);
+              }
             }
-          });
 
-          if (invalidSelector) {
-            wrapper.find(invalidSelector).each(function(i, el) {
-              el = $(el);
-              el.parents('.form-group').addClass('has-error');
-            });
-          } else {
-            Settings.save(nbbId, wrapper, function() {
-              app.alert({
-                type: 'success',
-                alert_id: nbbId,
-                title: 'Reload Required',
-                message: 'Please reload your NodeBB to have your changes take effect',
-                clickfn: function() {
-                  socket.emit('admin.reload');
-                }
+            wrapper.find('input[type="checkbox"]').on('change', onChange);
+
+            Settings.load(nbbId, wrapper, function() {
+              wrapper.find('input[type="checkbox"]').each(function() {
+                onChange({target: this});
               });
             });
-          }
-        });
-      });
+
+            wrapper.find('#save').on('click', function(e) {
+              e.preventDefault();
+              wrapper.find('.form-group').removeClass('has-error');
+
+              var invalidSelector = '';
+              var invalidCount = 0;
+              wrapper.find('input[type="checkbox"]').each(function(i, checkbox) {
+                checkbox = $(checkbox);
+                if (checkbox.is(':checked') && !wrapper.find(checkbox.attr('data-toggle-target')).val()) {
+                  invalidSelector += (!invalidCount++ ? '' : ', ') + checkbox.attr('data-toggle-target');
+                }
+              });
+
+              if (invalidSelector) {
+                wrapper.find(invalidSelector).each(function(i, el) {
+                  el = $(el);
+                  el.parents('.form-group').addClass('has-error');
+                });
+              } else {
+                Settings.save(nbbId, wrapper, function() {
+                  app.alert({
+                    type: 'success',
+                    alert_id: nbbId,
+                    title: 'Reload Required',
+                    message: 'Please reload your NodeBB to have your changes take effect',
+                    clickfn: function() {
+                      socket.emit('admin.reload');
+                    }
+                  });
+                });
+              }
+            });
+          });
       </script>

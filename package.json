@@ -1,7 +1,7 @@
 {
   "name": "nodebb-plugin-spam-be-gone",
-  "version": "0.5.5",
-  "description": "anti spam using both Akismet.com and StopForumSpam.com",
+  "version": "0.6.0",
+  "description": "anti spam using both Google Recaptcha, Akismet.com, StopForumSpam.com & ProjectHoneyPot.com",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,8 +14,11 @@
     "nodebb",
     "plugin",
     "spam",
+    "recaptcha",
+    "stopforumspam",
     "akismet",
     "honeypot",
+    "projecthoneypot",
     "antispam"
   ],
   "author": {
@@ -28,10 +31,11 @@
   },
   "dependencies": {
     "akismet": "^1.0.0",
+    "project-honeypot": "~0.0.0",
     "simple-recaptcha-new": "^1.1.1",
-    "project-honeypot": "~0.0.0"
+    "stopforumspam": "^1.0.0"
   },
   "nbbpm": {
-    "compatibility": "^1.5.1"
+    "compatibility": "^1.11.2"
   }
 }

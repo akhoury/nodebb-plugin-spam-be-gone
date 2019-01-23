@@ -1,0 +1,9 @@
+{
+  "report-user": "Report spammer",
+  "something-went-wrong": "Something went wrong",
+  "not-allowed": "You are not allowed to perform this action",
+  "cant-report-admin": "You can't report an admin as spammer",
+  "user-reported": "User reported!",
+  "sfs-not-enabled": "Stop Forum Spam is not enabled",
+  "sfs-api-key-not-set": "Stop Forum Spam API Key is not set, get one from stopforumspam.com/keys"
+}
