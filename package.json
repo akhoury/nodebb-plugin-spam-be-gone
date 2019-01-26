@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-spam-be-gone",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "anti spam using both Google Recaptcha, Akismet.com, StopForumSpam.com & ProjectHoneyPot.com",
   "main": "index.js",
   "scripts": {

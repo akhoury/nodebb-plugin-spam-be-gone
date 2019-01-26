@@ -1,6 +1,6 @@
 
 $(function() {
-	var nbbId = 'spam-be-gone';
+	var pluginName = 'spam-be-gone';
 	var readyTimeoutId = null;
 
 	function onRecaptachaArgsReady (callback) {
@@ -42,7 +42,7 @@ $(function() {
 	}
 
 	function reportUser (username) {
-		return $.post('/api/user/' + username + '/' + nbbId + '/report')
+		return $.post('/api/user/' + username + '/' + pluginName + '/report')
 			.then(function () {
 				app.alertSuccess('User reported!');
 			})
