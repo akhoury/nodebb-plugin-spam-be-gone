@@ -14,8 +14,8 @@ $(function() {
 
 	function onRegisterPage () {
 		onRecaptachaArgsReady(function () {
-			if (! $('script[src*="www.google.com/recaptcha/api.js"]').length) {
-				injectScript('//www.google.com/recaptcha/api.js?onload=__nodebbSpamBeGoneCreateCaptcha__&render=explicit&hl=' + (plugin[pluginName].recaptchaArgs.options.hl || 'en'));
+			if (! $('script[src*="www.recaptcha.net/recaptcha/api.js"]').length) {
+				injectScript('//www.recaptcha.net/recaptcha/api.js?onload=__nodebbSpamBeGoneCreateCaptcha__&render=explicit&hl=' + (plugin[pluginName].recaptchaArgs.options.hl || 'en'));
 			}
 		});
 	}
