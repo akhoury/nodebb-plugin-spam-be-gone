@@ -16,6 +16,8 @@ $(function() {
 		onRecaptachaArgsReady(function () {
 			if (! $('script[src*="www.recaptcha.net/recaptcha/api.js"]').length) {
 				injectScript('//www.recaptcha.net/recaptcha/api.js?onload=__nodebbSpamBeGoneCreateCaptcha__&render=explicit&hl=' + (plugin[pluginName].recaptchaArgs.options.hl || 'en'));
+			} else if (grecaptcha) {
+				window.__nodebbSpamBeGoneCreateCaptcha__();
 			}
 		});
 	}
