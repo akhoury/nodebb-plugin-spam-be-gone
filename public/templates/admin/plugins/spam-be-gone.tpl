@@ -1,10 +1,10 @@
 <h1><i class="fa {faIcon}"></i> {name}</h1>
 <style>
-   .{nbbId}-settings .checkbox>label {
-   font-size: 24px;
+   .{nbbId}-settings .checkbox>label.section-title {
+    font-size: 24px;
    }
    .{nbbId}-settings .checkbox>label>input[data-toggle-target] {
-   margin-bottom: 0;
+    margin-bottom: 0;
    }
 </style>
 <form role="form" class="{nbbId}-settings">
@@ -12,7 +12,7 @@
       <div class="row">
          <div class="col-sm-12">
             <div class="checkbox">
-               <label>
+               <label class="section-title">
                <input data-toggle-target="#akismetApiKey,#akismetMinReputationHam,#akismetFlagReporting" type="checkbox" id="akismetEnabled" name="akismetEnabled"/>
                Enable Akismet
                </label>
@@ -36,7 +36,7 @@
             <p class="help-block">Allow users with minimum reputation of X to submit posts to Akismet as spam via flagging (leave blank to disable)</p>
             <hr />
             <div class="checkbox">
-               <label>
+               <label class="section-title">
                <input data-toggle-target="#honeypotApiKey" type="checkbox" id="honeypotEnabled" name="honeypotEnabled"/> Enable Honeypot
                </label>
             </div>
@@ -49,8 +49,8 @@
             </div>
             <hr />
             <div class="checkbox">
-               <label>
-               <input data-toggle-target="#recaptchaPublicKey,#recaptchaPrivateKey" type="checkbox" id="recaptchaEnabled" name="recaptchaEnabled"/> Enable Re-Captcha
+               <label class="section-title">
+               <input data-toggle-target="#recaptchaPublicKey,#recaptchaPrivateKey,#loginRecaptchaEnabled" type="checkbox" id="recaptchaEnabled" name="recaptchaEnabled"/> Enable Re-Captcha
                </label>
             </div>
             <p class="help-block">To check every user registration. You need a private and a public key, get yours from
@@ -69,9 +69,15 @@
             <p class="help-block">
                Keep your private key private
             </p>
-            <hr />
             <div class="checkbox">
                <label>
+               <input type="checkbox" id="loginRecaptchaEnabled" name="loginRecaptchaEnabled"/>
+                <small>Enable Re-Captcha on login page as well</small>
+               </label>
+            </div>
+            <hr />
+            <div class="checkbox">
+               <label class="section-title">
                <input data-toggle-target="#stopforumspamApiKey" type="checkbox" id="stopforumspamEnabled" name="stopforumspamEnabled"/> Enable StopForumSpam
                </label>
             </div>
@@ -114,10 +120,10 @@
        }
      }
 
-     wrapper.find('input[type="checkbox"]').on('change', onChange);
+     wrapper.find('input[type="checkbox"].section-title').on('change', onChange);
 
      Settings.load(nbbId, wrapper, function() {
-       wrapper.find('input[type="checkbox"]').each(function() {
+       wrapper.find('input[type="checkbox"].section-title').each(function() {
          onChange({target: this});
        });
      });
@@ -128,7 +134,7 @@
 
        var invalidSelector = '';
        var invalidCount = 0;
-       wrapper.find('input[type="checkbox"]').each(function(i, checkbox) {
+       wrapper.find('input[type="checkbox"].section-title').each(function(i, checkbox) {
          checkbox = $(checkbox);
          if (checkbox.is(':checked') && !wrapper.find(checkbox.attr('data-toggle-target')).val()) {
            invalidSelector += (!invalidCount++ ? '' : ', ') + checkbox.attr('data-toggle-target');

@@ -12,14 +12,20 @@ $(function() {
 		readyTimeoutId = setTimeout(function () { onRecaptachaArgsReady(callback); }, 350);
 	}
 
+	function ensureRecaptchaThenCreate () {
+		if (! $('script[src*="www.recaptcha.net/recaptcha/api.js"]').length) {
+			injectScript('//www.recaptcha.net/recaptcha/api.js?onload=__nodebbSpamBeGoneCreateCaptcha__&render=explicit&hl=' + (plugin[pluginName].recaptchaArgs.options.hl || 'en'));
+		} else if (grecaptcha) {
+			window.__nodebbSpamBeGoneCreateCaptcha__();
+		}
+	}
+
 	function onRegisterPage () {
-		onRecaptachaArgsReady(function () {
-			if (! $('script[src*="www.recaptcha.net/recaptcha/api.js"]').length) {
-				injectScript('//www.recaptcha.net/recaptcha/api.js?onload=__nodebbSpamBeGoneCreateCaptcha__&render=explicit&hl=' + (plugin[pluginName].recaptchaArgs.options.hl || 'en'));
-			} else if (grecaptcha) {
-				window.__nodebbSpamBeGoneCreateCaptcha__();
-			}
-		});
+		onRecaptachaArgsReady(ensureRecaptchaThenCreate);
+	}
+
+	function onLoginPage () {
+		onRecaptachaArgsReady(ensureRecaptchaThenCreate);
 	}
 
 	function onAccountProfilePage (data) {
@@ -86,6 +92,9 @@ $(function() {
 		switch (data.tpl_url) {
 			case 'register':
 				onRegisterPage(data);
+				break;
+			case 'login':
+				onLoginPage(data);
 				break;
 			case 'account/profile':
 				onAccountProfilePage(data);

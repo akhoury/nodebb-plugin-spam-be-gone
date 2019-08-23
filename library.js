@@ -73,6 +73,7 @@ Plugin.load = function (params, callback) {
 			if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey) {
 
 				recaptchaArgs = {
+					addLoginRecaptcha: settings.loginRecaptchaEnabled === 'on',
 					publicKey: settings.recaptchaPublicKey,
 					targetId: pluginData.nbbId + '-recaptcha-target',
 					options: {
@@ -165,10 +166,14 @@ Plugin.addCaptcha = function (data, callback) {
 			'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'+ '</script>',
 			styleName: pluginData.nbbId
 		};
-		if (data.templateData.regFormEntry && Array.isArray(data.templateData.regFormEntry)) {
-			data.templateData.regFormEntry.push(captcha);
-		} else {
-			data.templateData.captcha = captcha;
+		if (data.templateData) {
+			if (data.templateData.regFormEntry && Array.isArray(data.templateData.regFormEntry)) {
+				data.templateData.regFormEntry.push(captcha);
+			} else if (recaptchaArgs.addLoginRecaptcha && data.templateData.loginFormEntry && Array.isArray(data.templateData.loginFormEntry)) {
+				data.templateData.loginFormEntry.push(captcha);
+			} else {
+				data.templateData.captcha = captcha;
+			}
 		}
 	}
 	callback(null, data);
@@ -280,6 +285,16 @@ Plugin.checkRegister = function (data, callback) {
 		function (next) {
 			Plugin._honeypotCheck(data.req, data.res, data.userData, next);
 		},
+		function (next) {
+			Plugin._recaptchaCheck(data.req, data.res, data.userData, next);
+		}
+	], function (err) {
+		callback(err, data);
+	});
+};
+
+Plugin.checkLogin = function (data, callback) {
+	async.parallel([
 		function (next) {
 			Plugin._recaptchaCheck(data.req, data.res, data.userData, next);
 		}

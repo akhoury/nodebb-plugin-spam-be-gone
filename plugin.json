@@ -25,7 +25,9 @@
   "hooks": [
     {"hook": "static:app.load", "method": "load"},
     {"hook": "filter:admin.header.build", "method": "admin.menu"},
+    {"hook": "filter:login.build", "method": "addCaptcha", "priority": 5},
     {"hook": "filter:register.build", "method": "addCaptcha", "priority": 5},
+    {"hook": "filter:login.check", "method": "checkLogin", "priority": 5},
     {"hook": "filter:register.check", "method": "checkRegister", "priority": 5},
     {"hook": "filter:user.profileMenu", "method": "userProfileMenu", "priority": 5},
     {"hook": "filter:user.getRegistrationQueue", "method": "getRegistrationQueue", "priority": 5},
