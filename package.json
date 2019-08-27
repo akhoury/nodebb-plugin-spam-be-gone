@@ -33,7 +33,7 @@
     "akismet": "^1.0.0",
     "project-honeypot": "~0.0.0",
     "simple-recaptcha-new": "^1.1.1",
-    "stopforumspam": "^1.0.0"
+    "stopforumspam": "^1.1.0"
   },
   "nbbpm": {
     "compatibility": "^1.11.2"
