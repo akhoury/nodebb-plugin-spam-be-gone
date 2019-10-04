@@ -294,11 +294,10 @@ Plugin.checkRegister = function (data, callback) {
 };
 
 Plugin.checkLogin = function (data, callback) {
-	async.parallel([
-		function (next) {
-			Plugin._recaptchaCheck(data.req, data.res, data.userData, next);
-		}
-	], function (err) {
+	if (!recaptchaArgs.addLoginRecaptcha) {
+		return setImmediate(callback, null, data);
+	}
+	Plugin._recaptchaCheck(data.req, data.res, data.userData, function (err) {
 		callback(err, data);
 	});
 };
