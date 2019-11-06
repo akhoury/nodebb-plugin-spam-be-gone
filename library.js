@@ -294,7 +294,7 @@ Plugin.checkRegister = function (data, callback) {
 };
 
 Plugin.checkLogin = function (data, callback) {
-	if (!recaptchaArgs.addLoginRecaptcha) {
+	if (!recaptchaArgs || !recaptchaArgs.addLoginRecaptcha) {
 		return setImmediate(callback, null, data);
 	}
 	Plugin._recaptchaCheck(data.req, data.res, data.userData, function (err) {
