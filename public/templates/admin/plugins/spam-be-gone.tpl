@@ -148,54 +148,54 @@
         wrapper = $( '.' + klass );
 
         function onChange (e) {
-        var target = $(e.target);
-        var input = wrapper.find(target.attr('data-toggle-target'));
-        if (target.is(':checked')) {
-            input.prop('disabled', false);
-        } else {
-            input.prop('disabled', true);
-        }
+            var target = $(e.target);
+            var input = wrapper.find(target.attr('data-toggle-target'));
+            if (target.is(':checked')) {
+                input.prop('disabled', false);
+            } else {
+                input.prop('disabled', true);
+            }
         }
 
         wrapper.find('input[type="checkbox"].section-title').on('change', onChange);
 
         Settings.load(nbbId, wrapper, function() {
-        wrapper.find('input[type="checkbox"].section-title').each(function() {
-            onChange({target: this});
-        });
+            wrapper.find('input[type="checkbox"].section-title').each(function() {
+                onChange({target: this});
+            });
         });
 
         wrapper.find('#save').on('click', function(e) {
-        e.preventDefault();
-        wrapper.find('.form-group').removeClass('has-error');
+            e.preventDefault();
+            wrapper.find('.form-group').removeClass('has-error');
 
-        var invalidSelector = '';
-        var invalidCount = 0;
-        wrapper.find('input[type="checkbox"].section-title').each(function(i, checkbox) {
-            checkbox = $(checkbox);
-            if (checkbox.is(':checked') && !wrapper.find(checkbox.attr('data-toggle-target')).val()) {
-            invalidSelector += (!invalidCount++ ? '' : ', ') + checkbox.attr('data-toggle-target');
-            }
-        });
-
-        if (invalidSelector) {
-            wrapper.find(invalidSelector).each(function(i, el) {
-            el = $(el);
-            el.parents('.form-group').addClass('has-error');
-            });
-        } else {
-            Settings.save(nbbId, wrapper, function() {
-            app.alert({
-                type: 'success',
-                alert_id: nbbId,
-                title: 'Reload Required',
-                message: 'Please reload your NodeBB to have your changes take effect',
-                clickfn: function() {
-                socket.emit('admin.reload');
+            var invalidSelector = '';
+            var invalidCount = 0;
+            wrapper.find('input[type="checkbox"].section-title').each(function(i, checkbox) {
+                checkbox = $(checkbox);
+                if (checkbox.is(':checked') && !wrapper.find(checkbox.attr('data-toggle-target')).val()) {
+                    invalidSelector += (!invalidCount++ ? '' : ', ') + checkbox.attr('data-toggle-target');
                 }
             });
-            });
-        }
+
+            if (invalidSelector) {
+                wrapper.find(invalidSelector).each(function(i, el) {
+                    el = $(el);
+                    el.parents('.form-group').addClass('has-error');
+                });
+            } else {
+                Settings.save(nbbId, wrapper, function() {
+                    app.alert({
+                        type: 'success',
+                        alert_id: nbbId,
+                        title: 'Reload Required',
+                        message: 'Please reload your NodeBB to have your changes take effect',
+                        clickfn: function() {
+                        socket.emit('admin.reload');
+                        }
+                    });
+                });
+            }
         });
     });
 </script>
