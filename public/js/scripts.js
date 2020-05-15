@@ -115,12 +115,12 @@ window.__nodebbSpamBeGoneCreateCaptcha__ = function () {
 		{
 			theme: args.options.theme,
 			sitekey: args.publicKey,
-			callback: function() {
+			callback: function () {
 				var error = utils.param('error');
 				if (error) {
 					app.alertError(error);
 				}
-			}
+			},
 		}
 	);
 };
