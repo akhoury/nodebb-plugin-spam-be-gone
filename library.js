@@ -1,8 +1,8 @@
 'use strict';
 
-
 var Honeypot = require('project-honeypot');
 var simpleRecaptcha = require('simple-recaptcha-new');
+var async = require('async');
 var stopforumspam = require('stopforumspam');
 var pluginData = require('./plugin.json');
 var winston = require.main.require('winston');
@@ -48,10 +48,10 @@ Plugin.load = function (params, callback) {
 			if (settings.akismetApiKey) {
 				akismet = require('akismet').client({
 					blog: nconf.get('url'),
-					apiKey: settings.akismetApiKey
+					apiKey: settings.akismetApiKey,
 				});
 				akismet.verifyKey(function (err, verified) {
-					if (!verified) {
+					if (err || !verified) {
 						winston.error('[plugins/' + pluginData.nbbId + '] Unable to verify Akismet API key.');
 						akismet = null;
 					}
@@ -71,19 +71,18 @@ Plugin.load = function (params, callback) {
 
 		if (settings.recaptchaEnabled === 'on') {
 			if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey) {
-
 				recaptchaArgs = {
 					addLoginRecaptcha: settings.loginRecaptchaEnabled === 'on',
 					publicKey: settings.recaptchaPublicKey,
 					targetId: pluginData.nbbId + '-recaptcha-target',
 					options: {
 						// theme: settings.recaptchaTheme || 'clean',
-						//todo: switch to custom theme, issue#9
+						// todo: switch to custom theme, issue#9
 						theme: 'clean',
 
 						hl: (Meta.config.defaultLang || 'en').toLowerCase(),
-						tabindex: settings.recaptchaTabindex || 0
-					}
+						tabindex: settings.recaptchaTabindex || 0,
+					},
 				};
 			}
 		}
@@ -163,8 +162,8 @@ Plugin.addCaptcha = function (data, callback) {
 			'<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n' +
 			'window.plugin = window.plugin || {};\n\t\t\t' +
 			'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'	+
-			'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'+ '</script>',
-			styleName: pluginData.nbbId
+			'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n</script>',
+			styleName: pluginData.nbbId,
 		};
 		if (data.templateData) {
 			if (data.templateData.regFormEntry && Array.isArray(data.templateData.regFormEntry)) {
@@ -197,7 +196,7 @@ Plugin.onPostEdit = function(data, callback) {
 	], callback);
 };
 
-Plugin.onTopicEdit = function(data, callback) {
+Plugin.onTopicEdit = function (data, callback) {
 	Plugin.checkReply({
 		title: data.topic.title || '',
 		uid: data.topic.uid,
@@ -276,7 +275,7 @@ Plugin.checkReply = function (data, options, callback) {
 
 			winston.verbose('[plugins/' + pluginData.nbbId + '] Post "' + akismetData.comment_content + '" by uid: ' + data.uid + ' username: ' + userData.username + '@' + data.req.ip + ' was flagged as spam and rejected.');
 			next(new Error('Post content was flagged as spam by Akismet.com'));
-		}
+		},
 	], callback);
 };
 
@@ -287,7 +286,7 @@ Plugin.checkRegister = function (data, callback) {
 		},
 		function (next) {
 			Plugin._recaptchaCheck(data.req, data.res, data.userData, next);
-		}
+		},
 	], function (err) {
 		callback(err, data);
 	});
@@ -414,20 +413,19 @@ Plugin._honeypotCheck = function (req, res, userData, next) {
 			if (err) {
 				winston.error(err);
 				next(null, userData);
-			} else {
-				if (results && results.found && results.type) {
-					if (results.type.spammer || results.type.suspicious) {
-						var message = userData.username + ' | ' + userData.email + ' was detected as ' + (results.type.spammer ? 'spammer' : 'suspicious');
+			} else if (results && results.found && results.type) {
+				if (results.type.spammer || results.type.suspicious) {
+					var message = userData.username + ' | ' + userData.email + ' was detected as ' + (results.type.spammer ? 'spammer' : 'suspicious');
 
-						winston.warn('[plugins/' + pluginData.nbbId + '] ' + message + ' and was denied registration.');
-						next(new Error(message), userData);
-					} else {
-						next(null, userData);
-					}
+					winston.warn('[plugins/' + pluginData.nbbId + '] ' + message + ' and was denied registration.');
+					next(new Error(message), userData);
 				} else {
 					winston.verbose('[plugins/' + pluginData.nbbId + '] username:' + userData.username + ' ip:' + req.ip + ' was not found in Honeypot database');
 					next(null, userData);
 				}
+			} else {
+				winston.warn('[plugins/' + pluginData.nbbId + '] username:' + userData.username + ' ip:' + req.ip + ' was not found in Honeypot database');
+				next(null, userData);
 			}
 		});
 	} else {
@@ -460,10 +458,10 @@ Plugin._recaptchaCheck = function (req, res, userData, next) {
 Plugin.admin = {
 	menu: function (custom_header, callback) {
 		custom_header.plugins.push({
-			"route": '/plugins/' + pluginData.nbbId,
-			"icon": pluginData.faIcon,
-			"name": pluginData.name
+			route: '/plugins/' + pluginData.nbbId,
+			icon: pluginData.faIcon,
+			name: pluginData.name,
 		});
 		callback(null, custom_header);
-	}
+	},
 };
