@@ -125,3 +125,9 @@ window.__nodebbSpamBeGoneCreateCaptcha__ = function () {
 	);
 };
 
+$(window).on('action:script.load', function (evt, data) {
+	// Inject register.tpl client-side script
+	if (data.tpl_url === 'register') {
+		data.scripts.push('spam-be-gone/register');
+	}
+});

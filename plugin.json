@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "id": "nodebb-plugin-spam-be-gone",
   "name": "Spam Be Gone",
   "description": "anti spam using both Akismet.com, StopForumSpam.com and Re-Captcha",
@@ -38,4 +39,33 @@
     {"hook": "action:flags.create", "method": "onPostFlagged", "priority": 5}
   ],
   "faIcon": "fa-shield"
+=======
+	"id": "nodebb-plugin-spam-be-gone",
+	"name": "Spam Be Gone",
+	"description": "anti spam using both Akismet.com, StopForumSpam.com and Re-Captcha",
+	"url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone",
+	"library": "./library.js",
+	"templates": "templates",
+	"scripts": [
+		"public/js/scripts.js",
+		"public/js/register.js"
+	],
+	"less": [
+		"public/less/styles.less"
+	],
+    "hooks": [
+        {"hook": "static:app.load", "method": "load"},
+        {"hook": "filter:admin.header.build", "method": "admin.menu"},
+        {"hook": "filter:register.build", "method": "addCaptcha", "priority": 5},
+        {"hook": "filter:register.check", "method": "checkRegister", "priority": 5},
+        {"hook": "filter:topic.post", "method": "checkReply", "priority": 5},
+        {"hook": "filter:topic.reply", "method": "checkReply", "priority": 5},
+        {"hook": "filter:topic.edit", "method": "onTopicEdit"},
+        {"hook": "filter:post.edit", "method": "onPostEdit"},
+		{"hook": "action:post.flag", "method": "onPostFlagged", "priority": 5},
+		{ "hook": "filter:scripts.get", "method": "injectScript" },
+		{ "hook": "filter:config.get", "method": "appendConfig" }
+    ],
+    "faIcon": "fa-shield"
+>>>>>>> feat: hCaptcha integration
 }

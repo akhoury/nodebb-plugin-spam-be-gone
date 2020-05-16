@@ -119,6 +119,28 @@
                         </div>
                     </div>
                 </div>
+                <div role="tabpanel" class="tab-pane" id="hCaptcha">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="checkbox">
+                                <label>
+                                  <input data-toggle-target="#hCaptchaSiteKey" type="checkbox" id="hCaptchaEnabled" name="hCaptchaEnabled"/> Enable hCaptcha
+                                </label>
+                            </div>
+                            <p class="help-block">To check every user registration. You need a private and a public key, get yours from <a target="_blank">https://dashboard.hcaptcha.com</a></p>
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <label for="hCaptchaSiteKey">hCaptcha Site Key</label>
+                                    <input type="text" class="form-control" id="hCaptchaSiteKey" name="hCaptchaSiteKey" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="hCaptchaSecretKey">hCaptcha Secret Key</label>
+                                    <input type="text" class="form-control" id="hCaptchaSecretKey" name="hCaptchaSecretKey" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </fieldset>
         </form>

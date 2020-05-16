@@ -2,6 +2,8 @@
 
 var Honeypot = require('project-honeypot');
 var simpleRecaptcha = require('simple-recaptcha-new');
+const hCaptcha = require('hcaptcha');
+
 var async = require('async');
 var stopforumspam = require('stopforumspam');
 var pluginData = require('./plugin.json');
@@ -153,6 +155,18 @@ Plugin.report = function (req, res) {
 	});
 };
 
+Plugin.appendConfig = async (data) => {
+	data['spam-be-gone'] = {};
+
+	if (pluginSettings.hCaptchaEnabled === 'on') {
+		data['spam-be-gone'].hCaptcha = {
+			key: pluginSettings.hCaptchaSiteKey,
+		};
+	}
+
+	return data;
+};
+
 Plugin.addCaptcha = function (data, callback) {
 	if (recaptchaArgs) {
 		var captcha = {
@@ -287,6 +301,9 @@ Plugin.checkRegister = function (data, callback) {
 		function (next) {
 			Plugin._recaptchaCheck(data.req, data.res, data.userData, next);
 		},
+		async () => {
+			await Plugin._hcaptchaCheck(data.userData);
+		},
 	], function (err) {
 		callback(err, data);
 	});
@@ -407,6 +424,11 @@ Plugin.onPostFlagged = function (data) {
 	}
 };
 
+Plugin.injectScript = async (scripts) => {
+	scripts.push('https://hcaptcha.com/1/api.js');
+	return scripts;
+};
+
 Plugin._honeypotCheck = function (req, res, userData, next) {
 	if (honeypot && req && req.ip) {
 		honeypot.query(req.ip, function (err, results) {
@@ -454,6 +476,12 @@ Plugin._recaptchaCheck = function (req, res, userData, next) {
 	}
 };
 
+Plugin._hcaptchaCheck = async (userData) => {
+	const response = await hCaptcha.verify(pluginSettings.hCaptchaSecretKey, userData['h-captcha-response']);
+	if (!response.success) {
+		throw new Error('Captcha not verified, are you a robot?');
+	}
+};
 
 Plugin.admin = {
 	menu: function (custom_header, callback) {
