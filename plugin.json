@@ -14,7 +14,8 @@
     "public/js/scripts.js"
   ],
   "scripts": [
-    "public/js/scripts.js"
+    "public/js/scripts.js",
+    "public/js/register.js"
   ],
   "templates": "public/templates",
   "languages": "public/languages",

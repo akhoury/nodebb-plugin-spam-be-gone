@@ -16,6 +16,7 @@
             <li role="presentation" class=""><a href="#honeypot" aria-controls="honeypot" role="tab" data-toggle="tab">Project Honeypot</a></li>
             <li role="presentation" class=""><a href="#recaptcha" aria-controls="recaptcha" role="tab" data-toggle="tab">Google reCAPTCHA</a></li>
             <li role="presentation" class=""><a href="#sfs" aria-controls="sfs" role="tab" data-toggle="tab">StopForumSpam</a></li>
+            <li role="presentation" class=""><a href="#hCaptcha" aria-controls="hCaptcha" role="tab" data-toggle="tab">hCaptcha</a></li>
         </ul>
 
         <form role="form" class="{nbbId}-settings">
@@ -123,7 +124,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="checkbox">
-                                <label>
+                                <label class="section-title">
                                   <input data-toggle-target="#hCaptchaSiteKey" type="checkbox" id="hCaptchaEnabled" name="hCaptchaEnabled"/> Enable hCaptcha
                                 </label>
                             </div>
