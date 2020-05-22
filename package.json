@@ -29,13 +29,36 @@
   "bugs": {
     "url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "dependencies": {
     "akismet": "^1.0.0",
+    "async": "^3.2.0",
+    "hcaptcha": "^0.0.1",
     "project-honeypot": "~0.0.0",
     "simple-recaptcha-new": "^1.1.1",
     "stopforumspam": "^1.1.0"
   },
   "nbbpm": {
     "compatibility": "^1.11.2"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-angular": "^8.3.4",
+    "eslint": "^7.0.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.2"
   }
 }

@@ -16,6 +16,7 @@
             <li role="presentation" class=""><a href="#honeypot" aria-controls="honeypot" role="tab" data-toggle="tab">Project Honeypot</a></li>
             <li role="presentation" class=""><a href="#recaptcha" aria-controls="recaptcha" role="tab" data-toggle="tab">Google reCAPTCHA</a></li>
             <li role="presentation" class=""><a href="#sfs" aria-controls="sfs" role="tab" data-toggle="tab">StopForumSpam</a></li>
+            <li role="presentation" class=""><a href="#hCaptcha" aria-controls="hCaptcha" role="tab" data-toggle="tab">hCaptcha</a></li>
         </ul>
 
         <form role="form" class="{nbbId}-settings">
@@ -119,6 +120,28 @@
                         </div>
                     </div>
                 </div>
+                <div role="tabpanel" class="tab-pane" id="hCaptcha">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="checkbox">
+                                <label class="section-title">
+                                  <input data-toggle-target="#hCaptchaSiteKey" type="checkbox" id="hCaptchaEnabled" name="hCaptchaEnabled"/> Enable hCaptcha
+                                </label>
+                            </div>
+                            <p class="help-block">To check every user registration. You need a private and a public key, get yours from <a target="_blank">https://dashboard.hcaptcha.com</a></p>
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <label for="hCaptchaSiteKey">hCaptcha Site Key</label>
+                                    <input type="text" class="form-control" id="hCaptchaSiteKey" name="hCaptchaSiteKey" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="hCaptchaSecretKey">hCaptcha Secret Key</label>
+                                    <input type="text" class="form-control" id="hCaptchaSecretKey" name="hCaptchaSecretKey" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </fieldset>
         </form>
@@ -129,7 +152,8 @@
             <a target="_blank" href="https://github.com/julianlam/project-honeypot">project-honeypot</a>,
             <a target="_blank" href="https://github.com/deltreey/stopforumspam">stopforumspam</a>,
             <a target="_blank" href="https://github.com/oozcitak/akismet-js">akismet-js</a>,
-            and <a target="_blank" href="https://github.com/zeMirco/simple-recaptcha">simple-recaptcha</a>
+            <a target="_blank" href="https://github.com/zeMirco/simple-recaptcha">simple-recaptcha</a>, and
+            <a target="_blank" href="https://github.com/vastus/node-hcaptcha#readme">hcaptcha</a>,
             <br/>
             File issues, pull requests or ideas at the
             <a target="_blank" href="https://github.com/akhoury/nodebb-plugin-spam-be-gone">github repo</a>

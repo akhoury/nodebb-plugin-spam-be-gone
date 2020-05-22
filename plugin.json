@@ -14,7 +14,8 @@
     "public/js/scripts.js"
   ],
   "scripts": [
-    "public/js/scripts.js"
+    "public/js/scripts.js",
+    "public/js/register.js"
   ],
   "templates": "public/templates",
   "languages": "public/languages",
@@ -35,7 +36,9 @@
     {"hook": "filter:topic.reply", "method": "onTopicReply", "priority": 5},
     {"hook": "filter:topic.edit", "method": "onTopicEdit"},
     {"hook": "filter:post.edit", "method": "onPostEdit"},
-    {"hook": "action:flags.create", "method": "onPostFlagged", "priority": 5}
+    {"hook": "action:flags.create", "method": "onPostFlagged", "priority": 5},
+	{ "hook": "filter:scripts.get", "method": "injectScript" },
+	{ "hook": "filter:config.get", "method": "appendConfig" }
   ],
   "faIcon": "fa-shield"
 }

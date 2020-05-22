@@ -1,13 +1,14 @@
 'use strict';
 
-
 var Honeypot = require('project-honeypot');
 var simpleRecaptcha = require('simple-recaptcha-new');
+const hCaptcha = require('hcaptcha');
+
+var async = require('async');
 var stopforumspam = require('stopforumspam');
 var pluginData = require('./plugin.json');
 var winston = require.main.require('winston');
 var nconf = require.main.require('nconf');
-var async = require.main.require('async');
 var Meta = require.main.require('./src/meta');
 var User = require.main.require('./src/user');
 var Topics = require.main.require('./src/topics');
@@ -26,7 +27,7 @@ Plugin.middleware = {};
 
 Plugin.middleware.isAdminOrGlobalMod = function (req, res, next) {
 	User.isAdminOrGlobalMod(req.uid, function (err, isAdminOrGlobalMod) {
-		if (isAdminOrGlobalMod) {
+		if (!err && isAdminOrGlobalMod) {
 			return next();
 		}
 		res.status(401).json({ message: '[[spam-be-gone:not-allowed]]' });
@@ -34,7 +35,6 @@ Plugin.middleware.isAdminOrGlobalMod = function (req, res, next) {
 };
 
 Plugin.load = function (params, callback) {
-
 	Meta.settings.get(pluginData.nbbId, function (err, settings) {
 		if (err) {
 			return callback(err);
@@ -48,10 +48,10 @@ Plugin.load = function (params, callback) {
 			if (settings.akismetApiKey) {
 				akismet = require('akismet').client({
 					blog: nconf.get('url'),
-					apiKey: settings.akismetApiKey
+					apiKey: settings.akismetApiKey,
 				});
 				akismet.verifyKey(function (err, verified) {
-					if (!verified) {
+					if (err || !verified) {
 						winston.error('[plugins/' + pluginData.nbbId + '] Unable to verify Akismet API key.');
 						akismet = null;
 					}
@@ -71,19 +71,18 @@ Plugin.load = function (params, callback) {
 
 		if (settings.recaptchaEnabled === 'on') {
 			if (settings.recaptchaPublicKey && settings.recaptchaPrivateKey) {
-
 				recaptchaArgs = {
 					addLoginRecaptcha: settings.loginRecaptchaEnabled === 'on',
 					publicKey: settings.recaptchaPublicKey,
 					targetId: pluginData.nbbId + '-recaptcha-target',
 					options: {
 						// theme: settings.recaptchaTheme || 'clean',
-						//todo: switch to custom theme, issue#9
+						// todo: switch to custom theme, issue#9
 						theme: 'clean',
 
 						hl: (Meta.config.defaultLang || 'en').toLowerCase(),
-						tabindex: settings.recaptchaTabindex || 0
-					}
+						tabindex: settings.recaptchaTabindex || 0,
+					},
 				};
 			}
 		}
@@ -112,7 +111,6 @@ Plugin.render = function (req, res) {
 };
 
 Plugin.report = function (req, res) {
-
 	if (!pluginSettings.stopforumspamEnabled) {
 		return res.status(400).send({ message: '[[spam-be-gone:sfs-not-enabled]]' });
 	}
@@ -127,18 +125,22 @@ Plugin.report = function (req, res) {
 		},
 		function (uid, next) {
 			async.parallel({
-				isAdmin: function(next) {
+				isAdmin: function (next) {
 					User.isAdministrator(uid, next);
 				},
-				fields: function(next) {
+				fields: function (next) {
 					User.getUserFields(uid, ['username', 'email', 'uid'], next);
 				},
 				ips: function (next) {
 					User.getIPs(uid, 4, next);
-				}
+				},
 			}, next);
-		}
+		},
 	], function (err, results) {
+		if (err) {
+			return res.status(400).json({ message: err.message || 'Something went wrong' });
+		}
+
 		if (results.isAdmin) {
 			return res.status(403).send({ message: '[[spam-be-gone:cant-report-admin]]' });
 		}
@@ -154,6 +156,18 @@ Plugin.report = function (req, res) {
 	});
 };
 
+Plugin.appendConfig = async (data) => {
+	data['spam-be-gone'] = {};
+
+	if (pluginSettings.hCaptchaEnabled === 'on') {
+		data['spam-be-gone'].hCaptcha = {
+			key: pluginSettings.hCaptchaSiteKey,
+		};
+	}
+
+	return data;
+};
+
 Plugin.addCaptcha = function (data, callback) {
 	if (recaptchaArgs) {
 		var captcha = {
@@ -163,8 +177,8 @@ Plugin.addCaptcha = function (data, callback) {
 			'<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n' +
 			'window.plugin = window.plugin || {};\n\t\t\t' +
 			'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'	+
-			'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n'+ '</script>',
-			styleName: pluginData.nbbId
+			'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n</script>',
+			styleName: pluginData.nbbId,
 		};
 		if (data.templateData) {
 			if (data.templateData.regFormEntry && Array.isArray(data.templateData.regFormEntry)) {
@@ -179,7 +193,7 @@ Plugin.addCaptcha = function (data, callback) {
 	callback(null, data);
 };
 
-Plugin.onPostEdit = function(data, callback) {
+Plugin.onPostEdit = function (data, callback) {
 	async.waterfall([
 		function (next) {
 			Topics.getTopicField(data.post.tid, 'cid', next);
@@ -190,30 +204,30 @@ Plugin.onPostEdit = function(data, callback) {
 				uid: data.post.uid,
 				cid: cid,
 				req: data.req,
-			}, {type: 'post'}, function (err) {
+			}, { type: 'post' }, function (err) {
 				next(err, data);
 			});
-		}
+		},
 	], callback);
 };
 
-Plugin.onTopicEdit = function(data, callback) {
+Plugin.onTopicEdit = function (data, callback) {
 	Plugin.checkReply({
 		title: data.topic.title || '',
 		uid: data.topic.uid,
 		cid: data.topic.cid,
-		req: data.req
-	}, {type: 'topic'}, function(err) {
+		req: data.req,
+	}, { type: 'topic' }, function (err) {
 		callback(err, data);
 	});
 };
 
-Plugin.onTopicPost = function(data, callback) {
-	Plugin.checkReply(data, {type: 'topic'}, callback);
+Plugin.onTopicPost = function (data, callback) {
+	Plugin.checkReply(data, { type: 'topic' }, callback);
 };
 
-Plugin.onTopicReply = function(data, callback) {
-	Plugin.checkReply(data, {type: 'post'}, callback);
+Plugin.onTopicReply = function (data, callback) {
+	Plugin.checkReply(data, { type: 'post' }, callback);
 };
 
 Plugin.checkReply = function (data, options, callback) {
@@ -232,15 +246,15 @@ Plugin.checkReply = function (data, options, callback) {
 	async.waterfall([
 		function (next) {
 			async.parallel({
-				isAdmin: function(next) {
+				isAdmin: function (next) {
 					User.isAdministrator(data.uid, next);
 				},
 				isModerator: function (next) {
 					User.isModerator(data.uid, data.cid, next);
 				},
-				userData: function(next) {
+				userData: function (next) {
 					User.getUserFields(data.uid, ['username', 'reputation', 'email'], next);
-				}
+				},
 			}, next);
 		},
 		function (results, next) {
@@ -249,7 +263,7 @@ Plugin.checkReply = function (data, options, callback) {
 				return callback(null, data);
 			}
 			akismetData = {
-				referrer: data.req.headers['referer'],
+				referrer: data.req.headers.referer,
 				user_ip: data.req.ip,
 				user_agent: data.req.headers['user-agent'],
 				permalink: nconf.get('url').replace(/\/$/, '') + data.req.path,
@@ -257,7 +271,7 @@ Plugin.checkReply = function (data, options, callback) {
 				comment_author: userData.username,
 				comment_author_email: userData.email,
 				// https://github.com/akhoury/nodebb-plugin-spam-be-gone/issues/54
-				comment_type: options.type === 'topic' ? 'forum-post' : 'comment'
+				comment_type: options.type === 'topic' ? 'forum-post' : 'comment',
 			};
 			akismet.checkSpam(akismetData, next);
 		},
@@ -276,7 +290,7 @@ Plugin.checkReply = function (data, options, callback) {
 
 			winston.verbose('[plugins/' + pluginData.nbbId + '] Post "' + akismetData.comment_content + '" by uid: ' + data.uid + ' username: ' + userData.username + '@' + data.req.ip + ' was flagged as spam and rejected.');
 			next(new Error('Post content was flagged as spam by Akismet.com'));
-		}
+		},
 	], callback);
 };
 
@@ -287,7 +301,10 @@ Plugin.checkRegister = function (data, callback) {
 		},
 		function (next) {
 			Plugin._recaptchaCheck(data.req, data.res, data.userData, next);
-		}
+		},
+		async () => {
+			await Plugin._hcaptchaCheck(data.userData);
+		},
 	], function (err) {
 		callback(err, data);
 	});
@@ -310,7 +327,7 @@ function augmentWitSpamData(user, callback) {
 		.then(function (body) {
 			// body === false, then just set the default non spam response, which stopforumspam node module doesn't return it's spam, but some template rely on it
 			if (!body) {
-				body = {success: 1, username: {frequency: 0, appears: 0}, email: {frequency: 0, appears: 0}, ip: {frequency: 0, appears: 0, asn: null}};
+				body = { success: 1, username: { frequency: 0, appears: 0 }, email: { frequency: 0, appears: 0 }, ip: { frequency: 0, appears: 0, asn: null } };
 			}
 			user.spamChecked = true;
 			user.spamData = body;
@@ -324,7 +341,7 @@ function augmentWitSpamData(user, callback) {
 					title: '[[spam-be-gone:report-user]]',
 					id: 'report-spam-user-' + user.username,
 					class: 'btn-warning report-spam-user',
-					icon: 'fa-flag'
+					icon: 'fa-flag',
 				});
 			}
 
@@ -360,8 +377,8 @@ Plugin.userProfileMenu = function (data, next) {
 				other: false,
 				moderator: false,
 				globalMod: true,
-				admin: true
-			}
+				admin: true,
+			},
 		});
 	}
 	next(null, data);
@@ -385,8 +402,12 @@ Plugin.onPostFlagged = function (data) {
 			},
 			ip: function (next) {
 				db.getSortedSetRevRange('uid:' + flagObj.target.uid + ':ip', 0, 1, next);
-			}
+			},
 		}, function (err, data) {
+			if (err) {
+				winston.error('Error reporting to Akismet', err);
+			}
+
 			// todo: we don't have access to the req here :/
 			var submitted = {
 				user_ip: data.ip ? data.ip[0] : '',
@@ -394,7 +415,7 @@ Plugin.onPostFlagged = function (data) {
 				comment_author: data.userData.username,
 				comment_author_email: data.userData.email,
 				comment_content: flagObj.target.content,
-				comment_type: 'forum-post'
+				comment_type: 'forum-post',
 			};
 
 			akismet.submitSpam(submitted, function (err) {
@@ -408,26 +429,29 @@ Plugin.onPostFlagged = function (data) {
 	}
 };
 
+Plugin.injectScript = async (scripts) => {
+	scripts.push('https://hcaptcha.com/1/api.js');
+	return scripts;
+};
+
 Plugin._honeypotCheck = function (req, res, userData, next) {
 	if (honeypot && req && req.ip) {
 		honeypot.query(req.ip, function (err, results) {
 			if (err) {
 				winston.error(err);
 				next(null, userData);
-			} else {
-				if (results && results.found && results.type) {
-					if (results.type.spammer || results.type.suspicious) {
-						var message = userData.username + ' | ' + userData.email + ' was detected as ' + (results.type.spammer ? 'spammer' : 'suspicious');
+			} else if (results && results.found && results.type) {
+				if (results.type.spammer || results.type.suspicious) {
+					var message = userData.username + ' | ' + userData.email + ' was detected as ' + (results.type.spammer ? 'spammer' : 'suspicious');
 
-						winston.warn('[plugins/' + pluginData.nbbId + '] ' + message + ' and was denied registration.');
-						next(new Error(message), userData);
-					} else {
-						next(null, userData);
-					}
+					winston.warn('[plugins/' + pluginData.nbbId + '] ' + message + ' and was denied registration.');
+					next(new Error(message), userData);
 				} else {
-					winston.verbose('[plugins/' + pluginData.nbbId + '] username:' + userData.username + ' ip:' + req.ip + ' was not found in Honeypot database');
 					next(null, userData);
 				}
+			} else {
+				winston.verbose('[plugins/' + pluginData.nbbId + '] username:' + userData.username + ' ip:' + req.ip + ' was not found in Honeypot database');
+				next(null, userData);
 			}
 		});
 	} else {
@@ -456,14 +480,20 @@ Plugin._recaptchaCheck = function (req, res, userData, next) {
 	}
 };
 
+Plugin._hcaptchaCheck = async (userData) => {
+	const response = await hCaptcha.verify(pluginSettings.hCaptchaSecretKey, userData['h-captcha-response']);
+	if (!response.success) {
+		throw new Error('Captcha not verified, are you a robot?');
+	}
+};
 
 Plugin.admin = {
 	menu: function (custom_header, callback) {
 		custom_header.plugins.push({
-			"route": '/plugins/' + pluginData.nbbId,
-			"icon": pluginData.faIcon,
-			"name": pluginData.name
+			route: '/plugins/' + pluginData.nbbId,
+			icon: pluginData.faIcon,
+			name: pluginData.name,
 		});
 		callback(null, custom_header);
-	}
+	},
 };
