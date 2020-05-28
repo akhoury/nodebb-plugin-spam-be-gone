@@ -11,7 +11,8 @@
     "public/less/styles.less"
   ],
   "acpScripts": [
-    "public/js/scripts.js"
+    "public/js/scripts.js",
+    "public/js/admin.js"
   ],
   "scripts": [
     "public/js/scripts.js",
