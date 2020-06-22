@@ -481,6 +481,10 @@ Plugin._recaptchaCheck = function (req, res, userData, next) {
 };
 
 Plugin._hcaptchaCheck = async (userData) => {
+	if (pluginSettings.hCaptchaEnabled !== 'on') {
+		return;
+	}
+
 	const response = await hCaptcha.verify(pluginSettings.hCaptchaSecretKey, userData['h-captcha-response']);
 	if (!response.success) {
 		throw new Error('Captcha not verified, are you a robot?');
