@@ -247,13 +247,13 @@ Plugin.checkReply = function (data, options, callback) {
 		function (next) {
 			async.parallel({
 				isAdmin: function (next) {
-					User.isAdministrator(data.uid, next);
+					User.isAdministrator(data.req.uid, next);
 				},
 				isModerator: function (next) {
-					User.isModerator(data.uid, data.cid, next);
+					User.isModerator(data.req.uid, data.cid, next);
 				},
 				userData: function (next) {
-					User.getUserFields(data.uid, ['username', 'reputation', 'email'], next);
+					User.getUserFields(data.req.uid, ['username', 'reputation', 'email'], next);
 				},
 			}, next);
 		},
@@ -288,7 +288,7 @@ Plugin.checkReply = function (data, options, callback) {
 				});
 			}
 
-			winston.verbose('[plugins/' + pluginData.nbbId + '] Post "' + akismetData.comment_content + '" by uid: ' + data.uid + ' username: ' + userData.username + '@' + data.req.ip + ' was flagged as spam and rejected.');
+			winston.verbose('[plugins/' + pluginData.nbbId + '] Post "' + akismetData.comment_content + '" by uid: ' + data.req.uid + ' username: ' + userData.username + '@' + data.req.ip + ' was flagged as spam and rejected.');
 			next(new Error('Post content was flagged as spam by Akismet.com'));
 		},
 	], callback);
