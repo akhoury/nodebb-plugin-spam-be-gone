@@ -208,14 +208,11 @@ Plugin.addCaptcha = function (data, callback) {
 		var captcha = {
 			label: 'Captcha',
 			html: '' +
-			'<div id="' + pluginData.nbbId + '-recaptcha-target"></div>' +
-			'<script id="' + pluginData.nbbId + '-recaptcha-script">\n\n' +
-			'window.plugin = window.plugin || {};\n\t\t\t' +
-			'plugin["' + pluginData.nbbId + '"] = window.plugin["' + pluginData.nbbId + '"] || {};\n\t\t\t'	+
-			'plugin["' + pluginData.nbbId + '"].recaptchaArgs = ' + JSON.stringify(recaptchaArgs) + ';\n</script>',
+			'<div id="' + pluginData.nbbId + '-recaptcha-target"></div>',
 			styleName: pluginData.nbbId,
 		};
 		if (data.templateData) {
+			data.templateData.recaptchaArgs = recaptchaArgs;
 			if (data.templateData.regFormEntry && Array.isArray(data.templateData.regFormEntry)) {
 				data.templateData.regFormEntry.push(captcha);
 			} else if (recaptchaArgs.addLoginRecaptcha && data.templateData.loginFormEntry && Array.isArray(data.templateData.loginFormEntry)) {

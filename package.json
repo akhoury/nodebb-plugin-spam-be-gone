@@ -31,8 +31,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+      "pre-commit": "npx lint-staged",
+      "commit-msg": "npx commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "lint-staged": {
@@ -56,7 +56,7 @@
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-angular": "^8.3.4",
     "eslint": "^7.0.0",
-    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.20.2",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.2"

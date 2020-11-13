@@ -4,33 +4,27 @@
 
 $(function () {
 	var pluginName = 'spam-be-gone';
-	var readyTimeoutId = null;
-
-	function onRecaptachaArgsReady(callback) {
-		if (window.plugin && plugin[pluginName] && plugin[pluginName].recaptchaArgs && $('#' + plugin[pluginName].recaptchaArgs.targetId).length) {
-			clearTimeout(readyTimeoutId);
-			return callback();
-		}
-		if (readyTimeoutId) {
-			clearTimeout(readyTimeoutId);
-		}
-		readyTimeoutId = setTimeout(function () { onRecaptachaArgsReady(callback); }, 350);
-	}
 
 	function ensureRecaptchaThenCreate() {
 		if (!$('script[src*="www.recaptcha.net/recaptcha/api.js"]').length) {
-			injectScript('//www.recaptcha.net/recaptcha/api.js?onload=__nodebbSpamBeGoneCreateCaptcha__&render=explicit&hl=' + (plugin[pluginName].recaptchaArgs.options.hl || 'en'));
+			injectScript('//www.recaptcha.net/recaptcha/api.js?onload=__nodebbSpamBeGoneCreateCaptcha__&render=explicit&hl=' +
+				(ajaxify.data.recaptchaArgs.options.hl || 'en')
+			);
 		} else if (grecaptcha) {
 			window.__nodebbSpamBeGoneCreateCaptcha__();
 		}
 	}
 
 	function onRegisterPage() {
-		onRecaptachaArgsReady(ensureRecaptchaThenCreate);
+		if (ajaxify.data.recaptchaArgs) {
+			ensureRecaptchaThenCreate();
+		}
 	}
 
 	function onLoginPage() {
-		onRecaptachaArgsReady(ensureRecaptchaThenCreate);
+		if (ajaxify.data.recaptchaArgs && ajaxify.data.recaptchaArgs.addLoginRecaptcha) {
+			onRecaptachaArgsReady(ensureRecaptchaThenCreate);
+		}
 	}
 
 	function onAccountProfilePage(data) {
@@ -115,7 +109,10 @@ $(function () {
 });
 
 window.__nodebbSpamBeGoneCreateCaptcha__ = function () {
-	var args = plugin['spam-be-gone'].recaptchaArgs;
+	var args = ajaxify.data.recaptchaArgs;
+	if (!args) {
+		return;
+	}
 
 	grecaptcha.render(
 		args.targetId,
