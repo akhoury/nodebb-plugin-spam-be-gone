@@ -38,7 +38,7 @@ $(function () {
 		$btn.off('click');
 		$btn.on('click', function (e) {
 			e.preventDefault();
-			reportUser(data.title);
+			reportUser('/api/user/' + ajaxify.data.userslug + '/' + pluginName + '/report');
 			var $parentBtn = $btn.parents('.account-fab').find('[data-toggle="dropdown"]');
 			if ($parentBtn.dropdown) {
 				$parentBtn.dropdown('toggle');
@@ -51,13 +51,14 @@ $(function () {
 		var $btn = $('button.report-spam-user');
 		$btn.on('click', function (e) {
 			e.preventDefault();
-			reportUser($btn.parents('[data-username]').attr('data-username'));
+			var username = $btn.parents('[data-username]').attr('data-username');
+			reportUser('/api/user/' + username + '/' + pluginName + '/report/queue');
 			return false;
 		});
 	}
 
-	function reportUser(username) {
-		return $.post('/api/user/' + username + '/' + pluginName + '/report')
+	function reportUser(url) {
+		return $.post(url)
 			.then(function () {
 				app.alertSuccess('User reported!');
 			})

@@ -34,6 +34,17 @@ Plugin.middleware.isAdminOrGlobalMod = function (req, res, next) {
 	});
 };
 
+Plugin.middleware.checkStopForumSpam = function (req, res, next) {
+	if (!pluginSettings.stopforumspamEnabled) {
+		return res.status(400).send({ message: '[[spam-be-gone:sfs-not-enabled]]' });
+	}
+
+	if (!pluginSettings.stopforumspamApiKey) {
+		return res.status(400).send({ message: '[[spam-be-gone:sfs-api-key-not-set]]' });
+	}
+	next();
+};
+
 Plugin.load = function (params, callback) {
 	Meta.settings.get(pluginData.nbbId, function (err, settings) {
 		if (err) {
@@ -101,7 +112,18 @@ Plugin.load = function (params, callback) {
 		params.router.get('/admin/plugins/' + pluginData.nbbId, params.middleware.admin.buildHeader, Plugin.render);
 		params.router.get('/api/admin/plugins/' + pluginData.nbbId, Plugin.render);
 
-		params.router.post('/api/user/:user/' + pluginData.nbbId + '/report', Plugin.middleware.isAdminOrGlobalMod, Plugin.report);
+		params.router.post(
+			'/api/user/:userslug/' + pluginData.nbbId + '/report',
+			Plugin.middleware.isAdminOrGlobalMod,
+			Plugin.middleware.checkStopForumSpam,
+			Plugin.report);
+
+		params.router.post(
+			'/api/user/:username/' + pluginData.nbbId + '/report/queue',
+			Plugin.middleware.isAdminOrGlobalMod,
+			Plugin.middleware.checkStopForumSpam,
+			Plugin.reportFromQueue);
+
 		callback();
 	});
 };
@@ -110,20 +132,16 @@ Plugin.render = function (req, res) {
 	res.render('admin/plugins/' + pluginData.nbbId, pluginData || {});
 };
 
+// report an existing user account
 Plugin.report = function (req, res) {
-	if (!pluginSettings.stopforumspamEnabled) {
-		return res.status(400).send({ message: '[[spam-be-gone:sfs-not-enabled]]' });
-	}
-
-	if (!pluginSettings.stopforumspamApiKey) {
-		return res.status(400).send({ message: '[[spam-be-gone:sfs-api-key-not-set]]' });
-	}
-
 	async.waterfall([
 		function (next) {
-			User.getUidByUserslug(req.params.user, next);
+			User.getUidByUserslug(req.params.userslug, next);
 		},
 		function (uid, next) {
+			if (!uid) {
+				return next(new Error('[[error:no-user]]'));
+			}
 			async.parallel({
 				isAdmin: function (next) {
 					User.isAdministrator(uid, next);
@@ -154,6 +172,23 @@ Plugin.report = function (req, res) {
 				return res.status(400).json({ message: err.message || 'Something went wrong' });
 			});
 	});
+};
+
+// report a user that is in the registration queue
+Plugin.reportFromQueue = async (req, res, next) => {
+	const data = await db.getObject('registration:queue:name:' + req.params.username);
+	if (!data) {
+		res.status(400).json({ message: '[[error:no-user]]' });
+	}
+	var data = { ip: data.ip, email: data.email, username: data.username };
+	stopforumspam.submit(data, 'Manual submission from user:' + req.uid + ' to user:' + data.username + ' via ' + pluginData.id)
+		.then(function () {
+			return res.status(200).json({ message: '[[spam-be-gone:user-reported]]' });
+		})
+		.catch(function (err) {
+			winston.error('[plugins/' + pluginData.nbbId + '][report-error] ' + err.message, data);
+			return res.status(400).json({ message: err.message || 'Something went wrong' });
+		});
 };
 
 Plugin.appendConfig = async (data) => {
