@@ -180,13 +180,13 @@ Plugin.reportFromQueue = async (req, res, next) => {
 	if (!data) {
 		res.status(400).json({ message: '[[error:no-user]]' });
 	}
-	var data = { ip: data.ip, email: data.email, username: data.username };
-	stopforumspam.submit(data, 'Manual submission from user:' + req.uid + ' to user:' + data.username + ' via ' + pluginData.id)
+	var submitData = { ip: data.ip, email: data.email, username: data.username };
+	stopforumspam.submit(submitData, 'Manual submission from user:' + req.uid + ' to user:' + data.username + ' via ' + pluginData.id)
 		.then(function () {
 			return res.status(200).json({ message: '[[spam-be-gone:user-reported]]' });
 		})
 		.catch(function (err) {
-			winston.error('[plugins/' + pluginData.nbbId + '][report-error] ' + err.message, data);
+			winston.error('[plugins/' + pluginData.nbbId + '][report-error] ' + err.message, submitData);
 			return res.status(400).json({ message: err.message || 'Something went wrong' });
 		});
 };
