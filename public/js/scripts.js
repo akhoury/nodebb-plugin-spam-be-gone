@@ -23,7 +23,7 @@ $(function () {
 
 	function onLoginPage() {
 		if (ajaxify.data.recaptchaArgs && ajaxify.data.recaptchaArgs.addLoginRecaptcha) {
-			onRecaptachaArgsReady(ensureRecaptchaThenCreate);
+			ensureRecaptchaThenCreate();
 		}
 	}
 
