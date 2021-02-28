@@ -462,7 +462,10 @@ Plugin.onPostFlagged = function (data) {
 };
 
 Plugin.injectScript = async (scripts) => {
-	scripts.push('https://hcaptcha.com/1/api.js');
+	const pluginSettings = await Meta.settings.get(pluginData.nbbId);
+	if (pluginSettings.hCaptchaEnabled === 'on') {
+		scripts.push('https://hcaptcha.com/1/api.js');
+	}
 	return scripts;
 };
 
