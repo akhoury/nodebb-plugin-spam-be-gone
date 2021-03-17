@@ -2,7 +2,7 @@
   "name": "nodebb-plugin-spam-be-gone",
   "version": "0.7.8",
   "description": "anti spam using both Google Recaptcha, Akismet.com, StopForumSpam.com & ProjectHoneyPot.com",
-  "main": "index.js",
+  "main": "library.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
