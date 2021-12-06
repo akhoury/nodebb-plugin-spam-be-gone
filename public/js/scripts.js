@@ -52,15 +52,15 @@ $(function () {
 	}
 
 	function reportUser(url) {
-		return $.post(url)
-			.then(function () {
-				app.alertSuccess('User reported!');
-			})
-			.catch(function (e) {
-				require(['alerts'], function (alerts) {
+		require(['alerts'], function (alerts) {
+			return $.post(url)
+				.then(function () {
+					alerts.success('User reported!');
+				})
+				.catch(function (e) {
 					alerts.error(e.responseJSON.message || '[spam-be-gone:something-went-wrong]');
 				});
-			});
+		});
 	}
 
 	function injectTag(tagName, attrs, options) {
