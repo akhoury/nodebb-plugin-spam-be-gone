@@ -57,7 +57,9 @@ $(function () {
 				app.alertSuccess('User reported!');
 			})
 			.catch(function (e) {
-				app.alertError(e.responseJSON.message || '[spam-be-gone:something-went-wrong]');
+				require(['alerts'], function (alerts) {
+					alerts.error(e.responseJSON.message || '[spam-be-gone:something-went-wrong]');
+				});
 			});
 	}
 
@@ -122,7 +124,9 @@ window.__nodebbSpamBeGoneCreateCaptcha__ = function () {
 			callback: function () {
 				var error = utils.param('error');
 				if (error) {
-					app.alertError(error);
+					require(['alerts'], function (alerts) {
+						alerts.error(error);
+					});
 				}
 			},
 		}
