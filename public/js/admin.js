@@ -2,7 +2,7 @@
 
 /* global define, $, app, socket, ajaxify */
 
-define('admin/plugins/spam-be-gone', ['settings'], function (Settings) {
+define('admin/plugins/spam-be-gone', ['settings', 'alerts'], function (Settings, alerts) {
 	var Admin = {};
 
 	Admin.init = function () {
@@ -49,7 +49,7 @@ define('admin/plugins/spam-be-gone', ['settings'], function (Settings) {
 				});
 			} else {
 				Settings.save(nbbId, wrapper, function () {
-					app.alert({
+					alerts.alert({
 						type: 'success',
 						alert_id: nbbId,
 						title: 'Reload Required',
