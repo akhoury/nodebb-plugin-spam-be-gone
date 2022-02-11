@@ -194,7 +194,7 @@ Plugin.reportFromQueue = async (req, res, next) => {
 Plugin.appendConfig = async (data) => {
 	data['spam-be-gone'] = {};
 
-	if (pluginSettings.hCaptchaEnabled === 'on') {
+	if (pluginSettings && pluginSettings.hCaptchaEnabled === 'on') {
 		data['spam-be-gone'].hCaptcha = {
 			key: pluginSettings.hCaptchaSiteKey,
 		};
