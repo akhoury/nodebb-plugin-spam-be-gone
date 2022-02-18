@@ -10,13 +10,15 @@
     "public/less/styles.less"
   ],
   "acpScripts": [
-    "public/js/scripts.js",
-    "public/js/admin.js"
+    "public/js/scripts.js"
   ],
   "scripts": [
-    "public/js/scripts.js",
-    "public/js/register.js"
+    "public/js/scripts.js"
   ],
+  "modules": {
+    "../admin/plugins/spam-be-gone.js": "public/js/admin.js",
+    "spam-be-gone/register.js": "public/js/register.js"
+  },
   "templates": "public/templates",
   "languages": "public/languages",
   "defaultLang": "en_GB",

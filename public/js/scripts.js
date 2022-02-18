@@ -1,6 +1,6 @@
 'use strict';
 
-/* global $, window, plugin, grecaptcha, utils, app, document */
+/* global $, window, grecaptcha, utils, document */
 
 $(function () {
 	var pluginName = 'spam-be-gone';
