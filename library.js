@@ -286,7 +286,6 @@ Plugin.checkReply = async function (data, options) {
 	};
 
 	const isSpam = await akismetCheckSpam(akismetData);
-	console.log('isSpam', isSpam);
 	await db.incrObjectField(`${pluginData.nbbId}:akismet`, 'checks');
 	if (!isSpam) {
 		return;
