@@ -34,6 +34,9 @@
                             <p class="help-block">To check every user post. Get yours from
                             <a target="_blank" href="http://akismet.com/">akismet.com</a>
                             </p>
+                            {{{ if akismet.checks }}}
+                            <p>Akismet checked <strong>{akismet.checks}</strong> posts and caught <strong>{akismet.spam}</strong> spam posts.</p>
+                            {{{ end }}}
                             <div class="form-group">
                             <label for="akismetApiKey">Akismet API Key</label>
                             <input placeholder="Akismet API Key here" type="text" class="form-control" id="akismetApiKey" name="akismetApiKey"/>

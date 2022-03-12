@@ -1,7 +1,5 @@
 'use strict';
 
-/* global define, $, app, socket, ajaxify */
-
 define('admin/plugins/spam-be-gone', ['settings', 'alerts'], function (Settings, alerts) {
 	var Admin = {};
 
