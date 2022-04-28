@@ -264,6 +264,9 @@ Plugin.checkReply = async function (data, options) {
 	if (!akismetClient || !data || !data.req) {
 		return;
 	}
+	if (data.fromQueue) { // don't check if submitted from queue
+		return;
+	}
 	const [isAdmin, isModerator, userData] = await Promise.all([
 		User.isAdministrator(data.req.uid),
 		User.isModerator(data.req.uid, data.cid),
