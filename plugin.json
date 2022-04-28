@@ -3,20 +3,19 @@
   "name": "Spam Be Gone",
   "description": "anti spam using both Akismet.com, StopForumSpam.com and Re-Captcha",
   "url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone",
-  "staticDirs": {
-    "public": "public"
-  },
   "less": [
     "public/less/styles.less"
   ],
   "acpScripts": [
-    "public/js/scripts.js",
-    "public/js/admin.js"
+    "public/js/scripts.js"
   ],
   "scripts": [
-    "public/js/scripts.js",
-    "public/js/register.js"
+    "public/js/scripts.js"
   ],
+  "modules": {
+    "../admin/plugins/spam-be-gone.js": "public/js/admin.js",
+    "spam-be-gone/register.js": "public/js/register.js"
+  },
   "templates": "public/templates",
   "languages": "public/languages",
   "defaultLang": "en_GB",
