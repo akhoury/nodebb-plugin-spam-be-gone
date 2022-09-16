@@ -3,8 +3,8 @@
   "name": "Spam Be Gone",
   "description": "anti spam using both Akismet.com, StopForumSpam.com and Re-Captcha",
   "url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone",
-  "less": [
-    "public/less/styles.less"
+  "scss": [
+    "public/scss/styles.scss"
   ],
   "acpScripts": [
     "public/js/scripts.js"

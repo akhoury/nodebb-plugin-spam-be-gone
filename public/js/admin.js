@@ -11,28 +11,24 @@ define('admin/plugins/spam-be-gone', ['settings', 'alerts'], function (Settings,
 		function onChange(e) {
 			var target = $(e.target);
 			var input = wrapper.find(target.attr('data-toggle-target'));
-			if (target.is(':checked')) {
-				input.prop('disabled', false);
-			} else {
-				input.prop('disabled', true);
-			}
+			input.prop('disabled', !target.is(':checked'));
 		}
 
-		wrapper.find('input[type="checkbox"].section-title').on('change', onChange);
+		wrapper.find('input[type="checkbox"][data-toggle-target]').on('change', onChange);
 
 		Settings.load(nbbId, wrapper, function () {
-			wrapper.find('input[type="checkbox"].section-title').each(function () {
+			wrapper.find('input[type="checkbox"][data-toggle-target]').each(function () {
 				onChange({ target: this });
 			});
 		});
 
 		$('#save').on('click', function (e) {
 			e.preventDefault();
-			wrapper.find('.form-group').removeClass('has-error');
+			wrapper.find('.has-error').removeClass('has-error');
 
 			var invalidSelector = '';
 			var invalidCount = 0;
-			wrapper.find('input[type="checkbox"].section-title').each(function (i, checkbox) {
+			wrapper.find('input[type="checkbox"][data-toggle-target]').each(function (i, checkbox) {
 				checkbox = $(checkbox);
 				if (checkbox.is(':checked') && !wrapper.find(checkbox.attr('data-toggle-target')).val()) {
 					// eslint-disable-next-line no-plusplus
@@ -43,7 +39,7 @@ define('admin/plugins/spam-be-gone', ['settings', 'alerts'], function (Settings,
 			if (invalidSelector) {
 				wrapper.find(invalidSelector).each(function (i, el) {
 					el = $(el);
-					el.parents('.form-group').addClass('has-error');
+					el.parent().addClass('has-error');
 				});
 			} else {
 				Settings.save(nbbId, wrapper, function () {
