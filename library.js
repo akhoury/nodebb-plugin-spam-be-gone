@@ -120,7 +120,7 @@ Plugin.load = async function (params) {
 	pluginSettings = settings;
 
 	const routeHelpers = require.main.require('./src/routes/helpers');
-	routeHelpers.setupAdminPageRoute(params.router, `/admin/plugins/${pluginData.nbbId}`, params.middleware, [], Plugin.render);
+	routeHelpers.setupAdminPageRoute(params.router, `/admin/plugins/${pluginData.nbbId}`, renderAdmin);
 
 	params.router.post(
 		`/api/user/:userslug/${pluginData.nbbId}/report`,
@@ -137,7 +137,7 @@ Plugin.load = async function (params) {
 	);
 };
 
-Plugin.render = async function (req, res) {
+async function renderAdmin (req, res) {
 	let akismet = await db.getObject(`${pluginData.nbbId}:akismet`);
 	akismet = { ...{ checks: 0, spam: 0 }, ...akismet };
 	res.render(`admin/plugins/${pluginData.nbbId}`, {
