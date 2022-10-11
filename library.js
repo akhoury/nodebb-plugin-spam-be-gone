@@ -116,7 +116,6 @@ Plugin.load = async function (params) {
 		stopforumspam.Key(settings.stopforumspamApiKey);
 	}
 
-	winston.info(`[plugins/${pluginData.nbbId}] Settings loaded`);
 	pluginSettings = settings;
 
 	const routeHelpers = require.main.require('./src/routes/helpers');
