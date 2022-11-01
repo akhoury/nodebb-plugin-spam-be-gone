@@ -2,10 +2,10 @@
 
 /* global hcaptcha */
 
-define('spam-be-gone/register', [], () => {
-	const Register = {};
+define('spam-be-gone/hcaptcha', [], () => {
+	const hCaptcha = {};
 
-	Register.init = () => {
+	hCaptcha.init = () => {
 		const hCaptchaOK = config['spam-be-gone'] && config['spam-be-gone'].hCaptcha;
 
 		if (hCaptchaOK) {
@@ -15,5 +15,5 @@ define('spam-be-gone/register', [], () => {
 		}
 	};
 
-	return Register;
+	return hCaptcha;
 });

@@ -1,6 +1,6 @@
 'use strict';
 
-/* global $, window, grecaptcha, utils, document */
+/* global grecaptcha */
 
 $(function () {
 	var pluginName = 'spam-be-gone';
@@ -8,8 +8,7 @@ $(function () {
 	function ensureRecaptchaThenCreate() {
 		if (!$('script[src*="www.recaptcha.net/recaptcha/api.js"]').length) {
 			injectScript('//www.recaptcha.net/recaptcha/api.js?onload=__nodebbSpamBeGoneCreateCaptcha__&render=explicit&hl=' +
-				(ajaxify.data.recaptchaArgs.options.hl || 'en')
-			);
+				(ajaxify.data.recaptchaArgs.options.hl || 'en'));
 		} else if (grecaptcha) {
 			window.__nodebbSpamBeGoneCreateCaptcha__();
 		}
@@ -27,7 +26,7 @@ $(function () {
 		}
 	}
 
-	function onAccountProfilePage(data) {
+	function onAccountProfilePage() {
 		var $btn = $('#spamBeGoneReportUserBtn');
 		$btn.off('click');
 		$btn.on('click', function (e) {
@@ -94,18 +93,18 @@ $(function () {
 
 	$(window).on('action:ajaxify.end', function (evt, data) {
 		switch (data.tpl_url) {
-		case 'register':
-			onRegisterPage(data);
-			break;
-		case 'login':
-			onLoginPage(data);
-			break;
-		case 'account/profile':
-			onAccountProfilePage(data);
-			break;
-		case 'admin/manage/registration':
-			onManageRegistrationPage(data);
-			break;
+			case 'register':
+				onRegisterPage(data);
+				break;
+			case 'login':
+				onLoginPage(data);
+				break;
+			case 'account/profile':
+				onAccountProfilePage(data);
+				break;
+			case 'admin/manage/registration':
+				onManageRegistrationPage(data);
+				break;
 		}
 	});
 });
@@ -135,7 +134,7 @@ window.__nodebbSpamBeGoneCreateCaptcha__ = function () {
 
 $(window).on('action:script.load', function (evt, data) {
 	// Inject register.tpl client-side script
-	if (data.tpl_url === 'register') {
-		data.scripts.push('spam-be-gone/register');
+	if (['register', 'login'].includes(data.tpl_url)) {
+		data.scripts.push('spam-be-gone/hcaptcha');
 	}
 });
