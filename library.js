@@ -195,10 +195,11 @@ Plugin.reportFromQueue = async (req, res) => {
 
 Plugin.appendConfig = async (data) => {
 	data['spam-be-gone'] = {};
+	const { hCaptchaEnabled, hCaptchaSiteKey } = await Meta.settings.get('spam-be-gone');
 
-	if (pluginSettings && pluginSettings.hCaptchaEnabled === 'on') {
+	if (hCaptchaEnabled === 'on') {
 		data['spam-be-gone'].hCaptcha = {
-			key: pluginSettings.hCaptchaSiteKey,
+			key: hCaptchaSiteKey,
 		};
 	}
 
@@ -226,7 +227,7 @@ Plugin.addCaptcha = async (data) => {
 		}
 	}
 
-	if (hCaptchaEnabled) {
+	if (hCaptchaEnabled === 'on') {
 		const captcha = {
 			label: 'CAPTCHA',
 			html: `<div id="h-captcha"></div>`,
@@ -486,11 +487,12 @@ Plugin._recaptchaCheck = async function (req) {
 };
 
 Plugin._hcaptchaCheck = async (userData) => {
-	if (pluginSettings.hCaptchaEnabled !== 'on') {
+	const { hCaptchaEnabled, hCaptchaSecretKey } = await Meta.settings.get('spam-be-gone');
+	if (hCaptchaEnabled !== 'on') {
 		return;
 	}
 
-	const response = await hCaptcha.verify(pluginSettings.hCaptchaSecretKey, userData['h-captcha-response']);
+	const response = await hCaptcha.verify(hCaptchaSecretKey, userData['h-captcha-response']);
 	if (!response.success) {
 		throw new Error('Captcha not verified, are you a robot?');
 	}
