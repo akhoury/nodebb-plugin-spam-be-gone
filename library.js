@@ -333,6 +333,8 @@ Plugin.checkRegister = async function (data) {
 };
 
 Plugin.checkLogin = async function (data) {
+	await Plugin._hcaptchaCheck(data.userData);
+
 	if (!recaptchaArgs || !recaptchaArgs.addLoginRecaptcha) {
 		return data;
 	}
