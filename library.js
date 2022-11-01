@@ -136,14 +136,14 @@ Plugin.load = async function (params) {
 	);
 };
 
-async function renderAdmin (req, res) {
+async function renderAdmin(req, res) {
 	let akismet = await db.getObject(`${pluginData.nbbId}:akismet`);
 	akismet = { ...{ checks: 0, spam: 0 }, ...akismet };
 	res.render(`admin/plugins/${pluginData.nbbId}`, {
 		nbbId: pluginData.nbbId,
 		akismet,
 	});
-};
+}
 
 // report an existing user account
 Plugin.report = async function (req, res, next) {
@@ -205,7 +205,9 @@ Plugin.appendConfig = async (data) => {
 	return data;
 };
 
-Plugin.addCaptcha = function (data, callback) {
+Plugin.addCaptcha = async (data) => {
+	const { hCaptchaEnabled } = await Meta.settings.get('spam-be-gone');
+
 	if (recaptchaArgs) {
 		const captcha = {
 			label: 'Captcha',
@@ -223,7 +225,26 @@ Plugin.addCaptcha = function (data, callback) {
 			}
 		}
 	}
-	callback(null, data);
+
+	if (hCaptchaEnabled) {
+		const captcha = {
+			label: 'CAPTCHA',
+			html: `<div id="h-captcha"></div>`,
+			styleName: pluginData.nbbId,
+		};
+		if (data.templateData) {
+			data.templateData.recaptchaArgs = recaptchaArgs;
+			['regFormEntry', 'loginFormEntry'].forEach((prop) => {
+				if (data.templateData[prop] && Array.isArray(data.templateData[prop])) {
+					data.templateData[prop].push(captcha);
+				} else {
+					data.templateData.captcha = captcha;
+				}
+			});
+		}
+	}
+
+	return data;
 };
 
 Plugin.onPostEdit = async function (data) {
