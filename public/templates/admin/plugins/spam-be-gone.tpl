@@ -131,6 +131,10 @@
                                 <label class="form-label" for="hCaptchaSecretKey">hCaptcha Secret Key</label>
                                 <input type="text" class="form-control" id="hCaptchaSecretKey" name="hCaptchaSecretKey" />
                             </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="loginhCaptchaEnabled" name="loginhCaptchaEnabled"/>
+                                <label class="form-check-label">Enable hCaptcha on login page as well</label>
+                            </div>
                         </div>
                     </div>
                 </div>

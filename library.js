@@ -207,40 +207,36 @@ Plugin.appendConfig = async (data) => {
 };
 
 Plugin.addCaptcha = async (data) => {
-	const { hCaptchaEnabled } = await Meta.settings.get('spam-be-gone');
-
-	if (recaptchaArgs) {
-		const captcha = {
-			label: 'Captcha',
-			html: `<div id="${pluginData.nbbId}-recaptcha-target"></div>`,
-			styleName: pluginData.nbbId,
-		};
-		if (data.templateData) {
-			data.templateData.recaptchaArgs = recaptchaArgs;
-			if (data.templateData.regFormEntry && Array.isArray(data.templateData.regFormEntry)) {
-				data.templateData.regFormEntry.push(captcha);
-			} else if (recaptchaArgs.addLoginRecaptcha && Array.isArray(data.templateData.loginFormEntry)) {
-				data.templateData.loginFormEntry.push(captcha);
-			} else {
-				data.templateData.captcha = captcha;
+	function addCaptchaData(templateData, loginCaptchaEnabled, captcha) {
+		if (templateData.regFormEntry && Array.isArray(templateData.regFormEntry)) {
+			templateData.regFormEntry.push(captcha);
+		} else if (Array.isArray(templateData.loginFormEntry)) {
+			if (loginCaptchaEnabled) {
+				templateData.loginFormEntry.push(captcha);
 			}
+		} else {
+			templateData.captcha = captcha;
 		}
 	}
 
-	if (hCaptchaEnabled === 'on') {
-		const captcha = {
-			label: 'CAPTCHA',
-			html: `<div id="h-captcha"></div>`,
-			styleName: pluginData.nbbId,
-		};
+	if (recaptchaArgs) {
 		if (data.templateData) {
 			data.templateData.recaptchaArgs = recaptchaArgs;
-			['regFormEntry', 'loginFormEntry'].forEach((prop) => {
-				if (data.templateData[prop] && Array.isArray(data.templateData[prop])) {
-					data.templateData[prop].push(captcha);
-				} else {
-					data.templateData.captcha = captcha;
-				}
+			addCaptchaData(data.templateData, recaptchaArgs.addLoginRecaptcha, {
+				label: 'Captcha',
+				html: `<div id="${pluginData.nbbId}-recaptcha-target"></div>`,
+				styleName: pluginData.nbbId,
+			});
+		}
+	}
+
+	const { hCaptchaEnabled, loginhCaptchaEnabled } = await Meta.settings.get('spam-be-gone');
+	if (hCaptchaEnabled === 'on') {
+		if (data.templateData) {
+			addCaptchaData(data.templateData, loginhCaptchaEnabled === 'on', {
+				label: 'CAPTCHA',
+				html: `<div id="h-captcha"></div>`,
+				styleName: pluginData.nbbId,
 			});
 		}
 	}
@@ -334,7 +330,10 @@ Plugin.checkRegister = async function (data) {
 };
 
 Plugin.checkLogin = async function (data) {
-	await Plugin._hcaptchaCheck(data.userData);
+	const { loginhCaptchaEnabled } = await Meta.settings.get('spam-be-gone');
+	if (loginhCaptchaEnabled === 'on') {
+		await Plugin._hcaptchaCheck(data.userData);
+	}
 
 	if (!recaptchaArgs || !recaptchaArgs.addLoginRecaptcha) {
 		return data;
