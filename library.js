@@ -251,7 +251,7 @@ Plugin.onPostEdit = async function (data) {
 		uid: data.post.uid,
 		cid: cid,
 		req: data.req,
-	}, { type: 'post' });
+	}, { type: 'post', edit: true });
 	return data;
 };
 
@@ -261,7 +261,7 @@ Plugin.onTopicEdit = async function (data) {
 		uid: data.topic.uid,
 		cid: data.topic.cid,
 		req: data.req,
-	}, { type: 'topic' });
+	}, { type: 'topic', edit: true });
 	return data;
 };
 
@@ -304,6 +304,10 @@ Plugin.checkReply = async function (data, options) {
 		// https://github.com/akhoury/nodebb-plugin-spam-be-gone/issues/54
 		comment_type: options.type === 'topic' ? 'forum-post' : 'comment',
 	};
+
+	if (options.edit) {
+		akismetData.recheck_reason = 'edit';
+	}
 
 	const isSpam = await akismetCheckSpam(akismetData);
 	await db.incrObjectField(`${pluginData.nbbId}:akismet`, 'checks');
