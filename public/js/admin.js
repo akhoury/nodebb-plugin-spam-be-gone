@@ -41,6 +41,7 @@ define('admin/plugins/spam-be-gone', ['settings', 'alerts'], function (Settings,
 					el = $(el);
 					el.parent().addClass('has-error');
 				});
+				alerts.error('Empty fields not allowed!');
 			} else {
 				Settings.save(nbbId, wrapper, function () {
 					alerts.alert({
