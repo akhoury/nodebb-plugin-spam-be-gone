@@ -447,14 +447,6 @@ Plugin.onPostFlagged = async function (data) {
 	}
 };
 
-Plugin.injectScript = async (scripts) => {
-	const pluginSettings = await Meta.settings.get(pluginData.nbbId);
-	if (pluginSettings.hCaptchaEnabled === 'on') {
-		scripts.push('https://hcaptcha.com/1/api.js');
-	}
-	return scripts;
-};
-
 Plugin._honeypotCheck = async function (req, userData) {
 	if (honeypot && req && req.ip) {
 		const honeypotQuery = util.promisify(honeypot.query);
