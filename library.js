@@ -15,6 +15,8 @@ const db = require.main.require('./src/database');
 
 const pluginData = require('./plugin.json');
 
+const https = require('https');
+
 let akismetClient;
 let akismetCheckSpam;
 let akismetSubmitSpam;
@@ -467,6 +469,66 @@ Plugin._honeypotCheck = async function (req, userData) {
 
 Plugin._recaptchaCheck = async function (req) {
 	if (recaptchaArgs && req && req.ip && req.body) {
+/*
+		const postData = JSON.stringify({
+			secret: pluginSettings.recaptchaPrivateKey,
+			response: req.body['g-recaptcha-response'],
+			remoteip: req.ip
+		});
+
+
+		const options = {
+			hostname: 'www.recaptcha.net',
+			path: '/recaptcha/api/siteverify',
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Content-Length': postData.length
+			}
+		};
+
+		return new Promise((resolve, reject) => {
+			const request = https.request(options, (res) => {
+				let responseData = '';
+
+				res.on('data', (chunk) => {
+					responseData += chunk;
+				});
+
+				res.on('end', () => {
+					const response = JSON.parse(responseData);
+
+					if (response.success === true) {
+						resolve();
+					} else {
+						const message = '[[spam-be-gone:captcha-not-verified]]';
+						reject(new Error(message));
+					}
+				});
+			});
+
+			request.on('error', (error) => {
+				const message = error.message || '[[spam-be-gone:captcha-not-verified]]';
+				reject(new Error(message));
+			});
+
+			request.write(postData);
+			request.end();
+		});
+
+*/
+		/*
+		try {
+			console.log("token" + recaptchaToken.getrecaptchaToken());
+		} catch (err) {
+			const message = err.Error || '[[spam-be-gone:captcha-not-verified]]';
+			winston.verbose(`[plugins/${pluginData.nbbId}] ${message}`);
+			throw new Error(message);
+		}
+*/
+
+
+
 		const simpleRecaptchaAsync = util.promisify(simpleRecaptcha);
 		try {
 			await simpleRecaptchaAsync(
@@ -479,6 +541,8 @@ Plugin._recaptchaCheck = async function (req) {
 			winston.verbose(`[plugins/${pluginData.nbbId}] ${message}`);
 			throw new Error(message);
 		}
+		
+
 	}
 };
 
