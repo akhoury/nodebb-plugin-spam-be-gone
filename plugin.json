@@ -1,8 +1,8 @@
 {
-  "id": "nodebb-plugin-spam-be-gone",
+  "id": "nodebb-plugin-spam-be-gone-fix",
   "name": "Spam Be Gone",
   "description": "anti spam using both Akismet.com, StopForumSpam.com and Re-Captcha",
-  "url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone",
+  "url": "https://github.com/LingkongSky/nodebb-plugin-spam-be-gone-fix",
   "scss": [
     "public/scss/styles.scss"
   ],

@@ -475,7 +475,7 @@ Plugin._recaptchaCheck = async function (req) {
 				req.body['g-recaptcha-response']
 			);
 		} catch (err) {
-			const message = err.Error || 'Captcha not verified, are you a robot?';
+			const message = err.Error || '[[spam-be-gone:captcha-not-verified]]';
 			winston.verbose(`[plugins/${pluginData.nbbId}] ${message}`);
 			throw new Error(message);
 		}
@@ -490,7 +490,7 @@ Plugin._hcaptchaCheck = async (userData) => {
 
 	const response = await hCaptcha.verify(hCaptchaSecretKey, userData['h-captcha-response']);
 	if (!response.success) {
-		throw new Error('Captcha not verified, are you a robot?');
+		throw new Error('[[spam-be-gone:captcha-not-verified]]');
 	}
 };
 

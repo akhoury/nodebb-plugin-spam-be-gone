@@ -1,0 +1,10 @@
+{
+  "report-user": "举报垃圾邮件",
+  "something-went-wrong": "未知错误",
+  "not-allowed": "你没有权限进行这个操作",
+  "cant-report-admin": "你无法举报管理员",
+  "user-reported": "用户举报!",
+  "sfs-not-enabled": "未启用“停止论坛垃圾邮件”",
+  "sfs-api-key-not-set": "未从stopforumspam.com/keys设置阻止论坛垃圾邮件的 API 密钥",
+  "captcha-not-verified": "验证码校验失败，请尝试重新校验或刷新页面"
+}

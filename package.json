@@ -1,5 +1,5 @@
 {
-  "name": "nodebb-plugin-spam-be-gone",
+  "name": "nodebb-plugin-spam-be-gone-fix",
   "version": "2.1.1",
   "description": "anti spam using both Google Recaptcha, Akismet.com, StopForumSpam.com & ProjectHoneyPot.com",
   "main": "library.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
+    "url": "https://github.com/LingkongSky/nodebb-plugin-spam-be-gone-fix"
   },
   "keywords": [
     "nodebb",
@@ -22,12 +22,12 @@
     "antispam"
   ],
   "author": {
-    "name": "Aziz khoury",
-    "email": "bentael@gmail.com"
+    "name": "LingkongSky",
+    "email": "LingkongSky@gmail.com"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
+    "url": "https://github.com/LingkongSky/nodebb-plugin-spam-be-gone-fix"
   },
   "husky": {
     "hooks": {

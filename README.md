@@ -1,6 +1,10 @@
 nodebb-plugin-spam-be-gone
 ==========================
 
+## This fork
+This fork fix the plugin to make it can work in Nodebb V3.x,and add some translate files.
+本fork修复了部分bug以确保其能在Nodebb V3.x运行，同时增加了中文翻译
+
 ## From 0.3.x to 0.4.x
 
 Spam Be Gone 0.4.x uses [Google's "No CAPTCHA reCAPTCHA"](http://googleonlinesecurity.blogspot.com/2014/12/are-you-robot-introducing-no-captcha.html?m=1) which does not support the old public/private keys, so you need to generate new ones and replace the old ones in your NodeBB Admin Panel, or you will see an error instead of the captcha image, visit this page to do so: https://www.google.com/recaptcha/admin#list
