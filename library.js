@@ -144,7 +144,7 @@ async function renderAdmin(req, res) {
 	res.render(`admin/plugins/${pluginData.nbbId}`, {
 		nbbId: pluginData.nbbId,
 		akismet,
-		title: 'Spam Be Gone',
+		title: 'Spam Be Gone Fix',
 	});
 }
 
