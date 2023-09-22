@@ -3,7 +3,7 @@
 /* global grecaptcha */
 
 $(function () {
-	var pluginName = 'spam-be-gone';
+	var pluginName = 'spam-be-gone-fix';
 
 	function ensureRecaptchaThenCreate() {
 		if (!$('script[src*="www.recaptcha.net/recaptcha/api.js"]').length) {
@@ -57,7 +57,7 @@ $(function () {
 					alerts.success('User reported!');
 				})
 				.catch(function (e) {
-					alerts.error(e.responseJSON.message || '[spam-be-gone:something-went-wrong]');
+					alerts.error(e.responseJSON.message || '[spam-be-gone-fix:something-went-wrong]');
 				});
 		});
 	}
@@ -135,6 +135,6 @@ window.__nodebbSpamBeGoneCreateCaptcha__ = function () {
 $(window).on('action:script.load', function (evt, data) {
 	// Inject register.tpl client-side script
 	if (['register', 'login'].includes(data.tpl_url)) {
-		data.scripts.push('spam-be-gone/hcaptcha');
+		data.scripts.push('spam-be-gone-fix/hcaptcha');
 	}
 });

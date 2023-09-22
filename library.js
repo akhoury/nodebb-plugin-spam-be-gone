@@ -41,17 +41,17 @@ Plugin.middleware.isAdminOrGlobalMod = function (req, res, next) {
 		if (isAdminOrGlobalMod) {
 			return next();
 		}
-		res.status(401).json({ message: '[[spam-be-gone:not-allowed]]' });
+		res.status(401).json({ message: '[[spam-be-gone-fix:not-allowed]]' });
 	});
 };
 
 Plugin.middleware.checkStopForumSpam = function (req, res, next) {
 	if (!pluginSettings.stopforumspamEnabled) {
-		return res.status(400).send({ message: '[[spam-be-gone:sfs-not-enabled]]' });
+		return res.status(400).send({ message: '[[spam-be-gone-fix:sfs-not-enabled]]' });
 	}
 
 	if (!pluginSettings.stopforumspamApiKey) {
-		return res.status(400).send({ message: '[[spam-be-gone:sfs-api-key-not-set]]' });
+		return res.status(400).send({ message: '[[spam-be-gone-fix:sfs-api-key-not-set]]' });
 	}
 	next();
 };
@@ -161,7 +161,7 @@ Plugin.report = async function (req, res, next) {
 			User.getIPs(uid, 0),
 		]);
 		if (isAdmin) {
-			return res.status(403).send({ message: '[[spam-be-gone:cant-report-admin]]' });
+			return res.status(403).send({ message: '[[spam-be-gone-fix:cant-report-admin]]' });
 		}
 		const data = {
 			ip: ips[0],
@@ -169,7 +169,7 @@ Plugin.report = async function (req, res, next) {
 			username: fields.username,
 		};
 		await stopforumspam.submit(data, `Manual submission from user: ${req.uid} to user: ${fields.uid} via ${pluginData.id}`);
-		res.status(200).json({ message: '[[spam-be-gone:user-reported]]' });
+		res.status(200).json({ message: '[[spam-be-gone-fix:user-reported]]' });
 	} catch (err) {
 		winston.error(`[plugins/${pluginData.nbbId}][report-error] ${err.message}`);
 		res.status(400).json({ message: err.message || 'Something went wrong' });
@@ -189,7 +189,7 @@ Plugin.reportFromQueue = async (req, res) => {
 	};
 	try {
 		await stopforumspam.submit(submitData, `Manual submission from user: ${req.uid} to user: ${data.username} via ${pluginData.id}`);
-		res.status(200).json({ message: '[[spam-be-gone:user-reported]]' });
+		res.status(200).json({ message: '[[spam-be-gone-fix:user-reported]]' });
 	} catch (err) {
 		winston.error(`[plugins/${pluginData.nbbId}][report-error] ${err.message}\n${JSON.stringify(submitData, null, 4)}`);
 		res.status(400).json({ message: err.message || 'Something went wrong' });
@@ -197,11 +197,11 @@ Plugin.reportFromQueue = async (req, res) => {
 };
 
 Plugin.appendConfig = async (data) => {
-	data['spam-be-gone'] = {};
-	const { hCaptchaEnabled, hCaptchaSiteKey } = await Meta.settings.get('spam-be-gone');
+	data['spam-be-gone-fix'] = {};
+	const { hCaptchaEnabled, hCaptchaSiteKey } = await Meta.settings.get('spam-be-gone-fix');
 
 	if (hCaptchaEnabled === 'on') {
-		data['spam-be-gone'].hCaptcha = {
+		data['spam-be-gone-fix'].hCaptcha = {
 			key: hCaptchaSiteKey,
 		};
 	}
@@ -233,7 +233,7 @@ Plugin.addCaptcha = async (data) => {
 		}
 	}
 
-	const { hCaptchaEnabled, loginhCaptchaEnabled } = await Meta.settings.get('spam-be-gone');
+	const { hCaptchaEnabled, loginhCaptchaEnabled } = await Meta.settings.get('spam-be-gone-fix');
 	if (hCaptchaEnabled === 'on') {
 		if (data.templateData) {
 			addCaptchaData(data.templateData, loginhCaptchaEnabled === 'on', {
@@ -337,7 +337,7 @@ Plugin.checkRegister = async function (data) {
 };
 
 Plugin.checkLogin = async function (data) {
-	const { loginhCaptchaEnabled } = await Meta.settings.get('spam-be-gone');
+	const { loginhCaptchaEnabled } = await Meta.settings.get('spam-be-gone-fix');
 	if (loginhCaptchaEnabled === 'on') {
 		await Plugin._hcaptchaCheck(data.userData);
 	}
@@ -381,7 +381,7 @@ async function augmentWitSpamData(user) {
 		user.customActions = user.customActions || [];
 		if (pluginSettings.stopforumspamApiKey) {
 			user.customActions.push({
-				title: '[[spam-be-gone:report-user]]',
+				title: '[[spam-be-gone-fix:report-user]]',
 				id: `report-spam-user-${user.username}`,
 				class: 'btn-warning report-spam-user',
 				icon: 'fa-flag',
@@ -402,7 +402,7 @@ Plugin.userProfileMenu = function (data, next) {
 			id: 'spamBeGoneReportUserBtn',
 			route: 'report-user',
 			icon: 'fa-flag',
-			name: '[[spam-be-gone:report-user]]',
+			name: '[[spam-be-gone-fix:report-user]]',
 			visibility: {
 				self: false,
 				other: false,
@@ -503,14 +503,14 @@ Plugin._recaptchaCheck = async function (req) {
 					if (response.success === true) {
 						resolve();
 					} else {
-						const message = '[[spam-be-gone:captcha-not-verified]]';
+						const message = '[[spam-be-gone-fix:captcha-not-verified]]';
 						reject(new Error(message));
 					}
 				});
 			});
 
 			request.on('error', (error) => {
-				const message = error.message || '[[spam-be-gone:captcha-not-verified]]';
+				const message = error.message || '[[spam-be-gone-fix:captcha-not-verified]]';
 				reject(new Error(message));
 			});
 
@@ -523,7 +523,7 @@ Plugin._recaptchaCheck = async function (req) {
 		try {
 			console.log("token" + recaptchaToken.getrecaptchaToken());
 		} catch (err) {
-			const message = err.Error || '[[spam-be-gone:captcha-not-verified]]';
+			const message = err.Error || '[[spam-be-gone-fix:captcha-not-verified]]';
 			winston.verbose(`[plugins/${pluginData.nbbId}] ${message}`);
 			throw new Error(message);
 		}
@@ -539,7 +539,7 @@ Plugin._recaptchaCheck = async function (req) {
 						req.body['g-recaptcha-response']
 					);
 				} catch (err) {
-					const message = err.Error || '[[spam-be-gone:captcha-not-verified]]';
+					const message = err.Error || '[[spam-be-gone-fix:captcha-not-verified]]';
 					winston.verbose(`[plugins/${pluginData.nbbId}] ${message}`);
 					throw new Error(message);
 				}
@@ -549,14 +549,14 @@ Plugin._recaptchaCheck = async function (req) {
 };
 
 Plugin._hcaptchaCheck = async (userData) => {
-	const { hCaptchaEnabled, hCaptchaSecretKey } = await Meta.settings.get('spam-be-gone');
+	const { hCaptchaEnabled, hCaptchaSecretKey } = await Meta.settings.get('spam-be-gone-fix');
 	if (hCaptchaEnabled !== 'on') {
 		return;
 	}
 
 	const response = await hCaptcha.verify(hCaptchaSecretKey, userData['h-captcha-response']);
 	if (!response.success) {
-		throw new Error('[[spam-be-gone:captcha-not-verified]]');
+		throw new Error('[[spam-be-gone-fix:captcha-not-verified]]');
 	}
 };
 

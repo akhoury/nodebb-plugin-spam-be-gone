@@ -13,8 +13,8 @@
     "public/js/scripts.js"
   ],
   "modules": {
-    "../admin/plugins/spam-be-gone.js": "public/js/admin.js",
-    "spam-be-gone/hcaptcha.js": "public/js/hcaptcha.js"
+    "../admin/plugins/spam-be-gone-fix.js": "public/js/admin.js",
+    "spam-be-gone-fix/hcaptcha.js": "public/js/hcaptcha.js"
   },
   "templates": "public/templates",
   "languages": "public/languages",
