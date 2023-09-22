@@ -2,7 +2,7 @@
 
 const util = require('util');
 const Honeypot = require('project-honeypot');
-const simpleRecaptcha = require('simple-recaptcha-new');
+//const simpleRecaptcha = require('simple-recaptcha-new');
 const hCaptcha = require('hcaptcha');
 const stopforumspam = require('stopforumspam');
 
