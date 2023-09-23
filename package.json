@@ -1,14 +1,14 @@
 {
-  "name": "nodebb-plugin-spam-be-gone-fix",
-  "version": "2.2.6",
-  "description": "support both Google Recaptcha, Akismet.com, StopForumSpam.com & ProjectHoneyPot.com in Nodebb V3.x",
+  "name": "nodebb-plugin-spam-be-gone",
+  "version": "2.1.1",
+  "description": "anti spam using both Google Recaptcha, Akismet.com, StopForumSpam.com & ProjectHoneyPot.com",
   "main": "library.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/LingkongSky/nodebb-plugin-spam-be-gone-fix"
+    "url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
   },
   "keywords": [
     "nodebb",
@@ -22,12 +22,12 @@
     "antispam"
   ],
   "author": {
-    "name": "LingkongSky",
-    "email": "LingkongSky@gmail.com"
+    "name": "Aziz khoury",
+    "email": "bentael@gmail.com"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/LingkongSky/nodebb-plugin-spam-be-gone-fix"
+    "url": "https://github.com/akhoury/nodebb-plugin-spam-be-gone"
   },
   "husky": {
     "hooks": {
@@ -49,7 +49,7 @@
     "stopforumspam": "^1.3.8"
   },
   "nbbpm": {
-    "compatibility": "^3.0.0 || ^3.1.0 || ^3.2.0 || ^3.3.0 || ^3.4.0"
+    "compatibility": "^3.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",

@@ -1,6 +1,6 @@
 'use strict';
 
-define('admin/plugins/spam-be-gone-fix', ['settings', 'alerts'], function (Settings, alerts) {
+define('admin/plugins/spam-be-gone', ['settings', 'alerts'], function (Settings, alerts) {
 	var Admin = {};
 
 	Admin.init = function () {
