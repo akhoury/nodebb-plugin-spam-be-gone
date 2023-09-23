@@ -1,7 +1,7 @@
 {
   "id": "nodebb-plugin-spam-be-gone-fix",
   "name": "Spam Be Gone fix",
-  "description": "anti spam using both Akismet.com, StopForumSpam.com and Re-Captcha",
+  "description": "support both Google Recaptcha, Akismet.com, StopForumSpam.com & ProjectHoneyPot.com in Nodebb V3.x",
   "url": "https://github.com/LingkongSky/nodebb-plugin-spam-be-gone-fix",
   "scss": [
     "public/scss/styles.scss"
