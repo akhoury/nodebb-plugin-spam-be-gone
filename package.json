@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-spam-be-gone-fix",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "description": "support both Google Recaptcha, Akismet.com, StopForumSpam.com & ProjectHoneyPot.com in Nodebb V3.x",
   "main": "library.js",
   "scripts": {

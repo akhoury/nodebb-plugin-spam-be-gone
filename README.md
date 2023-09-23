@@ -1,24 +1,46 @@
-nodebb-plugin-spam-be-gone
+nodebb-plugin-spam-be-gone-fix
 ==========================
 
 ## This fork
-This fork fix the plugin to make it can work in Nodebb V3.x,and add some translate files.
-本fork修复了部分bug以确保其能在Nodebb V3.x运行，同时增加了中文翻译
+This fork fix the plugin to make it can work in Nodebb V3.x and add some translate files.
 
-## From 0.3.x to 0.4.x
 
-Spam Be Gone 0.4.x uses [Google's "No CAPTCHA reCAPTCHA"](http://googleonlinesecurity.blogspot.com/2014/12/are-you-robot-introducing-no-captcha.html?m=1) which does not support the old public/private keys, so you need to generate new ones and replace the old ones in your NodeBB Admin Panel, or you will see an error instead of the captcha image, visit this page to do so: https://www.google.com/recaptcha/admin#list
+## Support captcha
+
+Spam Be Gone Fix now support the Google Recaptcha, Akismet.com, StopForumSpam.com and ProjectHoneyPot.com.
+You can use this plguin to verify the user login & registeration or report the form as spam...
+
 ```
-ERROR: Global site keys are not supported
+Tips: The ReCaptcha only support the V2 Checkbox
 ```
-## Screenshots
+
 
 ### Settings page
-![screen shot 2015-11-19 at 2 46 08 pm](https://cloud.githubusercontent.com/assets/1398375/11282248/4c5c7464-8ecc-11e5-9542-ab756a3fe5c2.png)
+
 
 ### Registration page
-![Imgur](http://i.imgur.com/5nTBtMa.png)
 
-### Flag a post for moderation
-and it will be also reported to Akismet (if enabled)
-![Github with love](https://cloud.githubusercontent.com/assets/1398375/11282166/e8c8edc4-8ecb-11e5-8925-9f09572d2371.png)
+==========================
+
+## 中文简介
+
+## 本分支
+本fork修复了部分bug以确保其能在Nodebb V3.x运行，同时增加了中文翻译
+
+## 支持的验证码
+
+Spam Be Gone Fix现在支持Google Recaptcha, Akismet.com, StopForumSpam.com and ProjectHoneyPot.com,
+你可以用它对用户登录及注册进行验证，也能用它来举报垃圾邮件。
+
+```
+Tips: ReCaptcha验证码仅支持V2复选框
+```
+
+
+### 设置页面
+
+
+### 注册页面
+
+
+
