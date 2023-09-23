@@ -16,11 +16,12 @@ Tips: The ReCaptcha only support the V2 Checkbox
 
 
 ### Settings page
+![settings](https://github.com/LingkongSky/nodebb-plugin-spam-be-gone-fix/assets/61834524/be69f615-cee4-45bf-9726-0c6f291148c5)
 
 
-### Registration page
+### Login page
+![login](https://github.com/LingkongSky/nodebb-plugin-spam-be-gone-fix/assets/61834524/7b247177-8613-42e2-8c38-fb22709be767)
 
-==========================
 
 ## 中文简介
 
@@ -38,9 +39,11 @@ Tips: ReCaptcha验证码仅支持V2复选框
 
 
 ### 设置页面
+![setting-ZH](https://github.com/LingkongSky/nodebb-plugin-spam-be-gone-fix/assets/61834524/fbeb4fa5-937f-487c-a5fd-62b67c26d623)
 
 
-### 注册页面
+### 登录页面
+![login-ZH](https://github.com/LingkongSky/nodebb-plugin-spam-be-gone-fix/assets/61834524/2126961a-0087-41cb-8096-a2364cb805da)
 
 
 
