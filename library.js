@@ -1,8 +1,8 @@
 'use strict';
 
 const util = require('util');
+const https = require('https');
 const Honeypot = require('project-honeypot');
-//const simpleRecaptcha = require('simple-recaptcha-new');
 const hCaptcha = require('hcaptcha');
 const stopforumspam = require('stopforumspam');
 
@@ -14,8 +14,6 @@ const Topics = require.main.require('./src/topics');
 const db = require.main.require('./src/database');
 
 const pluginData = require('./plugin.json');
-
-const https = require('https');
 
 let akismetClient;
 let akismetCheckSpam;
@@ -469,17 +467,15 @@ Plugin._honeypotCheck = async function (req, userData) {
 
 Plugin._recaptchaCheck = async function (req) {
 	if (recaptchaArgs && req && req.ip && req.body) {
-
-		const postData = "secret=" + pluginSettings.recaptchaPrivateKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.ip;
-
+		const postData = `secret=${pluginSettings.recaptchaPrivateKey}&response=${req.body['g-recaptcha-response']}&remoteip=${req.ip}`;
 		const options = {
 			hostname: 'www.recaptcha.net',
 			path: '/recaptcha/api/siteverify',
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
-				'Content-Length': postData.length
-			}
+				'Content-Length': postData.length,
+			},
 		};
 
 		return new Promise((resolve, reject) => {
@@ -510,7 +506,6 @@ Plugin._recaptchaCheck = async function (req) {
 			request.write(postData);
 			request.end();
 		});
-
 	}
 };
 
