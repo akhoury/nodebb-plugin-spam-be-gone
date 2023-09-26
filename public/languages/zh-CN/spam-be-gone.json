@@ -1,0 +1,23 @@
+{
+  "report-user": "举报垃圾邮件",
+  "something-went-wrong": "未知错误",
+  "not-allowed": "你没有权限进行这个操作",
+  "cant-report-admin": "你无法举报管理员",
+  "user-reported": "用户举报!",
+  "sfs-not-enabled": "未启用“停止论坛垃圾邮件”",
+  "sfs-api-key-not-set": "未从stopforumspam.com/keys设置阻止论坛垃圾邮件的 API 密钥",
+  "captcha-not-verified": "验证码校验失败，请尝试重新校验或刷新页面",
+  "admin-topic-start": "这个插件引用了以下项目：",
+  "admin-topic-end": "拉取项目或提交issue请前往：",
+  "enable": "启用",
+  "akismet-topic-1": "要检查所有的提交，可前往 ",
+  "akismet-topic-2": "将被标记的帖子分类为误报 （HAM） 的最低信誉级别。具有此级别声誉的用户所发布的帖子将不会被标记为垃圾邮件。",
+  "akismet-topic-3": "允许最低信誉等级为X的用户通过标记将帖子作为垃圾邮件提交给Akismet（留空以禁用）",
+  "honeypot-topic-1": "要对所有的用户注册进行检查，可前往 ",
+  "recaptcha-topic-1": "要对所有的用户注册进行检查，你需要一个私钥和一个公钥，可前往 ",
+  "recaptcha-topic-2": "确保你的私钥不被泄露",
+  "stopforumspam-topic-1": "你需要一个API密钥用于举报用户，可前往 ",
+  "hcaptcha-topic-1": "要对所有的用户注册进行检查，你需要一个私钥和一个公钥，可前往 ",
+  "enable-recaptcha-login": "为登录页面启用Re-Captcha",
+  "enable-hcaptcha-login": "为登录页面启用hCaptcha"
+}

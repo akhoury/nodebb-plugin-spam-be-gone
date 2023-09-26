@@ -4,15 +4,15 @@
 
     <div>
         <div class="alert alert-info mb-0 text-xs">
-            This plugin uses
+            [[spam-be-gone:admin-topic-start]]
             <a target="_blank" href="https://github.com/julianlam/project-honeypot">project-honeypot</a>,
             <a target="_blank" href="https://github.com/deltreey/stopforumspam">stopforumspam</a>,
             <a target="_blank" href="https://github.com/oozcitak/akismet-js">akismet-js</a>,
-            <a target="_blank" href="https://github.com/zeMirco/simple-recaptcha">simple-recaptcha</a>, and
             <a target="_blank" href="https://github.com/vastus/node-hcaptcha#readme">hcaptcha</a>
+            <a target="_blank" href="https://github.com/akhoury/nodebb-plugin-spam-be-gone">spam-be-gone</a>
             <br/>
-            File issues, pull requests or ideas at the
-            <a target="_blank" href="https://github.com/akhoury/nodebb-plugin-spam-be-gone">github repo</a>
+            [[spam-be-gone:admin-topic-end]]
+            <a target="_blank" href="https://github.com/LingkongSky/nodebb-plugin-spam-be-gone">spam-be-gone</a>
         </div>
     </div>
 
@@ -34,10 +34,10 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#akismetApiKey,#akismetMinReputationHam,#akismetFlagReporting" type="checkbox" id="akismetEnabled" name="akismetEnabled"/>
-                                    <label class="section-title form-check-label">Enable Akismet</label>
+                                    <label class="section-title form-check-label">[[spam-be-gone:enable]] Akismet</label>
                                 </div>
                                 <p class="form-text">
-                                    To check every user post. Get yours from <a target="_blank" href="http://akismet.com/">akismet.com</a>
+                                    [[spam-be-gone:akismet-topic-1]] <a target="_blank" href="http://akismet.com/">akismet.com</a>
                                 </p>
                                 {{{ if akismet.checks }}}
                                 <p>Akismet checked <strong>{akismet.checks}</strong> posts and caught <strong>{akismet.spam}</strong> spam posts.</p>
@@ -50,12 +50,12 @@
                                     <label class="form-label" for="akismetMinReputationHam">HAM Minimum Reputation</label>
                                     <input placeholder="10" type="number" class="form-control" id="akismetMinReputationHam" name="akismetMinReputationHam"/>
                                 </div>
-                                <p class="form-text">Minimum reputation level to classify flagged posts as false positives (HAM). Posts made by users with at least this level reputation will never be flagged as spam.</p>
+                                <p class="form-text">[[spam-be-gone:akismet-topic-2]]</p>
                                 <div class="mb-3">
                                     <label class="form-label" for="akismetFlagReporting">Flagging Minimum Reputation</label>
                                     <input placeholder="5" type="text" class="form-control" id="akismetFlagReporting" name="akismetFlagReporting"/>
                                 </div>
-                                <p class="form-text">Allow users with minimum reputation of X to submit posts to Akismet as spam via flagging (leave blank to disable)</p>
+                                <p class="form-text">[[spam-be-gone:akismet-topic-3]]</p>
                             </div>
                         </div>
                     </div>
@@ -64,10 +64,10 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#honeypotApiKey" type="checkbox" id="honeypotEnabled" name="honeypotEnabled"/>
-                                    <label class="form-check-label">Enable Honeypot</label>
+                                    <label class="form-check-label">[[spam-be-gone:enable]] Honeypot</label>
                                 </div>
                                 <p class="form-text">
-                                    To check every user registration. Get yours from <a target="_blank" href="http://www.projecthoneypot.org/">projecthoneypot.org</a>
+                                    [[spam-be-gone:honeypot-topic-1]]<a target="_blank" href="http://www.projecthoneypot.org/">projecthoneypot.org</a>
                                 </p>
                                 <div class="mb-3">
                                     <label class="form-label" for="honeypotApiKey">Honeypot API Key</label>
@@ -81,10 +81,10 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#recaptchaPublicKey,#recaptchaPrivateKey,#loginRecaptchaEnabled" type="checkbox" id="recaptchaEnabled" name="recaptchaEnabled"/>
-                                    <label class="form-check-label">Enable Re-Captcha</label>
+                                    <label class="form-check-label">[[spam-be-gone:enable]] Re-Captcha</label>
                                 </div>
                                 <p class="form-text">
-                                    To check every user registration. You need a private and a public key, get yours from <a target="_blank" href="http://www.google.com/recaptcha">google.com/recaptcha</a>
+                                    [[spam-be-gone:recaptcha-topic-1]]<a target="_blank" href="http://www.google.com/recaptcha">google.com/recaptcha</a>
                                 </p>
 
                                 <div class="mb-3" style="width:45%;">
@@ -97,11 +97,11 @@
                                 </div>
 
                                 <p class="form-text">
-                                Keep your private key private
+                                [[spam-be-gone:recaptcha-topic-2]]
                                 </p>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="loginRecaptchaEnabled" name="loginRecaptchaEnabled"/>
-                                    <label class="form-check-label">Enable Re-Captcha on login page as well</label>
+                                    <label class="form-check-label">[[spam-be-gone:enable-recaptcha-login]]</label>
                                 </div>
                             </div>
                         </div>
@@ -114,7 +114,7 @@
                                     <label class="form-check-label">Enable StopForumSpam</label>
                                 </div>
                                 <p class="form-text">
-                                    To report a user you need an API key, get yours from <a target="_blank" href="https://www.stopforumspam.com/keys">stopforumspam.com/keys</a>
+                                    [[spam-be-gone:stopforumspam-topic-1]]<a target="_blank" href="https://www.stopforumspam.com/keys">stopforumspam.com/keys</a>
                                 </p>
                                 <div class="mb-3" style="width:45%;">
                                     <label class="form-label" for="stopforumspamApiKey">StopForumSpam API Key</label>
@@ -128,10 +128,10 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#hCaptchaSiteKey,#hCaptchaSecretKey" type="checkbox" id="hCaptchaEnabled" name="hCaptchaEnabled"/>
-                                    <label class="form-check-label">Enable hCaptcha</label>
+                                    <label class="form-check-label">[[spam-be-gone:enable]] hCaptcha</label>
                                 </div>
                                 <p class="form-text">
-                                    To check every user registration. You need a private and a public key, get yours from <a target="_blank">https://dashboard.hcaptcha.com</a>
+                                    [[spam-be-gone:hcaptcha-topic-1]]<a target="_blank" href="https://dashboard.hcaptcha.com">https://dashboard.hcaptcha.com</a>
                                 </p>
                                 <div class="mb-3">
                                     <label class="form-label" for="hCaptchaSiteKey">hCaptcha Site Key</label>
@@ -143,7 +143,7 @@
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="loginhCaptchaEnabled" name="loginhCaptchaEnabled"/>
-                                    <label class="form-check-label">Enable hCaptcha on login page as well</label>
+                                    <label class="form-check-label">[[spam-be-gone:enable-hcaptcha-login]]</label>
                                 </div>
                             </div>
                         </div>

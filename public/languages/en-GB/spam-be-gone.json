@@ -5,5 +5,19 @@
   "cant-report-admin": "You can't report an admin as spammer",
   "user-reported": "User reported!",
   "sfs-not-enabled": "Stop Forum Spam is not enabled",
-  "sfs-api-key-not-set": "Stop Forum Spam API Key is not set, get one from stopforumspam.com/keys"
+  "sfs-api-key-not-set": "Stop Forum Spam API Key is not set, get one from stopforumspam.com/keys",
+  "captcha-not-verified": "Captcha not verified, are you a robot?",
+  "admin-topic-start": "This plugin uses",
+  "admin-topic-end": "pull requests or ideas at the",
+  "enable": "Enable",
+  "akismet-topic-1": "To check every user post. Get yours from ",
+  "akismet-topic-2": "Minimum reputation level to classify flagged posts as false positives (HAM). Posts made by users with at least this level reputation will never be flagged as spam.",
+  "akismet-topic-3": "Allow users with minimum reputation of X to submit posts to Akismet as spam via flagging (leave blank to disable)",
+  "honeypot-topic-1": "To check every user registration. Get yours from ",
+  "recaptcha-topic-1": "To check every user registration. You need a private and a public key, get yours from ",
+  "recaptcha-topic-2": "Keep your private key private",
+  "stopforumspam-topic-1": "To report a user you need an API key, get yours from ",
+  "hcaptcha-topic-1": "To check every user registration. You need a private and a public key, get yours from ",
+  "enable-recaptcha-login": "Enable Re-Captcha on login page as well",
+  "enable-hcaptcha-login": "Enable hCaptcha on login page as well"
 }
