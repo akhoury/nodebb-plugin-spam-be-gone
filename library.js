@@ -470,13 +470,6 @@ Plugin._honeypotCheck = async function (req, userData) {
 Plugin._recaptchaCheck = async function (req) {
 	if (recaptchaArgs && req && req.ip && req.body) {
 
-		/*
-				const postData = JSON.stringify({
-					secret: pluginSettings.recaptchaPrivateKey,
-					response: req.body['g-recaptcha-response'],
-					remoteip: req.ip
-				});
-		*/
 		const postData = "secret=" + pluginSettings.recaptchaPrivateKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.ip;
 
 		const options = {
@@ -517,33 +510,6 @@ Plugin._recaptchaCheck = async function (req) {
 			request.write(postData);
 			request.end();
 		});
-
-
-		/*
-		try {
-			console.log("token" + recaptchaToken.getrecaptchaToken());
-		} catch (err) {
-			const message = err.Error || '[[spam-be-gone:captcha-not-verified]]';
-			winston.verbose(`[plugins/${pluginData.nbbId}] ${message}`);
-			throw new Error(message);
-		}
-*/
-
-		/*
-		
-				const simpleRecaptchaAsync = util.promisify(simpleRecaptcha);
-				try {
-					await simpleRecaptchaAsync(
-						pluginSettings.recaptchaPrivateKey,
-						req.ip,
-						req.body['g-recaptcha-response']
-					);
-				} catch (err) {
-					const message = err.Error || '[[spam-be-gone:captcha-not-verified]]';
-					winston.verbose(`[plugins/${pluginData.nbbId}] ${message}`);
-					throw new Error(message);
-				}
-				*/
 
 	}
 };
