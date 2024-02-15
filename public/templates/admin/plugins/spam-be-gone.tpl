@@ -4,15 +4,18 @@
 
     <div>
         <div class="alert alert-info mb-0 text-xs">
-            [[spam-be-gone:admin-topic-start]]
-            <a target="_blank" href="https://github.com/julianlam/project-honeypot">project-honeypot</a>,
-            <a target="_blank" href="https://github.com/deltreey/stopforumspam">stopforumspam</a>,
-            <a target="_blank" href="https://github.com/oozcitak/akismet-js">akismet-js</a>,
-            <a target="_blank" href="https://github.com/vastus/node-hcaptcha#readme">hcaptcha</a>
-            <a target="_blank" href="https://github.com/akhoury/nodebb-plugin-spam-be-gone">spam-be-gone</a>
-            <br/>
-            [[spam-be-gone:admin-topic-end]]
-            <a target="_blank" href="https://github.com/LingkongSky/nodebb-plugin-spam-be-gone">spam-be-gone</a>
+            <p>
+                [[spam-be-gone:admin-topic-start]]
+                <a target="_blank" href="https://github.com/oozcitak/akismet-js">akismet-js</a>,
+                <a target="_blank" href="https://github.com/julianlam/project-honeypot">project-honeypot</a>,
+                <a target="_blank" href="http://www.google.com/recaptcha">Google reCAPTCHA</a>,
+                <a target="_blank" href="https://github.com/deltreey/stopforumspam">stopforumspam</a>,
+                <a target="_blank" href="https://github.com/vastus/node-hcaptcha#readme">hcaptcha</a>
+            </p>
+            <p class="mb-0">
+                [[spam-be-gone:admin-topic-end]]
+                <a target="_blank" href="https://github.com/akhoury/nodebb-plugin-spam-be-gone">spam-be-gone</a>
+            </p>
         </div>
     </div>
 
