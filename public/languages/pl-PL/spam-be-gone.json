@@ -1,0 +1,23 @@
+{
+  "report-user": "Zgłoś spam",
+  "something-went-wrong": "Coś poszło nie tak",
+  "not-allowed": "Nie masz uprawnień do wykonania tej czynności",
+  "cant-report-admin": "Nie możesz zgłosić administratora jako spamera",
+  "user-reported": "Użytkownik zgłoszony!",
+  "sfs-not-enabled": "Stop Forum Spam jest włączone",
+  "sfs-api-key-not-set": "Klucz API dla Stop Forum Spam nie został wprowadzony - uzyskasz go na stopforumspam.com/keys",
+  "captcha-not-verified": "Brak weryfikacji Captcha, jesteś automatem?",
+  "admin-topic-start": "Wtyczka wykorzystuje",
+  "admin-topic-end": "Na stronie projektu zgłosisz zmiany kodu czy własne pomysły",
+  "enable": "Włącz",
+  "akismet-topic-1": "Pozwoli sprawdzić każdy wpis. Uzyskaj własny na ",
+  "akismet-topic-2": "Poziom reputacji aby kwalifikować wpisy jako błędnie zakwalifikowane (HAM). Wpisy użytkowników z wysoką reputacją nie będą oznaczane jako spam.",
+  "akismet-topic-3": "Zezwól użytkownikom z reputacją X i wyższą aby zgłaszali spam do bazy Akismet (pozostaw puste aby wyłączyć)",
+  "honeypot-topic-1": "Pozwoli sprawdzać nowe konta. Uzyskaj własny na ",
+  "recaptcha-topic-1": "Pozwoli sprawdzać nowe konta. Wymaga kluczy prywatnego i publicznego, które uzyskasz na ",
+  "recaptcha-topic-2": "Zachowaj klucz prywatny tylko dla siebie",
+  "stopforumspam-topic-1": "Aby zgłosić użytkownika potrzebujesz klucz API stąd ",
+  "hcaptcha-topic-1": "Pozwoli sprawdzać nowe konta. Wymaga kluczy prywatnego i publicznego, które uzyskasz na ",
+  "enable-recaptcha-login": "Włącz Re-Captcha także na stronie logowania",
+  "enable-hcaptcha-login": "Włącz hCaptcha także na stronie logowania"
+}
