@@ -15,10 +15,7 @@ const db = require.main.require('./src/database');
 
 const pluginData = require('./plugin.json');
 
-let akismetClient;
-let akismetCheckSpam;
-let akismetSubmitSpam;
-let akismetSubmitHam;
+const akismet = require('./lib/akismet');
 
 let honeypot;
 let recaptchaArgs;
@@ -63,20 +60,9 @@ Plugin.load = async function (params) {
 
 	if (settings.akismetEnabled === 'on') {
 		if (settings.akismetApiKey) {
-			akismetClient = require('akismet').client({
-				blog: nconf.get('url'),
-				apiKey: settings.akismetApiKey,
-			});
-			akismetClient.verifyKey((err, verified) => {
-				if (err || !verified) {
-					winston.error(`[plugins/${pluginData.nbbId}] Unable to verify Akismet API key.`);
-					akismetClient = null;
-				} else {
-					akismetCheckSpam = util.promisify(akismetClient.checkSpam).bind(akismetClient);
-					akismetSubmitSpam = util.promisify(akismetClient.submitSpam).bind(akismetClient);
-					akismetSubmitHam = util.promisify(akismetClient.submitHam).bind(akismetClient);
-				}
-			});
+			if (!await akismet.verifyKey(settings.akismetApiKey, nconf.get('url'))) {
+				winston.error(`[plugins/${pluginData.nbbId}] Unable to verify Akismet API key.`);
+			}
 		} else {
 			winston.error(`[plugins/${pluginData.nbbId}] Akismet API Key not set!`);
 		}
@@ -279,7 +265,7 @@ Plugin.onTopicReply = async function (data) {
 Plugin.checkReply = async function (data, options) {
 	options = options || {};
 	// http://akismet.com/development/api/#comment-check
-	if (!akismetClient || !data || !data.req) {
+	if (!akismet.verified || !data || !data.req) {
 		return;
 	}
 	if (data.fromQueue) { // don't check if submitted from queue
@@ -310,7 +296,7 @@ Plugin.checkReply = async function (data, options) {
 		akismetData.recheck_reason = 'edit';
 	}
 
-	const isSpam = await akismetCheckSpam(akismetData);
+	const isSpam = await akismet.checkSpam(akismetData);
 	await db.incrObjectField(`${pluginData.nbbId}:akismet`, 'checks');
 	if (!isSpam) {
 		return;
@@ -318,7 +304,7 @@ Plugin.checkReply = async function (data, options) {
 	await db.incrObjectField(`${pluginData.nbbId}:akismet`, 'spam');
 
 	if (parseInt(userData.reputation, 10) >= parseInt(pluginSettings.akismetMinReputationHam, 10)) {
-		await akismetSubmitHam(akismetData);
+		await akismet.submitHam(akismetData);
 	}
 
 	winston.verbose(`[plugins/${pluginData.nbbId}] Post "${akismetData.comment_content}" by uid: ${data.req.uid} username: ${userData.username}@${data.req.ip} was flagged as spam and rejected.`);
@@ -421,7 +407,7 @@ Plugin.onPostFlagged = async function (data) {
 		return;
 	}
 
-	if (akismetClient && pluginSettings.akismetFlagReporting &&
+	if (akismet.verified && pluginSettings.akismetFlagReporting &&
 		parseInt(flagObj.reporter.reputation, 10) >= parseInt(pluginSettings.akismetFlagReporting, 10)) {
 		const [userData, permalink, ip] = await Promise.all([
 			User.getUserFields(flagObj.target.uid, ['username', 'email']),
@@ -439,7 +425,7 @@ Plugin.onPostFlagged = async function (data) {
 			comment_type: 'forum-post',
 		};
 		try {
-			await akismetSubmitSpam(submitted);
+			await akismet.submitSpam(submitted);
 			winston.info('Spam reported to Akismet.', submitted);
 		} catch (err) {
 			winston.error(`Error reporting to Akismet ${err.message}\n${JSON.stringify(submitted, null, 4)}`);
