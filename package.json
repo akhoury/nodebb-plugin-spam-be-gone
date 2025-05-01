@@ -4,7 +4,8 @@
   "description": "anti spam using both Google Recaptcha, Akismet.com, StopForumSpam.com & ProjectHoneyPot.com",
   "main": "library.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -53,9 +54,9 @@
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-angular": "^8.3.4",
-    "eslint": "8.57.1",
-    "eslint-config-nodebb": "0.2.1",
-    "eslint-plugin-import": "2.31.0",
+    "eslint": "^9.25.1",
+    "eslint-config-nodebb": "^1.1.4",
+    "eslint-plugin-import": "^2.31.0",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.2"
   }

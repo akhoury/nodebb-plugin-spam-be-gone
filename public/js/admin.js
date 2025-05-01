@@ -31,7 +31,6 @@ define('admin/plugins/spam-be-gone', ['settings', 'alerts'], function (Settings,
 			wrapper.find('input[type="checkbox"][data-toggle-target]').each(function (i, checkbox) {
 				checkbox = $(checkbox);
 				if (checkbox.is(':checked') && !wrapper.find(checkbox.attr('data-toggle-target')).val()) {
-					// eslint-disable-next-line no-plusplus
 					invalidSelector += (!invalidCount++ ? '' : ', ') + checkbox.attr('data-toggle-target');
 				}
 			});
