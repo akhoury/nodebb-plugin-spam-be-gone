@@ -6,12 +6,12 @@ const Honeypot = require('project-honeypot');
 const hCaptcha = require('hcaptcha');
 const stopforumspam = require('stopforumspam');
 
-const winston = require.main.require('winston');
-const nconf = require.main.require('nconf');
-const Meta = require.main.require('./src/meta');
-const User = require.main.require('./src/user');
-const Topics = require.main.require('./src/topics');
-const db = require.main.require('./src/database');
+const winston = nodebb.require('winston');
+const nconf = nodebb.require('nconf');
+const Meta = nodebb.require('./src/meta');
+const User = nodebb.require('./src/user');
+const Topics = nodebb.require('./src/topics');
+const db = nodebb.require('./src/database');
 
 const pluginData = require('./plugin.json');
 
@@ -104,7 +104,7 @@ Plugin.load = async function (params) {
 
 	pluginSettings = settings;
 
-	const routeHelpers = require.main.require('./src/routes/helpers');
+	const routeHelpers = nodebb.require('./src/routes/helpers');
 	routeHelpers.setupAdminPageRoute(params.router, `/admin/plugins/${pluginData.nbbId}`, renderAdmin);
 
 	params.router.post(

@@ -3,7 +3,7 @@
 /* global grecaptcha */
 
 $(function () {
-	var pluginName = 'spam-be-gone';
+	const pluginName = 'spam-be-gone';
 
 	function ensureRecaptchaThenCreate() {
 		if (!$('script[src*="www.recaptcha.net/recaptcha/api.js"]').length) {
@@ -27,12 +27,12 @@ $(function () {
 	}
 
 	function onAccountProfilePage() {
-		var $btn = $('#spamBeGoneReportUserBtn');
+		const $btn = $('#spamBeGoneReportUserBtn');
 		$btn.off('click');
 		$btn.on('click', function (e) {
 			e.preventDefault();
 			reportUser('/api/user/' + ajaxify.data.userslug + '/' + pluginName + '/report');
-			var $parentBtn = $btn.parents('.account-fab').find('[data-toggle="dropdown"]');
+			const $parentBtn = $btn.parents('.account-fab').find('[data-toggle="dropdown"]');
 			if ($parentBtn.dropdown) {
 				$parentBtn.dropdown('toggle');
 			}
@@ -41,10 +41,10 @@ $(function () {
 	}
 
 	function onManageRegistrationPage() {
-		var $btn = $('button.report-spam-user');
+		const $btn = $('button.report-spam-user');
 		$btn.on('click', function (e) {
 			e.preventDefault();
-			var username = $btn.parents('[data-username]').attr('data-username');
+			const username = $btn.parents('[data-username]').attr('data-username');
 			reportUser('/api/user/' + username + '/' + pluginName + '/report/queue');
 			return false;
 		});
@@ -65,10 +65,10 @@ $(function () {
 	function injectTag(tagName, attrs, options) {
 		options = options || {};
 
-		var tag = document.createElement(tagName);
+		let tag = document.createElement(tagName);
 		tag.onload = options.onload || null; // @ie8; img.onload cannot be undefined
 
-		var setAttr = tag.setAttribute ?
+		const setAttr = tag.setAttribute ?
 			function (tag, key, value) { tag.setAttribute(key, value); return tag; } :
 			function (tag, key, value) { tag[key] = value; return tag; };
 
@@ -81,7 +81,7 @@ $(function () {
 		} else if (options.appendChild) {
 			options.appendChild.appendChild(tag);
 		} else {
-			var scripts = document.getElementsByTagName('script');
+			const scripts = document.getElementsByTagName('script');
 			scripts[scripts.length - 1].parentNode.appendChild(tag);
 		}
 	}
@@ -110,7 +110,7 @@ $(function () {
 });
 
 window.__nodebbSpamBeGoneCreateCaptcha__ = function () {
-	var args = ajaxify.data.recaptchaArgs;
+	const args = ajaxify.data.recaptchaArgs;
 	if (!args) {
 		return;
 	}
@@ -121,7 +121,7 @@ window.__nodebbSpamBeGoneCreateCaptcha__ = function () {
 			theme: args.options.theme,
 			sitekey: args.publicKey,
 			callback: function () {
-				var error = utils.param('error');
+				const error = utils.param('error');
 				if (error) {
 					require(['alerts'], function (alerts) {
 						alerts.error(error);

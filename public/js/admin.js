@@ -1,16 +1,16 @@
 'use strict';
 
 define('admin/plugins/spam-be-gone', ['settings', 'alerts'], function (Settings, alerts) {
-	var Admin = {};
+	const Admin = {};
 
 	Admin.init = function () {
-		var nbbId = ajaxify.data.nbbId;
-		var klass = nbbId + '-settings';
-		var wrapper = $('.' + klass);
+		const nbbId = ajaxify.data.nbbId;
+		const klass = nbbId + '-settings';
+		const wrapper = $('.' + klass);
 
 		function onChange(e) {
-			var target = $(e.target);
-			var input = wrapper.find(target.attr('data-toggle-target'));
+			const target = $(e.target);
+			const input = wrapper.find(target.attr('data-toggle-target'));
 			input.prop('disabled', !target.is(':checked'));
 		}
 
@@ -26,8 +26,8 @@ define('admin/plugins/spam-be-gone', ['settings', 'alerts'], function (Settings,
 			e.preventDefault();
 			wrapper.find('.has-error').removeClass('has-error');
 
-			var invalidSelector = '';
-			var invalidCount = 0;
+			let invalidSelector = '';
+			let invalidCount = 0;
 			wrapper.find('input[type="checkbox"][data-toggle-target]').each(function (i, checkbox) {
 				checkbox = $(checkbox);
 				if (checkbox.is(':checked') && !wrapper.find(checkbox.attr('data-toggle-target')).val()) {

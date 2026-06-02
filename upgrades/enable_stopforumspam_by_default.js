@@ -1,9 +1,9 @@
 'use strict';
 
-var Meta = require.main.require('./src/meta');
-var async = require.main.require('async');
-var winston = require.main.require('winston');
-var Plugin = require('../library');
+const winston = nodebb.require('winston');
+
+const Meta = nodebb.require('./src/meta');
+const Plugin = require('../library');
 
 module.exports = {
 	name: 'Enable StopForumSpam by default without api key',
