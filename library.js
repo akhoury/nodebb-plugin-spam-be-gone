@@ -351,9 +351,9 @@ async function augmentWitSpamData(user) {
 		if (!body) {
 			body = {
 				success: 1,
-				username: { frequency: 0, appears: 0 },
-				email: { frequency: 0, appears: 0 },
-				ip: { frequency: 0, appears: 0, asn: null },
+				username: { frequency: 0, appears: 0, confidence: 0 },
+				email: { frequency: 0, appears: 0, confidence: 0 },
+				ip: { frequency: 0, appears: 0, confidence: 0, asn: null },
 			};
 		}
 		user.spamChecked = true;
