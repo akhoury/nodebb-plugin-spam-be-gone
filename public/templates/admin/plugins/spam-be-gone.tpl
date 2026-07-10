@@ -5,7 +5,7 @@
     <div>
         <div class="alert alert-info mb-0 text-xs">
             <p>
-                [[spam-be-gone:admin-topic-start]]
+                {{tx("spam-be-gone:admin-topic-start")}}
                 <a target="_blank" href="https://github.com/oozcitak/akismet-js">akismet-js</a>,
                 <a target="_blank" href="https://github.com/julianlam/project-honeypot">project-honeypot</a>,
                 <a target="_blank" href="http://www.google.com/recaptcha">Google reCAPTCHA</a>,
@@ -13,7 +13,7 @@
                 <a target="_blank" href="https://github.com/vastus/node-hcaptcha#readme">hcaptcha</a>
             </p>
             <p class="mb-0">
-                [[spam-be-gone:admin-topic-end]]
+                {{tx("spam-be-gone:admin-topic-end")}}
                 <a target="_blank" href="https://github.com/akhoury/nodebb-plugin-spam-be-gone">spam-be-gone</a>
             </p>
         </div>
@@ -37,10 +37,10 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#akismetApiKey,#akismetMinReputationHam,#akismetFlagReporting" type="checkbox" id="akismetEnabled" name="akismetEnabled"/>
-                                    <label class="section-title form-check-label">[[spam-be-gone:enable]] Akismet</label>
+                                    <label class="section-title form-check-label">{{tx("spam-be-gone:enable")}} Akismet</label>
                                 </div>
                                 <p class="form-text">
-                                    [[spam-be-gone:akismet-topic-1]] <a target="_blank" href="http://akismet.com/">akismet.com</a>
+                                    {{tx("spam-be-gone:akismet-topic-1")}} <a target="_blank" href="http://akismet.com/">akismet.com</a>
                                 </p>
                                 {{{ if akismet.checks }}}
                                 <p>Akismet checked <strong>{akismet.checks}</strong> posts and caught <strong>{akismet.spam}</strong> spam posts.</p>
@@ -53,12 +53,12 @@
                                     <label class="form-label" for="akismetMinReputationHam">HAM Minimum Reputation</label>
                                     <input placeholder="10" type="number" class="form-control" id="akismetMinReputationHam" name="akismetMinReputationHam"/>
                                 </div>
-                                <p class="form-text">[[spam-be-gone:akismet-topic-2]]</p>
+                                <p class="form-text">{{tx("spam-be-gone:akismet-topic-2")}}</p>
                                 <div class="mb-3">
                                     <label class="form-label" for="akismetFlagReporting">Flagging Minimum Reputation</label>
                                     <input placeholder="5" type="text" class="form-control" id="akismetFlagReporting" name="akismetFlagReporting"/>
                                 </div>
-                                <p class="form-text">[[spam-be-gone:akismet-topic-3]]</p>
+                                <p class="form-text">{{tx("spam-be-gone:akismet-topic-3")}}</p>
                             </div>
                         </div>
                     </div>
@@ -67,10 +67,10 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#honeypotApiKey" type="checkbox" id="honeypotEnabled" name="honeypotEnabled"/>
-                                    <label class="form-check-label">[[spam-be-gone:enable]] Honeypot</label>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable")}} Honeypot</label>
                                 </div>
                                 <p class="form-text">
-                                    [[spam-be-gone:honeypot-topic-1]]<a target="_blank" href="http://www.projecthoneypot.org/">projecthoneypot.org</a>
+                                    {{tx("spam-be-gone:honeypot-topic-1")}}<a target="_blank" href="http://www.projecthoneypot.org/">projecthoneypot.org</a>
                                 </p>
                                 <div class="mb-3">
                                     <label class="form-label" for="honeypotApiKey">Honeypot API Key</label>
@@ -84,10 +84,10 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#recaptchaPublicKey,#recaptchaPrivateKey,#loginRecaptchaEnabled" type="checkbox" id="recaptchaEnabled" name="recaptchaEnabled"/>
-                                    <label class="form-check-label">[[spam-be-gone:enable]] Re-Captcha</label>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable")}} Re-Captcha</label>
                                 </div>
                                 <p class="form-text">
-                                    [[spam-be-gone:recaptcha-topic-1]]<a target="_blank" href="http://www.google.com/recaptcha">google.com/recaptcha</a>
+                                    {{tx("spam-be-gone:recaptcha-topic-1")}}<a target="_blank" href="http://www.google.com/recaptcha">google.com/recaptcha</a>
                                 </p>
 
                                 <div class="mb-3" style="width:45%;">
@@ -100,11 +100,11 @@
                                 </div>
 
                                 <p class="form-text">
-                                [[spam-be-gone:recaptcha-topic-2]]
+                                {{tx("spam-be-gone:recaptcha-topic-2")}}
                                 </p>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="loginRecaptchaEnabled" name="loginRecaptchaEnabled"/>
-                                    <label class="form-check-label">[[spam-be-gone:enable-recaptcha-login]]</label>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable-recaptcha-login")}}</label>
                                 </div>
                             </div>
                         </div>
@@ -114,10 +114,10 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#stopforumspamApiKey" type="checkbox" id="stopforumspamEnabled" name="stopforumspamEnabled"/>
-                                    <label class="form-check-label">Enable StopForumSpam</label>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable-stopforumspam")}}</label>
                                 </div>
                                 <p class="form-text">
-                                    [[spam-be-gone:stopforumspam-topic-1]]<a target="_blank" href="https://www.stopforumspam.com/keys">stopforumspam.com/keys</a>
+                                    {{tx("spam-be-gone:stopforumspam-topic-1")}}<a target="_blank" href="https://www.stopforumspam.com/keys">stopforumspam.com/keys</a>
                                 </p>
                                 <div class="mb-3" style="width:45%;">
                                     <label class="form-label" for="stopforumspamApiKey">StopForumSpam API Key</label>
@@ -131,10 +131,10 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#hCaptchaSiteKey,#hCaptchaSecretKey" type="checkbox" id="hCaptchaEnabled" name="hCaptchaEnabled"/>
-                                    <label class="form-check-label">[[spam-be-gone:enable]] hCaptcha</label>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable")}} hCaptcha</label>
                                 </div>
                                 <p class="form-text">
-                                    [[spam-be-gone:hcaptcha-topic-1]]<a target="_blank" href="https://dashboard.hcaptcha.com">https://dashboard.hcaptcha.com</a>
+                                    {{tx("spam-be-gone:hcaptcha-topic-1")}}<a target="_blank" href="https://dashboard.hcaptcha.com">https://dashboard.hcaptcha.com</a>
                                 </p>
                                 <div class="mb-3">
                                     <label class="form-label" for="hCaptchaSiteKey">hCaptcha Site Key</label>
@@ -146,7 +146,7 @@
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="loginhCaptchaEnabled" name="loginhCaptchaEnabled"/>
-                                    <label class="form-check-label">[[spam-be-gone:enable-hcaptcha-login]]</label>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable-hcaptcha-login")}}</label>
                                 </div>
                             </div>
                         </div>
