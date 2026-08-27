@@ -453,14 +453,18 @@ Plugin._honeypotCheck = async function (req, userData) {
 
 Plugin._recaptchaCheck = async function (req) {
 	if (recaptchaArgs && req && req.ip && req.body) {
-		const postData = `secret=${pluginSettings.recaptchaPrivateKey}&response=${req.body['g-recaptcha-response']}&remoteip=${req.ip}`;
+		const postData = new URLSearchParams({
+			secret: pluginSettings.recaptchaPrivateKey,
+			response: String(req.body['g-recaptcha-response'] || ''),
+			remoteip: req.ip,
+		}).toString();
 		const options = {
 			hostname: 'www.recaptcha.net',
 			path: '/recaptcha/api/siteverify',
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
-				'Content-Length': postData.length,
+				'Content-Length': Buffer.byteLength(postData),
 			},
 		};
 
@@ -473,7 +477,14 @@ Plugin._recaptchaCheck = async function (req) {
 				});
 
 				res.on('end', () => {
-					const response = JSON.parse(responseData);
+					let response;
+					try {
+						response = JSON.parse(responseData);
+					} catch (err) {
+						// a throw here would be uncaught, this promise has already been handed off
+						reject(new Error('[[spam-be-gone:captcha-not-verified]]'));
+						return;
+					}
 
 					if (response.success === true) {
 						resolve();
