@@ -321,6 +321,9 @@ Plugin.checkRegister = async function (data) {
 };
 
 Plugin.checkLogin = async function (data) {
+	if (data.req && data.req.path && data.req.path.startsWith('/api/')) {
+		return data;
+	}
 	const { loginhCaptchaEnabled } = await Meta.settings.get('spam-be-gone');
 	if (loginhCaptchaEnabled === 'on') {
 		await Plugin._hcaptchaCheck(data.userData);
