@@ -164,7 +164,7 @@ Plugin.report = async function (req, res, next) {
 Plugin.reportFromQueue = async (req, res) => {
 	const data = await db.getObject(`registration:queue:name:${req.params.username}`);
 	if (!data) {
-		res.status(400).json({ message: '[[error:no-user]]' });
+		return res.status(400).json({ message: '[[error:no-user]]' });
 	}
 	const submitData = {
 		ip: data.ip,
