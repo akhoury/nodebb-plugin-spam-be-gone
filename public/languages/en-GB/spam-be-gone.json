@@ -9,7 +9,7 @@
   "captcha-not-verified": "Captcha not verified, are you a robot?",
   "admin-topic-start": "This plugin uses",
   "admin-topic-end": "Submit pull requests or ideas at the the project repository",
-  "enable": "Enable",
+  "enable-x": "Enable %1",
   "akismet-topic-1": "To check every user post. Get yours from ",
   "akismet-topic-2": "Minimum reputation level to classify flagged posts as false positives (HAM). Posts made by users with at least this level reputation will never be flagged as spam.",
   "akismet-topic-3": "Allow users with minimum reputation of X to submit posts to Akismet as spam via flagging (leave blank to disable)",

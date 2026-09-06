@@ -9,7 +9,7 @@
   "captcha-not-verified": "Brak weryfikacji Captcha, jesteś automatem?",
   "admin-topic-start": "Wtyczka wykorzystuje",
   "admin-topic-end": "Na stronie projektu zgłosisz zmiany kodu czy własne pomysły",
-  "enable": "Włącz",
+  "enable-x": "Włącz %1",
   "akismet-topic-1": "Pozwoli sprawdzić każdy wpis. Uzyskaj własny na ",
   "akismet-topic-2": "Poziom reputacji aby kwalifikować wpisy jako błędnie zakwalifikowane (HAM). Wpisy użytkowników z wysoką reputacją nie będą oznaczane jako spam.",
   "akismet-topic-3": "Zezwól użytkownikom z reputacją X i wyższą aby zgłaszali spam do bazy Akismet (pozostaw puste aby wyłączyć)",

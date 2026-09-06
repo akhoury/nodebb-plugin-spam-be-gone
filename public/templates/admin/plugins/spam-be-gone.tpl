@@ -37,7 +37,7 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#akismetApiKey,#akismetMinReputationHam,#akismetFlagReporting" type="checkbox" id="akismetEnabled" name="akismetEnabled"/>
-                                    <label class="section-title form-check-label">{{tx("spam-be-gone:enable")}} Akismet</label>
+                                    <label class="section-title form-check-label">{{tx("spam-be-gone:enable", "Akismet")}}</label>
                                 </div>
                                 <p class="form-text">
                                     {{tx("spam-be-gone:akismet-topic-1")}} <a target="_blank" href="http://akismet.com/">akismet.com</a>
@@ -67,7 +67,7 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#honeypotApiKey" type="checkbox" id="honeypotEnabled" name="honeypotEnabled"/>
-                                    <label class="form-check-label">{{tx("spam-be-gone:enable")}} Honeypot</label>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable", "Honeypot")}}</label>
                                 </div>
                                 <p class="form-text">
                                     {{tx("spam-be-gone:honeypot-topic-1")}}<a target="_blank" href="http://www.projecthoneypot.org/">projecthoneypot.org</a>
@@ -84,7 +84,7 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#recaptchaPublicKey,#recaptchaPrivateKey,#loginRecaptchaEnabled" type="checkbox" id="recaptchaEnabled" name="recaptchaEnabled"/>
-                                    <label class="form-check-label">{{tx("spam-be-gone:enable")}} Re-Captcha</label>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable", "Re-Captcha")}}</label>
                                 </div>
                                 <p class="form-text">
                                     {{tx("spam-be-gone:recaptcha-topic-1")}}<a target="_blank" href="http://www.google.com/recaptcha">google.com/recaptcha</a>
@@ -114,7 +114,7 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#stopforumspamApiKey" type="checkbox" id="stopforumspamEnabled" name="stopforumspamEnabled"/>
-                                    <label class="form-check-label">{{tx("spam-be-gone:enable-stopforumspam")}}</label>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable", "StopForumSpam")}}</label>
                                 </div>
                                 <p class="form-text">
                                     {{tx("spam-be-gone:stopforumspam-topic-1")}}<a target="_blank" href="https://www.stopforumspam.com/keys">stopforumspam.com/keys</a>
@@ -131,7 +131,7 @@
                             <div class="col-sm-12">
                                 <div class="form-check">
                                     <input class="form-check-input" data-toggle-target="#hCaptchaSiteKey,#hCaptchaSecretKey" type="checkbox" id="hCaptchaEnabled" name="hCaptchaEnabled"/>
-                                    <label class="form-check-label">{{tx("spam-be-gone:enable")}} hCaptcha</label>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable", "hCaptcha")}}</label>
                                 </div>
                                 <p class="form-text">
                                     {{tx("spam-be-gone:hcaptcha-topic-1")}}<a target="_blank" href="https://dashboard.hcaptcha.com">https://dashboard.hcaptcha.com</a>
