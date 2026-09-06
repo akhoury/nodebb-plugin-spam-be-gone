@@ -31,7 +31,7 @@ $(function () {
 		$btn.off('click');
 		$btn.on('click', function (e) {
 			e.preventDefault();
-			reportUser('/api/user/' + ajaxify.data.userslug + '/' + pluginName + '/report');
+			reportUser(`/api/user/${ajaxify.data.userslug}/${pluginName}/report`);
 			const $parentBtn = $btn.parents('.account-fab').find('[data-toggle="dropdown"]');
 			if ($parentBtn.dropdown) {
 				$parentBtn.dropdown('toggle');
@@ -45,20 +45,22 @@ $(function () {
 		$btn.on('click', function (e) {
 			e.preventDefault();
 			const username = $btn.parents('[data-username]').attr('data-username');
-			reportUser('/api/user/' + username + '/' + pluginName + '/report/queue');
+			reportUser(`/api/user/${username}/${pluginName}/report/queue`);
 			return false;
 		});
 	}
 
 	function reportUser(url) {
 		require(['alerts'], function (alerts) {
-			return $.post(url)
-				.then(function () {
-					alerts.success('User reported!');
-				})
-				.catch(function (e) {
-					alerts.error(e.responseJSON.message || '[spam-be-gone:something-went-wrong]');
-				});
+			return $.post(url, {
+				headers: {
+					'x-csrf-token': config.csrf_token,
+				},
+			}).then(function () {
+				alerts.success('User reported!');
+			}).catch(function (e) {
+				alerts.error(e.responseJSON.message || '[spam-be-gone:something-went-wrong]');
+			});
 		});
 	}
 

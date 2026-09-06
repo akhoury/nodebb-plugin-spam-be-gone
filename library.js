@@ -28,16 +28,12 @@ Plugin.nbbId = pluginData.nbbId;
 
 Plugin.middleware = {};
 
-Plugin.middleware.isAdminOrGlobalMod = function (req, res, next) {
-	User.isAdminOrGlobalMod(req.uid, (err, isAdminOrGlobalMod) => {
-		if (err) {
-			return next(err);
-		}
-		if (isAdminOrGlobalMod) {
-			return next();
-		}
-		res.status(401).json({ message: '[[spam-be-gone:not-allowed]]' });
-	});
+Plugin.middleware.isAdminOrGlobalMod = async function (req, res, next) {
+	const isAdminOrGlobalMod = await User.isAdminOrGlobalMod(req.uid);
+	if (isAdminOrGlobalMod) {
+		return next();
+	}
+	res.status(401).json({ message: '[[spam-be-gone:not-allowed]]' });
 };
 
 Plugin.middleware.checkStopForumSpam = function (req, res, next) {
@@ -52,6 +48,7 @@ Plugin.middleware.checkStopForumSpam = function (req, res, next) {
 };
 
 Plugin.load = async function (params) {
+	const { middleware } = params;
 	const settings = await Meta.settings.get(pluginData.nbbId);
 	if (!settings) {
 		winston.warn(`[plugins/${pluginData.nbbId}] Settings not set or could not be retrieved!`);
@@ -109,6 +106,7 @@ Plugin.load = async function (params) {
 
 	params.router.post(
 		`/api/user/:userslug/${pluginData.nbbId}/report`,
+		middleware.applyCSRF,
 		Plugin.middleware.isAdminOrGlobalMod,
 		Plugin.middleware.checkStopForumSpam,
 		Plugin.report
@@ -116,6 +114,7 @@ Plugin.load = async function (params) {
 
 	params.router.post(
 		`/api/user/:username/${pluginData.nbbId}/report/queue`,
+		middleware.applyCSRF,
 		Plugin.middleware.isAdminOrGlobalMod,
 		Plugin.middleware.checkStopForumSpam,
 		Plugin.reportFromQueue
