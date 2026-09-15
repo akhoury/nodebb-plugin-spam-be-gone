@@ -41,10 +41,9 @@ $(function () {
 	}
 
 	function onManageRegistrationPage() {
-		const $btn = $('button.report-spam-user');
-		$btn.on('click', function (e) {
+		$('button.report-spam-user').on('click', function (e) {
 			e.preventDefault();
-			const username = $btn.parents('[data-username]').attr('data-username');
+			const username = $(this).parents('[data-username]').attr('data-username');
 			reportUser(`/api/user/${username}/${pluginName}/report/queue`);
 			return false;
 		});
@@ -52,14 +51,16 @@ $(function () {
 
 	function reportUser(url) {
 		require(['alerts'], function (alerts) {
-			return $.post(url, {
+			return $.ajax({
+				url: config.relative_path + url,
+				method: 'POST',
 				headers: {
 					'x-csrf-token': config.csrf_token,
 				},
-			}).then(function () {
-				alerts.success('User reported!');
+			}).then(function (res) {
+				alerts.success(res.message || '[[spam-be-gone:user-reported]]');
 			}).catch(function (e) {
-				alerts.error(e.responseJSON.message || '[spam-be-gone:something-went-wrong]');
+				alerts.error((e.responseJSON && e.responseJSON.message) || '[[spam-be-gone:something-went-wrong]]');
 			});
 		});
 	}
@@ -104,6 +105,7 @@ $(function () {
 			case 'account/profile':
 				onAccountProfilePage(data);
 				break;
+			case 'registration-queue':
 			case 'admin/manage/registration':
 				onManageRegistrationPage(data);
 				break;
