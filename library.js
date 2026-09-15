@@ -12,6 +12,8 @@ const Meta = nodebb.require('./src/meta');
 const User = nodebb.require('./src/user');
 const Topics = nodebb.require('./src/topics');
 const db = nodebb.require('./src/database');
+const translator = nodebb.require('./src/translator');
+const als = nodebb.require('./src/als');
 
 const pluginData = require('./plugin.json');
 
@@ -334,12 +336,15 @@ Plugin.checkLogin = async function (data) {
 
 Plugin.getRegistrationQueue = async function (data) {
 	if (pluginSettings.stopforumspamEnabled) {
-		await Promise.all(data.users.map(augmentWitSpamData));
+		// core renders customActions titles without tx, so translate here
+		const { userLang } = await User.getSettings(als.getStore()?.uid || 0);
+		const reportTitle = await translator.translate('[[spam-be-gone:report-user]]', userLang);
+		await Promise.all(data.users.map(user => augmentWitSpamData(user, reportTitle)));
 	}
 	return data;
 };
 
-async function augmentWitSpamData(user) {
+async function augmentWitSpamData(user, reportTitle) {
 	// temporary: see http://www.stopforumspam.com/forum/viewtopic.php?id=6392
 	try {
 		user.ip = user.ip.replace('::ffff:', '');
@@ -364,7 +369,7 @@ async function augmentWitSpamData(user) {
 		user.customActions = user.customActions || [];
 		if (pluginSettings.stopforumspamApiKey) {
 			user.customActions.push({
-				title: '[[spam-be-gone:report-user]]',
+				title: reportTitle,
 				id: `report-spam-user-${user.username}`,
 				class: 'btn-warning report-spam-user',
 				icon: 'fa-flag',
