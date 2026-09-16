@@ -1,6 +1,7 @@
 'use strict';
 
 const util = require('util');
+const net = require('net');
 const https = require('https');
 const Honeypot = require('project-honeypot');
 const hCaptcha = require('hcaptcha');
@@ -342,9 +343,11 @@ Plugin.getRegistrationQueue = async function (data) {
 async function augmentWitSpamData(user) {
 	// temporary: see http://www.stopforumspam.com/forum/viewtopic.php?id=6392
 	try {
-		user.ip = user.ip.replace('::ffff:', '');
+		user.ip = (user.ip || '').replace('::ffff:', '');
+		// the stopforumspam module rejects anything but IPv4
+		const checkIp = net.isIPv4(user.ip);
 
-		let body = await stopforumspam.isSpammer({ ip: user.ip, email: user.email, username: user.username, f: 'json' });
+		let body = await stopforumspam.isSpammer({ ip: checkIp ? user.ip : undefined, email: user.email, username: user.username, f: 'json' });
 		// body === false, then just set the default non spam response,
 		// which stopforumspam node module doesn't return it's spam, but some template rely on it
 		if (!body) {
@@ -359,7 +362,9 @@ async function augmentWitSpamData(user) {
 		user.spamData = body;
 		user.usernameSpam = body.username ? (body.username.frequency > 0 || body.username.appears > 0) : true;
 		user.emailSpam = body.email ? (body.email.frequency > 0 || body.email.appears > 0) : true;
-		user.ipSpam = body.ip ? (body.ip.frequency > 0 || body.ip.appears > 0) : true;
+		if (checkIp) {
+			user.ipSpam = body.ip ? (body.ip.frequency > 0 || body.ip.appears > 0) : true;
+		}
 
 		user.customActions = user.customActions || [];
 		if (pluginSettings.stopforumspamApiKey) {
