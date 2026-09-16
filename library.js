@@ -1,11 +1,9 @@
 'use strict';
 
 const util = require('util');
-const net = require('net');
 const https = require('https');
 const Honeypot = require('project-honeypot');
 const hCaptcha = require('hcaptcha');
-const stopforumspam = require('stopforumspam');
 
 const winston = nodebb.require('winston');
 const nconf = nodebb.require('nconf');
@@ -17,6 +15,7 @@ const db = nodebb.require('./src/database');
 const pluginData = require('./plugin.json');
 
 const akismet = require('./lib/akismet');
+const stopforumspam = require('./lib/stopforumspam');
 
 let honeypot;
 let recaptchaArgs;
@@ -97,7 +96,7 @@ Plugin.load = async function (params) {
 	}
 
 	if (settings.stopforumspamApiKey) {
-		stopforumspam.Key(settings.stopforumspamApiKey);
+		stopforumspam.api_key = settings.stopforumspamApiKey;
 	}
 
 	pluginSettings = settings;
@@ -341,30 +340,15 @@ Plugin.getRegistrationQueue = async function (data) {
 };
 
 async function augmentWitSpamData(user) {
-	// temporary: see http://www.stopforumspam.com/forum/viewtopic.php?id=6392
 	try {
 		user.ip = (user.ip || '').replace('::ffff:', '');
-		// the stopforumspam module rejects anything but IPv4
-		const checkIp = net.isIPv4(user.ip);
-
-		let body = await stopforumspam.isSpammer({ ip: checkIp ? user.ip : undefined, email: user.email, username: user.username, f: 'json' });
-		// body === false, then just set the default non spam response,
-		// which stopforumspam node module doesn't return it's spam, but some template rely on it
-		if (!body) {
-			body = {
-				success: 1,
-				username: { frequency: 0, appears: 0, confidence: 0 },
-				email: { frequency: 0, appears: 0, confidence: 0 },
-				ip: { frequency: 0, appears: 0, confidence: 0, asn: null },
-			};
-		}
+		const body = await stopforumspam.check({ ip: user.ip, email: user.email, username: user.username });
 		user.spamChecked = true;
 		user.spamData = body;
-		user.usernameSpam = body.username ? (body.username.frequency > 0 || body.username.appears > 0) : true;
-		user.emailSpam = body.email ? (body.email.frequency > 0 || body.email.appears > 0) : true;
-		if (checkIp) {
-			user.ipSpam = body.ip ? (body.ip.frequency > 0 || body.ip.appears > 0) : true;
-		}
+		const listed = entry => !!entry && (entry.frequency > 0 || entry.appears > 0);
+		user.usernameSpam = listed(body.username);
+		user.emailSpam = listed(body.email);
+		user.ipSpam = listed(body.ip);
 
 		user.customActions = user.customActions || [];
 		if (pluginSettings.stopforumspamApiKey) {
