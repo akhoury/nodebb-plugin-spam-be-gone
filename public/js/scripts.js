@@ -47,6 +47,51 @@ $(function () {
 			reportUser(`/api/user/${username}/${pluginName}/report/queue`);
 			return false;
 		});
+
+		$('#reject-and-report-spam-users').on('click', function (e) {
+			e.preventDefault();
+			// read the selection straight from the DOM; `forum/registration` is a page
+			// controller and cannot be resolved from a plugin script by webpack
+			const usernames = $('.registration-queue-group[data-group="spam"]')
+				.find('[component="registration-queue/select/single"]:checked')
+				.map((index, el) => $(el).attr('data-username'))
+				.get();
+
+			require(['modals', 'alerts'], function (modals, alerts) {
+				if (!usernames.length) {
+					return alerts.error('[[error:no-users-selected]]');
+				}
+				modals.confirm(`[[spam-be-gone:reject-and-report-confirm, ${usernames.length}]]`, function (ok) {
+					if (ok) {
+						rejectAndReportUsers(usernames);
+					}
+				});
+			});
+			return false;
+		});
+	}
+
+	function rejectAndReportUsers(usernames) {
+		require(['alerts'], function (alerts) {
+			return $.ajax({
+				url: `${config.relative_path}/api/${pluginName}/report/queue/bulk`,
+				method: 'POST',
+				data: JSON.stringify({ usernames: usernames }),
+				contentType: 'application/json',
+				headers: {
+					'x-csrf-token': config.csrf_token,
+				},
+			}).then(function (res) {
+				if (res.failed.length) {
+					alerts.warning(`[[spam-be-gone:bulk-report-result, ${res.reported.length}, ${res.failed.length}]]`);
+				} else {
+					alerts.success('[[spam-be-gone:user-reported]]');
+				}
+				ajaxify.refresh();
+			}).catch(function (e) {
+				alerts.error((e.responseJSON && e.responseJSON.message) || '[[spam-be-gone:something-went-wrong]]');
+			});
+		});
 	}
 
 	function reportUser(url) {

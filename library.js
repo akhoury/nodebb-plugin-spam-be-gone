@@ -21,6 +21,12 @@ let honeypot;
 let recaptchaArgs;
 let pluginSettings;
 
+// https://www.stopforumspam.com/usage - submissions are spaced out to stay a good API citizen
+const BULK_REPORT_DELAY = 500;
+const MAX_BULK_REPORT = 50;
+
+const sleep = util.promisify(setTimeout);
+
 const Plugin = module.exports;
 
 pluginData.nbbId = pluginData.id.replace(/nodebb-plugin-/, '');
@@ -119,6 +125,14 @@ Plugin.load = async function (params) {
 		Plugin.middleware.checkStopForumSpam,
 		Plugin.reportFromQueue
 	);
+
+	params.router.post(
+		`/api/${pluginData.nbbId}/report/queue/bulk`,
+		middleware.applyCSRF,
+		Plugin.middleware.isAdminOrGlobalMod,
+		Plugin.middleware.checkStopForumSpam,
+		Plugin.reportFromQueueBulk
+	);
 };
 
 async function renderAdmin(req, res) {
@@ -177,6 +191,53 @@ Plugin.reportFromQueue = async (req, res) => {
 		winston.error(`[plugins/${pluginData.nbbId}][report-error] ${err.message}\n${JSON.stringify(submitData, null, 4)}`);
 		res.status(400).json({ message: err.message || 'Something went wrong' });
 	}
+};
+
+// report and reject a batch of users from the registration queue
+Plugin.reportFromQueueBulk = async (req, res) => {
+	const usernames = Array.isArray(req.body.usernames) ? req.body.usernames.filter(Boolean) : [];
+	if (!usernames.length || usernames.length > MAX_BULK_REPORT) {
+		return res.status(400).json({ message: '[[error:invalid-data]]' });
+	}
+
+	const reported = [];
+	const failed = [];
+	for (const username of usernames) {
+		try {
+			/* eslint-disable no-await-in-loop */
+			const data = await db.getObject(`registration:queue:name:${username}`);
+			if (!data) {
+				throw new Error('[[error:no-user]]');
+			}
+			const submitData = { ip: data.ip, email: data.email, username: data.username };
+			await stopforumspam.submit(submitData, `Manual bulk submission from user: ${req.uid} to user: ${data.username} via ${pluginData.id}`);
+			reported.push(username);
+			await sleep(BULK_REPORT_DELAY);
+			/* eslint-enable no-await-in-loop */
+		} catch (err) {
+			winston.error(`[plugins/${pluginData.nbbId}][bulk-report-error][${username}] ${err.message}`);
+			failed.push(username);
+		}
+	}
+
+	// a user we could not report stays in the queue, so the failure is visible and retryable
+	await Promise.all(reported.map(username => User.rejectRegistration(username).catch((err) => {
+		winston.error(`[plugins/${pluginData.nbbId}][bulk-reject-error][${username}] ${err.message}`);
+	})));
+
+	res.status(200).json({ reported, failed });
+};
+
+Plugin.registrationQueueBulkActions = async (data) => {
+	if (pluginSettings.stopforumspamEnabled && pluginSettings.stopforumspamApiKey) {
+		data.actions.push({
+			title: '[[spam-be-gone:reject-and-report-selected]]',
+			id: 'reject-and-report-spam-users',
+			class: 'btn-warning',
+			icon: 'fa-flag',
+		});
+	}
+	return data;
 };
 
 Plugin.appendConfig = async (data) => {
