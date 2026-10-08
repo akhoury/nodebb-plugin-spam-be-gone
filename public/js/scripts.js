@@ -185,5 +185,6 @@ $(window).on('action:script.load', function (evt, data) {
 	// Inject register.tpl client-side script
 	if (['register', 'login'].includes(data.tpl_url)) {
 		data.scripts.push('spam-be-gone/hcaptcha');
+		data.scripts.push('spam-be-gone/turnstile');
 	}
 });

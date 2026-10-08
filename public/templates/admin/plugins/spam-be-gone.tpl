@@ -6,10 +6,10 @@
         <div class="alert alert-info mb-0 text-xs">
             <p>
                 {{tx("spam-be-gone:admin-topic-start")}}
-                <a target="_blank" href="https://github.com/oozcitak/akismet-js">akismet-js</a>,
+                <a target="_blank" href="https://akismet.com/">akismet-js</a>,
                 <a target="_blank" href="https://github.com/julianlam/project-honeypot">project-honeypot</a>,
                 <a target="_blank" href="http://www.google.com/recaptcha">Google reCAPTCHA</a>,
-                <a target="_blank" href="https://github.com/deltreey/stopforumspam">stopforumspam</a>,
+                <a target="_blank" href="https://www.stopforumspam.com/">stopforumspam</a>,
                 <a target="_blank" href="https://github.com/vastus/node-hcaptcha#readme">hcaptcha</a>
             </p>
             <p class="mb-0">
@@ -27,6 +27,7 @@
                 <li role="presentation" class="nav-item"><a class="nav-link" href="#recaptcha" aria-controls="recaptcha" role="tab" data-bs-toggle="tab">Google reCAPTCHA</a></li>
                 <li role="presentation" class="nav-item"><a class="nav-link" href="#sfs" aria-controls="sfs" role="tab" data-bs-toggle="tab">StopForumSpam</a></li>
                 <li role="presentation" class="nav-item"><a class="nav-link" href="#hCaptcha" aria-controls="hCaptcha" role="tab" data-bs-toggle="tab">hCaptcha</a></li>
+                <li role="presentation" class="nav-item"><a class="nav-link" href="#cfturnstile" aria-controls="cfturnstile" role="tab" data-bs-toggle="tab">Cloudflare Turnstile</a></li>
             </ul>
 
             <form role="form" class="{nbbId}-settings">
@@ -147,6 +148,31 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="loginhCaptchaEnabled" name="loginhCaptchaEnabled"/>
                                     <label class="form-check-label">{{tx("spam-be-gone:enable-hcaptcha-login")}}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div role="tabpanel" class="tab-pane fade" id="cfturnstile">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" data-toggle-target="#cfturnstileSiteKey,#cfturnstileApiKey" type="checkbox" id="cfturnstileEnabled" name="cfturnstileEnabled"/>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable-x", "Cloudflare Turnstile")}}</label>
+                                </div>
+                                <p class="form-text">
+                                    {{tx("spam-be-gone:cfturnstile-topic-1")}}<a target="_blank" href="https://developers.cloudflare.com/turnstile/get-started/">Cloudflare Turnstile</a>
+                                </p>
+                                <div class="mb-3">
+                                    <label class="form-label" for="cfturnstileSiteKey">Cloudflare Turnstile Site Key</label>
+                                    <input type="text" class="form-control" id="cfturnstileSiteKey" name="cfturnstileSiteKey" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="cfturnstileApiKey">Cloudflare Turnstile API Key</label>
+                                    <input type="text" class="form-control" id="cfturnstileApiKey" name="cfturnstileApiKey"/>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="loginCfturnstileEnabled" name="loginCfturnstileEnabled"/>
+                                    <label class="form-check-label">{{tx("spam-be-gone:enable-cfturnstile-login")}}</label>
                                 </div>
                             </div>
                         </div>

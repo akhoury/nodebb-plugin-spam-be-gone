@@ -22,5 +22,7 @@
   "stopforumspam-topic-1": "To report a user you need an API key, get yours from ",
   "hcaptcha-topic-1": "To check every user registration. You need a private and a public key, get yours from ",
   "enable-recaptcha-login": "Enable Re-Captcha on login page as well",
-  "enable-hcaptcha-login": "Enable hCaptcha on login page as well"
+  "enable-hcaptcha-login": "Enable hCaptcha on login page as well",
+  "cfturnstile-topic-1": "To check every user registration. You need an API key from Cloudflare Turnstile, get yours from ",
+  "enable-cfturnstile-login": "Enable Cloudflare Turnstile on login page as well"
 }

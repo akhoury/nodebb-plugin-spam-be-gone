@@ -16,6 +16,7 @@ const pluginData = require('./plugin.json');
 
 const akismet = require('./lib/akismet');
 const stopforumspam = require('./lib/stopforumspam');
+const cfturnstile = require('./lib/turnstile');
 
 let honeypot;
 let recaptchaArgs;
@@ -242,11 +243,17 @@ Plugin.registrationQueueBulkActions = async (data) => {
 
 Plugin.appendConfig = async (data) => {
 	data['spam-be-gone'] = {};
-	const { hCaptchaEnabled, hCaptchaSiteKey } = await Meta.settings.get('spam-be-gone');
+	const { hCaptchaEnabled, hCaptchaSiteKey, cfturnstileEnabled, cfturnstileSiteKey } = await Meta.settings.get('spam-be-gone');
 
 	if (hCaptchaEnabled === 'on') {
 		data['spam-be-gone'].hCaptcha = {
 			key: hCaptchaSiteKey,
+		};
+	}
+
+	if (cfturnstileEnabled === 'on') {
+		data['spam-be-gone'].cfturnstile = {
+			key: cfturnstileSiteKey,
 		};
 	}
 
@@ -277,7 +284,7 @@ Plugin.addCaptcha = async (data) => {
 		}
 	}
 
-	const { hCaptchaEnabled, loginhCaptchaEnabled } = await Meta.settings.get('spam-be-gone');
+	const { hCaptchaEnabled, loginhCaptchaEnabled, cfturnstileEnabled, loginCfturnstileEnabled } = await Meta.settings.get('spam-be-gone');
 	if (hCaptchaEnabled === 'on') {
 		if (data.templateData) {
 			addCaptchaData(data.templateData, loginhCaptchaEnabled === 'on', {
@@ -288,6 +295,15 @@ Plugin.addCaptcha = async (data) => {
 		}
 	}
 
+	if (cfturnstileEnabled === 'on') {
+		if (data.templateData) {
+			addCaptchaData(data.templateData, loginCfturnstileEnabled === 'on', {
+				label: 'CAPTCHA',
+				html: `<div id="turnstile-container"></div>`,
+				styleName: pluginData.nbbId,
+			});
+		}
+	}
 	return data;
 };
 
@@ -376,14 +392,19 @@ Plugin.checkRegister = async function (data) {
 		Plugin._honeypotCheck(data.req, data.userData),
 		Plugin._recaptchaCheck(data.req, data.userData),
 		Plugin._hcaptchaCheck(data.userData),
+		Plugin._cfTurnstileCheck(data.req, data.userData),
 	]);
 	return data;
 };
 
 Plugin.checkLogin = async function (data) {
-	const { loginhCaptchaEnabled } = await Meta.settings.get('spam-be-gone');
+	const { loginhCaptchaEnabled, loginCfturnstileEnabled } = await Meta.settings.get('spam-be-gone');
 	if (loginhCaptchaEnabled === 'on') {
 		await Plugin._hcaptchaCheck(data.userData);
+	}
+
+	if (loginCfturnstileEnabled === 'on') {
+		await Plugin._cfTurnstileCheck(data.req, data.userData);
 	}
 
 	if (!recaptchaArgs || !recaptchaArgs.addLoginRecaptcha) {
@@ -565,6 +586,15 @@ Plugin._hcaptchaCheck = async (userData) => {
 	if (!response.success) {
 		throw new Error('[[spam-be-gone:captcha-not-verified]]');
 	}
+};
+
+Plugin._cfTurnstileCheck = async (req, userData) => {
+	const { cfturnstileEnabled } = await Meta.settings.get('spam-be-gone');
+	if (cfturnstileEnabled !== 'on') {
+		return;
+	}
+
+	await cfturnstile.cfTurnstileCheck(req, userData['cf-turnstile-response']);
 };
 
 Plugin.admin = {

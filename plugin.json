@@ -14,7 +14,8 @@
   ],
   "modules": {
     "../admin/plugins/spam-be-gone.js": "public/js/admin.js",
-    "spam-be-gone/hcaptcha.js": "public/js/hcaptcha.js"
+    "spam-be-gone/hcaptcha.js": "public/js/hcaptcha.js",
+    "spam-be-gone/turnstile.js": "public/js/turnstile.js"
   },
   "templates": "public/templates",
   "languages": "public/languages",
