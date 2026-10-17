@@ -102,6 +102,8 @@ Plugin.load = async function (params) {
 		settings.akismetMinReputationHam = 10;
 	}
 
+	akismet.rateLimitMax = parseInt(settings.akismetRateLimit, 10) || 1000;
+
 	if (settings.stopforumspamApiKey) {
 		stopforumspam.api_key = settings.stopforumspamApiKey;
 	}
