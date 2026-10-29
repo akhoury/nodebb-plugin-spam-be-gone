@@ -37,7 +37,7 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="form-check">
-                                    <input class="form-check-input" data-toggle-target="#akismetApiKey,#akismetMinReputationHam,#akismetFlagReporting" type="checkbox" id="akismetEnabled" name="akismetEnabled"/>
+                                    <input class="form-check-input" data-toggle-target="#akismetApiKey,#akismetMinReputationHam,#akismetRateLimit,#akismetFlagReporting" type="checkbox" id="akismetEnabled" name="akismetEnabled"/>
                                     <label class="section-title form-check-label">{{tx("spam-be-gone:enable-x", "Akismet")}}</label>
                                 </div>
                                 <p class="form-text">
@@ -53,6 +53,11 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="akismetMinReputationHam">HAM Minimum Reputation</label>
                                     <input placeholder="10" type="number" class="form-control" id="akismetMinReputationHam" name="akismetMinReputationHam"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="akismetRateLimit">Max Akismet API calls per minute (per NodeBB process)</label>
+                                    <input placeholder="1000" type="number" min="1" class="form-control" id="akismetRateLimit" name="akismetRateLimit"/>
+                                    <p class="form-text">When reached, posts are let through unchecked instead of being rejected.</p>
                                 </div>
                                 <p class="form-text">{{tx("spam-be-gone:akismet-topic-2")}}</p>
                                 <div class="mb-3">
